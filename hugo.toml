@@ -1,0 +1,4 @@
+baseURL = "https://szy1840.github.io/"
+title = "Ziyan Song Blog"
+languageCode = "en-us"
+theme = "PaperMod"
