@@ -16,13 +16,13 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: '0.125.0'  # 可根据你本地 Hugo 版本调整
+          hugo-version: '0.150.0'  # 可根据你本地 Hugo 版本调整
 
       - name: Build
         run: hugo --minify  # 生成静态网站到 public/
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v5
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
