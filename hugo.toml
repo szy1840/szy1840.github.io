@@ -1,4 +1,16 @@
 baseURL = "https://szy1840.github.io/"
-title = "Ziyan Song Blog"
+title = "Ziyan Song's Blog"
 languageCode = "en-us"
 theme = "PaperMod"
+
+[params]
+  homeInfoParams.Title = "Hi there 👋"
+  homeInfoParams.Content = "Welcome to my blog! I'm documenting my learning journey and sharing interesting discoveries here."
+
+  [[params.socialIcons]]
+  name = "github"
+  url = "https://github.com/szy1840"
+
+  [[params.socialIcons]]
+  name = "twitter"
+  url = "https://twitter.com/your_username"

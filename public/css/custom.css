@@ -1,0 +1,49 @@
+/* 统一所有post的样式 */
+.first-entry {
+    background: var(--theme);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 确保first-entry和post-entry样式一致 */
+.first-entry,
+.post-entry {
+    background: var(--theme);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+/* 悬停效果 */
+.first-entry:hover,
+.post-entry:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 确保标题样式一致 */
+.first-entry .entry-header h2,
+.post-entry .entry-header h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* 确保内容区域样式一致 */
+.first-entry .entry-content,
+.post-entry .entry-content {
+    margin: 0.5rem 0;
+}
+
+/* 确保页脚样式一致 */
+.first-entry .entry-footer,
+.post-entry .entry-footer {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: var(--secondary);
+}

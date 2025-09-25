@@ -1,12 +1,10 @@
----
-title: "another"
-date: 2025-09-24
-draft: false
-tags: ["Hugo","PaperMod"]
----
++++
+title = 'My First Post'
+date = 2024-01-14T07:07:07+01:00
+draft = false
++++
+## Introduction
 
+This is **bold** text, and this is *emphasized* text.
 
-# another
-
-another
-another
+Visit the [Hugo](https://gohugo.io) website!

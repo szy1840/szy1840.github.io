@@ -1,12 +1,37 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Ziyan Song Blog</title>
+    <title>Ziyan Song&#39;s Blog</title>
     <link>http://localhost:1313/</link>
-    <description>Recent content on Ziyan Song Blog</description>
+    <description>Recent content on Ziyan Song&#39;s Blog</description>
     <generator>Hugo -- 0.150.0</generator>
     <language>en-us</language>
-    <lastBuildDate></lastBuildDate>
+    <lastBuildDate>Tue, 14 Jan 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TRY</title>
+      <link>http://localhost:1313/post/try/</link>
+      <pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/post/try/</guid>
+      <description>&lt;h1 id=&#34;try&#34;&gt;Try&lt;/h1&gt;
+&lt;p&gt;trytrytry&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>我的第一篇文章</title>
+      <link>http://localhost:1313/post/my-first-post/</link>
+      <pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/post/my-first-post/</guid>
+      <description>&lt;h1 id=&#34;myfirst&#34;&gt;myfirst&lt;/h1&gt;
+&lt;p&gt;fsfsfsfs&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>My First Post</title>
+      <link>http://localhost:1313/post/another/</link>
+      <pubDate>Sun, 14 Jan 2024 07:07:07 +0100</pubDate>
+      <guid>http://localhost:1313/post/another/</guid>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;This is &lt;strong&gt;bold&lt;/strong&gt; text, and this is &lt;em&gt;emphasized&lt;/em&gt; text.&lt;/p&gt;
+&lt;p&gt;Visit the &lt;a href=&#34;https://gohugo.io&#34;&gt;Hugo&lt;/a&gt; website!&lt;/p&gt;</description>
+    </item>
   </channel>
 </rss>
