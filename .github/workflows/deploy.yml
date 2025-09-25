@@ -27,4 +27,3 @@ jobs:
           personal_token: ${{ secrets.PAT_TOKEN }}
           publish_dir: ./public
           publish_branch: gh-pages
-          force: true

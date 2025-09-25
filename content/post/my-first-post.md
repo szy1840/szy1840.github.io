@@ -1,5 +1,11 @@
-+++
-date = '2025-09-24T18:22:18-04:00'
-draft = true
-title = 'My First Post'
-+++
+
+---
+title: "我的第一篇文章"
+date: 2025-09-24
+draft: false
+tags: ["Hugo","PaperMod"]
+---
+
+# myfirst
+
+fsfsfsfs
