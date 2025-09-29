@@ -2,30 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/tags/hugo/</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <loc>https://szy1840.github.io/tags/concurrency/</loc>
+    <lastmod>2025-09-29T11:22:13-04:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/papermod/</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <loc>https://szy1840.github.io/tags/ios/</loc>
+    <lastmod>2025-09-29T11:22:13-04:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/post/</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <loc>https://szy1840.github.io/post/</loc>
+    <lastmod>2025-09-29T11:22:13-04:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <loc>https://szy1840.github.io/tags/swift/</loc>
+    <lastmod>2025-09-29T11:22:13-04:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/post/try/</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <loc>https://szy1840.github.io/post/2025-09-29-swift-concurrency/</loc>
+    <lastmod>2025-09-29T11:22:13-04:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <loc>https://szy1840.github.io/tags/</loc>
+    <lastmod>2025-09-29T11:22:13-04:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/post/my-first-post/</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <loc>https://szy1840.github.io/</loc>
+    <lastmod>2025-09-29T11:22:13-04:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/post/another/</loc>
-    <lastmod>2024-01-14T07:07:07+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://szy1840.github.io/categories/</loc>
   </url>
 </urlset>
