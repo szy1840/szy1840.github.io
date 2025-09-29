@@ -1,5 +1,5 @@
 baseURL = "https://szy1840.github.io/"
-title = "Ziyan Song's Blog"
+title = "Ziyan's Blog"
 languageCode = "en-us"
 theme = "PaperMod"
 
@@ -12,5 +12,5 @@ theme = "PaperMod"
   url = "https://github.com/szy1840"
 
   [[params.socialIcons]]
-  name = "twitter"
-  url = "https://twitter.com/your_username"
+  name = "linkedin"
+  url = "https://www.linkedin.com/in/ziyansong02/"
