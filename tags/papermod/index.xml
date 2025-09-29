@@ -1,3 +1,28 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>PaperMod on Ziyan Song's Blog</title><link>https://szy1840.github.io/tags/papermod/</link><description>Recent content in PaperMod on Ziyan Song's Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Tue, 14 Jan 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://szy1840.github.io/tags/papermod/index.xml" rel="self" type="application/rss+xml"/><item><title>TRY</title><link>https://szy1840.github.io/post/try/</link><pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate><guid>https://szy1840.github.io/post/try/</guid><description>&lt;h1 id="try"&gt;Try&lt;/h1&gt;
-&lt;p&gt;trytrytry&lt;/p&gt;</description></item><item><title>我的第一篇文章</title><link>https://szy1840.github.io/post/my-first-post/</link><pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate><guid>https://szy1840.github.io/post/my-first-post/</guid><description>&lt;h1 id="myfirst"&gt;myfirst&lt;/h1&gt;
-&lt;p&gt;fsfsfsfs&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>PaperMod on Ziyan Song&#39;s Blog</title>
+    <link>http://localhost:1313/tags/papermod/</link>
+    <description>Recent content in PaperMod on Ziyan Song&#39;s Blog</description>
+    <generator>Hugo -- 0.150.0</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 14 Jan 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/papermod/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TRY</title>
+      <link>http://localhost:1313/post/try/</link>
+      <pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/post/try/</guid>
+      <description>&lt;h1 id=&#34;try&#34;&gt;Try&lt;/h1&gt;
+&lt;p&gt;trytrytry&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>我的第一篇文章</title>
+      <link>http://localhost:1313/post/my-first-post/</link>
+      <pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/post/my-first-post/</guid>
+      <description>&lt;h1 id=&#34;myfirst&#34;&gt;myfirst&lt;/h1&gt;
+&lt;p&gt;fsfsfsfs&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

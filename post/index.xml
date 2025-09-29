@@ -1,5 +1,31 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Ziyan Song's Blog</title><link>https://szy1840.github.io/post/</link><description>Recent content in Posts on Ziyan Song's Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Tue, 14 Jan 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://szy1840.github.io/post/index.xml" rel="self" type="application/rss+xml"/><item><title>TRY</title><link>https://szy1840.github.io/post/try/</link><pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate><guid>https://szy1840.github.io/post/try/</guid><description>&lt;h1 id="try"&gt;Try&lt;/h1&gt;
-&lt;p&gt;trytrytry&lt;/p&gt;</description></item><item><title>我的第一篇文章</title><link>https://szy1840.github.io/post/my-first-post/</link><pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate><guid>https://szy1840.github.io/post/my-first-post/</guid><description>&lt;h1 id="myfirst"&gt;myfirst&lt;/h1&gt;
-&lt;p&gt;fsfsfsfs&lt;/p&gt;</description></item><item><title>My First Post</title><link>https://szy1840.github.io/post/another/</link><pubDate>Sun, 14 Jan 2024 07:07:07 +0100</pubDate><guid>https://szy1840.github.io/post/another/</guid><description>&lt;h2 id="introduction"&gt;Introduction&lt;/h2&gt;
-&lt;p&gt;This is &lt;strong&gt;bold&lt;/strong&gt; text, and this is &lt;em&gt;emphasized&lt;/em&gt; text.&lt;/p&gt;
-&lt;p&gt;Visit the &lt;a href="https://gohugo.io"&gt;Hugo&lt;/a&gt; website!&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Ziyan's Blog</title><link>https://szy1840.github.io/post/</link><description>Recent content in Posts on Ziyan's Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Mon, 29 Sep 2025 11:22:13 -0400</lastBuildDate><atom:link href="https://szy1840.github.io/post/index.xml" rel="self" type="application/rss+xml"/><item><title>Swift 并发入门：Task、Actor、Async/Await 与线程模型</title><link>https://szy1840.github.io/post/2025-09-29-swift-concurrency/</link><pubDate>Mon, 29 Sep 2025 11:22:13 -0400</pubDate><guid>https://szy1840.github.io/post/2025-09-29-swift-concurrency/</guid><description>&lt;h1 id="swift-并发入门taskactorasyncawait-与线程模型"&gt;Swift 并发入门：Task、Actor、Async/Await 与线程模型&lt;/h1&gt;
+&lt;p&gt;Swift 并发编程是 iOS 15+ 引入的现代异步编程范式，通过 Task、Actor 和 async/await 语法提供了更安全、更易用的并发解决方案。&lt;/p&gt;
+&lt;h2 id="swift-并发方案演进"&gt;Swift 并发方案演进&lt;/h2&gt;
+&lt;p&gt;Swift 的并发编程经历了三个主要阶段：&lt;/p&gt;
+&lt;h3 id="gcdgrand-central-dispatch"&gt;GCD（Grand Central Dispatch）&lt;/h3&gt;
+&lt;p&gt;GCD 是苹果最早提供的并发解决方案，基于队列管理任务执行：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-swift" data-lang="swift"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;DispatchQueue.global().async {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; print(&lt;span style="color:#e6db74"&gt;&amp;#34;在后台线程执行&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;DispatchQueue.main.async {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; print(&lt;span style="color:#e6db74"&gt;&amp;#34;回到主线程更新UI&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="operation--operationqueue"&gt;Operation / OperationQueue&lt;/h3&gt;
+&lt;p&gt;Operation 提供了比 GCD 更面向对象的并发管理，支持任务取消、依赖关系和复用：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-swift" data-lang="swift"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;let&lt;/span&gt; queue = OperationQueue()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;queue.addOperation {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; print(&lt;span style="color:#e6db74"&gt;&amp;#34;任务1&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="swift-concurrency推荐"&gt;Swift Concurrency（推荐）&lt;/h3&gt;
+&lt;p&gt;Swift Concurrency 是苹果在 iOS 15+ 推荐的新方案，通过 async/await 语法避免回调地狱：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-swift" data-lang="swift"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;fetchData&lt;/span&gt;() async -&amp;gt; String {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;结果&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Task {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;let&lt;/span&gt; data = await fetchData()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; print(data)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="核心概念和执行模型"&gt;核心概念和执行模型&lt;/h2&gt;
+&lt;p&gt;Swift 并发编程基于三个核心概念：Task、async/await 和 Actor。与传统的线程模型不同，Swift 并发采用任务级别的调度，线程作为底层实现细节被抽象化。&lt;/p&gt;</description></item></channel></rss>
