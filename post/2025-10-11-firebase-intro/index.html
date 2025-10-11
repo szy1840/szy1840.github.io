@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Firebase 入门指南：从零构建现代 Web 与移动后端 | Ziyan&#39;s Blog</title>
+<meta name="keywords" content="firebase, baas, serverless">
+<meta name="description" content="Firebase 入门指南：从零构建现代 Web 与移动后端
+Firebase 是 Google 提供的BaaS平台，非常适合独立开发者、全栈工程师或小团队快速构建 Web、iOS、Android 应用。它集成了数据库、身份验证、托管、函数、存储等核心能力，让开发者几乎不需要传统后端就能构建完整的应用。
+
+Firebase 的 BaaS 服务
+在传统架构中通常需要开发前端后端，其中后端包括：
+
+搭建服务器（如 Node.js）
+管理数据库（MySQL / MongoDB）
+配置认证、部署、日志、安全规则……
+
+而 Firebase 提供了一整套即开即用的托管服务：
+
+  
+      
+          功能
+          模块
+          说明
+      
+  
+  
+      
+          数据库
+          Firestore / Realtime Database
+          文档型数据库，实时同步
+      
+      
+          云函数
+          Cloud Functions
+          事件驱动的 Serverless 后端逻辑
+      
+      
+          认证
+          Firebase Auth
+          支持邮箱、Google、Apple登录等
+      
+      
+          存储
+          Firebase Storage
+          文件、图片、视频存储
+      
+      
+          托管
+          Firebase Hosting / App Hosting
+          静态站点或 SPA 托管
+      
+      
+          分析与通知
+          Analytics / FCM
+          用户行为分析与推送服务
+      
+  
+
+这意味着我们可以用前端（Vue / React / SwiftUI）&#43; Firebase 直接构建完整产品，无需再自行部署传统后端。
+
+项目初始化与结构
+Firebase 命令行安装和初始化项目：">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/post/2025-10-11-firebase-intro/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e1f5c4cae44599655f7ff95195ff89c8cb3adbda94f2b1581a434ab2b4d4e6cf.css" integrity="sha256-4fXEyuRFmWVff/lRlf&#43;JyMs629qU8rFYGkNKsrTU5s8=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/post/2025-10-11-firebase-intro/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Ziyan&#39;s Blog (Alt + H)">Ziyan&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Firebase 入门指南：从零构建现代 Web 与移动后端
+    </h1>
+    <div class="post-meta"><span title='2025-10-11 15:00:00 -0400 EDT'>October 11, 2025</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#firebase-%e5%85%a5%e9%97%a8%e6%8c%87%e5%8d%97%e4%bb%8e%e9%9b%b6%e6%9e%84%e5%bb%ba%e7%8e%b0%e4%bb%a3-web-%e4%b8%8e%e7%a7%bb%e5%8a%a8%e5%90%8e%e7%ab%af" aria-label="Firebase 入门指南：从零构建现代 Web 与移动后端">Firebase 入门指南：从零构建现代 Web 与移动后端</a><ul>
+                        
+                <li>
+                    <a href="#firebase-%e7%9a%84-baas-%e6%9c%8d%e5%8a%a1" aria-label="Firebase 的 BaaS 服务">Firebase 的 BaaS 服务</a></li>
+                <li>
+                    <a href="#%e9%a1%b9%e7%9b%ae%e5%88%9d%e5%a7%8b%e5%8c%96%e4%b8%8e%e7%bb%93%e6%9e%84" aria-label="项目初始化与结构">项目初始化与结构</a></li>
+                <li>
+                    <a href="#firestore-%e6%95%b0%e6%8d%ae%e5%ba%93%e4%b8%8e%e6%93%8d%e4%bd%9c" aria-label="Firestore 数据库与操作">Firestore 数据库与操作</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8%e8%a7%84%e5%88%99%e4%b8%8e%e6%9d%83%e9%99%90%e6%8e%a7%e5%88%b6" aria-label="安全规则与权限控制">安全规则与权限控制</a></li>
+                <li>
+                    <a href="#cloud-functions" aria-label="Cloud Functions">Cloud Functions</a></li>
+                <li>
+                    <a href="#firebase-hosting-%e4%b8%8e%e5%89%8d%e7%ab%af%e9%83%a8%e7%bd%b2" aria-label="Firebase Hosting 与前端部署">Firebase Hosting 与前端部署</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93" aria-label="总结">总结</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="firebase-入门指南从零构建现代-web-与移动后端">Firebase 入门指南：从零构建现代 Web 与移动后端<a hidden class="anchor" aria-hidden="true" href="#firebase-入门指南从零构建现代-web-与移动后端">#</a></h2>
+<p>Firebase 是 Google 提供的BaaS平台，非常适合独立开发者、全栈工程师或小团队快速构建 Web、iOS、Android 应用。它集成了数据库、身份验证、托管、函数、存储等核心能力，让开发者几乎不需要传统后端就能构建完整的应用。</p>
+<hr>
+<h3 id="firebase-的-baas-服务">Firebase 的 BaaS 服务<a hidden class="anchor" aria-hidden="true" href="#firebase-的-baas-服务">#</a></h3>
+<p>在传统架构中通常需要开发前端后端，其中后端包括：</p>
+<ul>
+<li>搭建服务器（如 Node.js）</li>
+<li>管理数据库（MySQL / MongoDB）</li>
+<li>配置认证、部署、日志、安全规则……</li>
+</ul>
+<p>而 Firebase 提供了一整套即开即用的托管服务：</p>
+<table>
+  <thead>
+      <tr>
+          <th>功能</th>
+          <th>模块</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>数据库</td>
+          <td>Firestore / Realtime Database</td>
+          <td>文档型数据库，实时同步</td>
+      </tr>
+      <tr>
+          <td>云函数</td>
+          <td>Cloud Functions</td>
+          <td>事件驱动的 Serverless 后端逻辑</td>
+      </tr>
+      <tr>
+          <td>认证</td>
+          <td>Firebase Auth</td>
+          <td>支持邮箱、Google、Apple登录等</td>
+      </tr>
+      <tr>
+          <td>存储</td>
+          <td>Firebase Storage</td>
+          <td>文件、图片、视频存储</td>
+      </tr>
+      <tr>
+          <td>托管</td>
+          <td>Firebase Hosting / App Hosting</td>
+          <td>静态站点或 SPA 托管</td>
+      </tr>
+      <tr>
+          <td>分析与通知</td>
+          <td>Analytics / FCM</td>
+          <td>用户行为分析与推送服务</td>
+      </tr>
+  </tbody>
+</table>
+<p>这意味着我们可以用前端（Vue / React / SwiftUI）+ Firebase 直接构建完整产品，无需再自行部署传统后端。</p>
+<hr>
+<h3 id="项目初始化与结构">项目初始化与结构<a hidden class="anchor" aria-hidden="true" href="#项目初始化与结构">#</a></h3>
+<p>Firebase 命令行安装和初始化项目：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -g firebase-tools
+</span></span><span class="line"><span class="cl">firebase login
+</span></span><span class="line"><span class="cl">firebase init
+</span></span></code></pre></div><p>初始化时选择所需模块（常用的包括 Hosting、Firestore、Functions）。
+项目结构通常如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">my-app/
+</span></span><span class="line"><span class="cl"> ├─ public/           # 前端构建产物 (Vite / React / Vue build 输出)
+</span></span><span class="line"><span class="cl"> ├─ functions/        # 云函数（Node.js 运行）
+</span></span><span class="line"><span class="cl">├─ firestore.rules    # 数据库访问控制
+</span></span><span class="line"><span class="cl">├─ firebase.json      # 全局配置
+</span></span><span class="line"><span class="cl">└─ .firebaserc        # 项目别名和关联信息
+</span></span></code></pre></div><h3 id="firestore-数据库与操作">Firestore 数据库与操作<a hidden class="anchor" aria-hidden="true" href="#firestore-数据库与操作">#</a></h3>
+<p>Firestore 是一个文档型数据库，数据以集合（collection）和文档（document）层级组织：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">users (collection)
+</span></span><span class="line"><span class="cl"> └── userId (document)
+</span></span><span class="line"><span class="cl">     ├── name: &#34;Alice&#34;
+</span></span><span class="line"><span class="cl">     ├── age: 25
+</span></span><span class="line"><span class="cl">     └── conversations (subcollection)
+</span></span><span class="line"><span class="cl">          └── messageId (document)
+</span></span></code></pre></div><p>典型用法（以 Swift 的 Firebase SDK 为例）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">db</span> <span class="p">=</span> <span class="n">Firestore</span><span class="p">.</span><span class="n">firestore</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">try</span> <span class="n">await</span> <span class="n">db</span><span class="p">.</span><span class="n">collection</span><span class="p">(</span><span class="s">&#34;users&#34;</span><span class="p">).</span><span class="n">document</span><span class="p">(</span><span class="s">&#34;alice&#34;</span><span class="p">).</span><span class="n">setData</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;name&#34;</span><span class="p">:</span> <span class="s">&#34;Alice&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;age&#34;</span><span class="p">:</span> <span class="mi">25</span>
+</span></span><span class="line"><span class="cl"><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nv">snapshot</span> <span class="p">=</span> <span class="k">try</span> <span class="n">await</span> <span class="n">db</span><span class="p">.</span><span class="n">collection</span><span class="p">(</span><span class="s">&#34;users&#34;</span><span class="p">).</span><span class="n">getDocuments</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">doc</span> <span class="k">in</span> <span class="n">snapshot</span><span class="p">.</span><span class="n">documents</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">print</span><span class="p">(</span><span class="n">doc</span><span class="p">.</span><span class="n">data</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Firestore 的监听机制：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-swift" data-lang="swift"><span class="line"><span class="cl"><span class="n">Firestore</span><span class="p">.</span><span class="n">firestore</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">collection</span><span class="p">(</span><span class="s">&#34;users&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">addSnapshotListener</span> <span class="p">{</span> <span class="n">snapshot</span><span class="p">,</span> <span class="kc">_</span> <span class="k">in</span>
+</span></span><span class="line"><span class="cl">        <span class="k">guard</span> <span class="kd">let</span> <span class="nv">snapshot</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 实时更新用户列表</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span></code></pre></div><p>这样可以实时监听并响应数据变更，非常适合比如即时通讯功能的实现。</p>
+<h3 id="安全规则与权限控制">安全规则与权限控制<a hidden class="anchor" aria-hidden="true" href="#安全规则与权限控制">#</a></h3>
+<p>Firebase 依靠 Firestore Rules 实现细粒度访问控制。
+一个最小安全规则示例：</p>
+<pre tabindex="0"><code class="language-rules" data-lang="rules">rules_version = &#39;2&#39;;
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null &amp;&amp; request.auth.uid == userId;
+    }
+  }
+}
+</code></pre><h3 id="cloud-functions">Cloud Functions<a hidden class="anchor" aria-hidden="true" href="#cloud-functions">#</a></h3>
+<p>当需要调用外部 API（如 GPT）或进行复杂计算时，可以使用 Cloud Functions：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">onRequest</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;firebase-functions/v2/https&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">fetch</span> <span class="kr">from</span> <span class="s2">&#34;node-fetch&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">callGPT</span> <span class="o">=</span> <span class="nx">onRequest</span><span class="p">(</span><span class="kr">async</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;https://api.openai.com/v1/chat/completions&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="nx">Authorization</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">OPENAI_API_KEY</span><span class="si">}</span><span class="sb">`</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">body</span>: <span class="kt">JSON.stringify</span><span class="p">({</span> <span class="nx">model</span><span class="o">:</span> <span class="s2">&#34;gpt-4o&#34;</span><span class="p">,</span> <span class="nx">messages</span>: <span class="kt">req.body.messages</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></div><p>部署这些 Cloud Functions 的命令：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">firebase deploy --only functions
+</span></span></code></pre></div><p>可以在 console 看到函数被触发了多少次等统计信息。</p>
+<p>另外，Logs Explorer 是 GCP 的日志系统，可以查看 Cloud Functions / Firestore / Hosting 等所有 Firebase 服务的运行日志。</p>
+<h3 id="firebase-hosting-与前端部署">Firebase Hosting 与前端部署<a hidden class="anchor" aria-hidden="true" href="#firebase-hosting-与前端部署">#</a></h3>
+<p>对于前端项目（例如 Vue + Vite），只需构建并部署：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm run build
+</span></span><span class="line"><span class="cl">firebase deploy --only hosting
+</span></span></code></pre></div><h3 id="总结">总结<a hidden class="anchor" aria-hidden="true" href="#总结">#</a></h3>
+<p>Firebase 的核心思维：数据即后端，事件即逻辑，规则即安全。</p>
+<p>最后，Firebase 在中国大陆可能存在访问问题，可考虑腾讯云 CloudBase 作为替代方案，对微信登录等相关生态支持也更好。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/firebase/">Firebase</a></li>
+      <li><a href="http://localhost:1313/tags/baas/">Baas</a></li>
+      <li><a href="http://localhost:1313/tags/serverless/">Serverless</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Ziyan&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
