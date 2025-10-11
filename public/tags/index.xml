@@ -2,31 +2,52 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tags on Ziyan&#39;s Blog</title>
-    <link>https://szy1840.github.io/tags/</link>
+    <link>http://localhost:1313/tags/</link>
     <description>Recent content in Tags on Ziyan&#39;s Blog</description>
     <generator>Hugo -- 0.150.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 29 Sep 2025 11:22:13 -0400</lastBuildDate>
-    <atom:link href="https://szy1840.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 11 Oct 2025 15:00:00 -0400</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Baas</title>
+      <link>http://localhost:1313/tags/baas/</link>
+      <pubDate>Sat, 11 Oct 2025 15:00:00 -0400</pubDate>
+      <guid>http://localhost:1313/tags/baas/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Firebase</title>
+      <link>http://localhost:1313/tags/firebase/</link>
+      <pubDate>Sat, 11 Oct 2025 15:00:00 -0400</pubDate>
+      <guid>http://localhost:1313/tags/firebase/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Serverless</title>
+      <link>http://localhost:1313/tags/serverless/</link>
+      <pubDate>Sat, 11 Oct 2025 15:00:00 -0400</pubDate>
+      <guid>http://localhost:1313/tags/serverless/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Concurrency</title>
-      <link>https://szy1840.github.io/tags/concurrency/</link>
+      <link>http://localhost:1313/tags/concurrency/</link>
       <pubDate>Mon, 29 Sep 2025 11:22:13 -0400</pubDate>
-      <guid>https://szy1840.github.io/tags/concurrency/</guid>
+      <guid>http://localhost:1313/tags/concurrency/</guid>
       <description></description>
     </item>
     <item>
       <title>Ios</title>
-      <link>https://szy1840.github.io/tags/ios/</link>
+      <link>http://localhost:1313/tags/ios/</link>
       <pubDate>Mon, 29 Sep 2025 11:22:13 -0400</pubDate>
-      <guid>https://szy1840.github.io/tags/ios/</guid>
+      <guid>http://localhost:1313/tags/ios/</guid>
       <description></description>
     </item>
     <item>
       <title>Swift</title>
-      <link>https://szy1840.github.io/tags/swift/</link>
+      <link>http://localhost:1313/tags/swift/</link>
       <pubDate>Mon, 29 Sep 2025 11:22:13 -0400</pubDate>
-      <guid>https://szy1840.github.io/tags/swift/</guid>
+      <guid>http://localhost:1313/tags/swift/</guid>
       <description></description>
     </item>
   </channel>

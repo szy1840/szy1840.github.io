@@ -14,3 +14,10 @@ theme = "PaperMod"
   [[params.socialIcons]]
   name = "linkedin"
   url = "https://www.linkedin.com/in/ziyansong02/"
+
+
+[markup]
+  [markup.highlight]
+    style = "github"
+    noClasses = false
+    lineNos = false

@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex, nofollow">
 <title>Posts | Ziyan&#39;s Blog</title>
 <meta name="keywords" content="">
 <meta name="description" content="Posts - Ziyan&#39;s Blog">
 <meta name="author" content="">
-<link rel="canonical" href="https://szy1840.github.io/post/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.e1f5c4cae44599655f7ff95195ff89c8cb3adbda94f2b1581a434ab2b4d4e6cf.css" integrity="sha256-4fXEyuRFmWVff/lRlf&#43;JyMs629qU8rFYGkNKsrTU5s8=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://szy1840.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://szy1840.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://szy1840.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://szy1840.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://szy1840.github.io/safari-pinned-tab.svg">
+<link rel="canonical" href="http://localhost:1313/post/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.c671a181af24c17897b0e52ce31e4860667c0c961fb053b091f2f76c7c892dc8.css" integrity="sha256-xnGhga8kwXiXsOUs4x5IYGZ8DJYfsFOwkfL3bHyJLcg=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://szy1840.github.io/post/index.xml">
-<link rel="alternate" hreflang="en" href="https://szy1840.github.io/post/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/post/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/post/">
 <noscript>
     <style>
         #theme-toggle,
@@ -56,30 +56,7 @@
         }
 
     </style>
-</noscript><meta property="og:url" content="https://szy1840.github.io/post/">
-  <meta property="og:site_name" content="Ziyan&#39;s Blog">
-  <meta property="og:title" content="Posts">
-  <meta property="og:locale" content="en-us">
-  <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Posts">
-<meta name="twitter:description" content="">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Posts",
-      "item": "https://szy1840.github.io/post/"
-    }
-  ]
-}
-</script>
+</noscript>
 </head>
 
 <body class="list" id="top">
@@ -97,7 +74,7 @@
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://szy1840.github.io/" accesskey="h" title="Ziyan&#39;s Blog (Alt + H)">Ziyan&#39;s Blog</a>
+            <a href="http://localhost:1313/" accesskey="h" title="Ziyan&#39;s Blog (Alt + H)">Ziyan&#39;s Blog</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -134,6 +111,23 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Firebase 入门指南：从零构建现代 Web 与移动后端
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Firebase 入门指南：从零构建现代 Web 与移动后端 Firebase 是 Google 提供的BaaS平台，非常适合独立开发者、全栈工程师或小团队快速构建 Web、iOS、Android 应用。它集成了数据库、身份验证、托管、函数、存储等核心能力，让开发者几乎不需要传统后端就能构建完整的应用。
+Firebase 的 BaaS 服务 在传统架构中通常需要开发前端后端，其中后端包括：
+搭建服务器（如 Node.js） 管理数据库（MySQL / MongoDB） 配置认证、部署、日志、安全规则…… 而 Firebase 提供了一整套即开即用的托管服务：
+功能 模块 说明 数据库 Firestore / Realtime Database 文档型数据库，实时同步 云函数 Cloud Functions 事件驱动的 Serverless 后端逻辑 认证 Firebase Auth 支持邮箱、Google、Apple登录等 存储 Firebase Storage 文件、图片、视频存储 托管 Firebase Hosting / App Hosting 静态站点或 SPA 托管 分析与通知 Analytics / FCM 用户行为分析与推送服务 这意味着我们可以用前端（Vue / React / SwiftUI）&#43; Firebase 直接构建完整产品，无需再自行部署传统后端。
+项目初始化与结构 Firebase 命令行安装和初始化项目：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-11 15:00:00 -0400 EDT'>October 11, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to Firebase 入门指南：从零构建现代 Web 与移动后端" href="http://localhost:1313/post/2025-10-11-firebase-intro/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Swift 并发入门：Task、Actor、Async/Await 与线程模型
     </h2>
   </header>
@@ -144,15 +138,16 @@ GCD（Grand Central Dispatch） GCD 是苹果最早提供的并发解决方案�
 DispatchQueue.global().async { print(&#34;在后台线程执行&#34;) } DispatchQueue.main.async { print(&#34;回到主线程更新UI&#34;) } Operation / OperationQueue Operation 提供了比 GCD 更面向对象的并发管理，支持任务取消、依赖关系和复用：
 let queue = OperationQueue() queue.addOperation { print(&#34;任务1&#34;) } Swift Concurrency（推荐） Swift Concurrency 是苹果在 iOS 15&#43; 推荐的新方案，通过 async/await 语法避免回调地狱：
 func fetchData() async -&gt; String { return &#34;结果&#34; } Task { let data = await fetchData() print(data) } 核心概念和执行模型 Swift 并发编程基于三个核心概念：Task、async/await 和 Actor。与传统的线程模型不同，Swift 并发采用任务级别的调度，线程作为底层实现细节被抽象化。
+核心概念 Task：表示一个并发执行的工作单元，相当于在 Java 里的 Runnable 或 Callable。
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-09-29 11:22:13 -0400 EDT'>September 29, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Swift 并发入门：Task、Actor、Async/Await 与线程模型" href="https://szy1840.github.io/post/2025-09-29-swift-concurrency/"></a>
+  <a class="entry-link" aria-label="post link to Swift 并发入门：Task、Actor、Async/Await 与线程模型" href="http://localhost:1313/post/2025-09-29-swift-concurrency/"></a>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="https://szy1840.github.io/">Ziyan&#39;s Blog</a></span> · 
+        <span>&copy; 2025 <a href="http://localhost:1313/">Ziyan&#39;s Blog</a></span> · 
 
     <span>
         Powered by
