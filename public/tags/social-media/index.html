@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Tags | Ziyan&#39;s Blog</title>
+<title>Social-Media | Ziyan&#39;s Blog</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="https://szy1840.github.io/tags/">
+<link rel="canonical" href="https://szy1840.github.io/tags/social-media/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.e1f5c4cae44599655f7ff95195ff89c8cb3adbda94f2b1581a434ab2b4d4e6cf.css" integrity="sha256-4fXEyuRFmWVff/lRlf&#43;JyMs629qU8rFYGkNKsrTU5s8=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://szy1840.github.io/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://szy1840.github.io/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="https://szy1840.github.io/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://szy1840.github.io/tags/index.xml">
-<link rel="alternate" hreflang="en" href="https://szy1840.github.io/tags/">
+<link rel="alternate" type="application/rss+xml" href="https://szy1840.github.io/tags/social-media/index.xml">
+<link rel="alternate" hreflang="en" href="https://szy1840.github.io/tags/social-media/">
 <noscript>
     <style>
         #theme-toggle,
@@ -56,13 +56,13 @@
         }
 
     </style>
-</noscript><meta property="og:url" content="https://szy1840.github.io/tags/">
+</noscript><meta property="og:url" content="https://szy1840.github.io/tags/social-media/">
   <meta property="og:site_name" content="Ziyan&#39;s Blog">
-  <meta property="og:title" content="Tags">
+  <meta property="og:title" content="Social-Media">
   <meta property="og:locale" content="en-us">
   <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Tags">
+<meta name="twitter:title" content="Social-Media">
 <meta name="twitter:description" content="">
 
 </head>
@@ -110,40 +110,35 @@
         </ul>
     </nav>
 </header>
-<main class="main">
+<main class="main"> 
 <header class="page-header">
-    <h1>Tags</h1>
+  <h1>
+    Social-Media
+  </h1>
 </header>
 
-<ul class="terms-tags">
-    <li>
-        <a href="https://szy1840.github.io/tags/architecture/">architecture <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://szy1840.github.io/tags/baas/">baas <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://szy1840.github.io/tags/concurrency/">concurrency <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://szy1840.github.io/tags/feed-system/">feed-system <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://szy1840.github.io/tags/firebase/">firebase <sup><strong><sup>2</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://szy1840.github.io/tags/ios/">ios <sup><strong><sup>2</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://szy1840.github.io/tags/serverless/">serverless <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://szy1840.github.io/tags/social-media/">social-media <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="https://szy1840.github.io/tags/swift/">swift <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-</ul>
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">朋友圈系统设计：好友关系与 Fan-out Feed
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>朋友圈系统设计：好友关系与 Fan-out Feed 在社交应用里，一个常见的系统就是朋友圈系统。其主要功能有：
+用户发布 Moment（朋友圈动态）后，所有好友应该能看到 用户打开朋友圈时，只看到好友发布的内容 删除好友后，双方都不应再看到对方的历史动态 点赞和评论只对共同好友可见 换句话说，就是要实现 private social feed/friends-only feed。
+Feed 系统的两种经典模式 在社交应用中，Feed 系统主要有两种实现模式：
+Fan-out on Write（写扩散） 当用户发布内容时，立即将内容复制到所有粉丝/好友的 Feed 中：
+用户A发布 Moment M → 写入用户B的feed → 写入用户C的feed → 写入用户D的feed ... 优点：
+读取极快，用户只需查询自己的 feed 适合读多写少的场景 实时性好 缺点：
+写入成本高（N&#43;1 次写入，N=好友数） 对好友数多的用户不友好 有冗余数据（但一般只存Moment的索引，所以冗余可控） Fan-out on Read（读扩散） 当用户打开 Feed 时，实时查询所有关注对象的最新内容：
+用户A打开Feed → 查询好友B的moments → 查询好友C的moments → 查询好友D的moments → 聚合排序后返回 优点：
+写入简单，只需写入一次 无冗余数据 适合好友数多的用户（超级节点） 缺点：
+读取慢（需要多次查询） 复杂的聚合排序逻辑 实时性依赖查询性能 我的选择：Fan-out on Write 考虑到朋友圈的特点：
+朋友圈的好友数量通常是有限的（&lt; 500） 用户打开朋友圈频率高（读远多于写） 需要良好的实时体验 我选择了 Fan-out on Write 模式，并结合 Firebase Cloud Functions 实现 Feed 分发。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-27 15:30:00 -0400 EDT'>October 27, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to 朋友圈系统设计：好友关系与 Fan-out Feed" href="https://szy1840.github.io/post/2025-10-27-social-media-fan-out-feed/"></a>
+</article>
     </main>
     
 <footer class="footer">

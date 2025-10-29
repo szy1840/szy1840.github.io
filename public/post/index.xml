@@ -6,8 +6,71 @@
     <description>Recent content in Posts on Ziyan&#39;s Blog</description>
     <generator>Hugo -- 0.150.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 11 Oct 2025 15:00:00 -0400</lastBuildDate>
+    <lastBuildDate>Mon, 27 Oct 2025 15:30:00 -0400</lastBuildDate>
     <atom:link href="https://szy1840.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>朋友圈系统设计：好友关系与 Fan-out Feed</title>
+      <link>https://szy1840.github.io/post/2025-10-27-social-media-fan-out-feed/</link>
+      <pubDate>Mon, 27 Oct 2025 15:30:00 -0400</pubDate>
+      <guid>https://szy1840.github.io/post/2025-10-27-social-media-fan-out-feed/</guid>
+      <description>&lt;h1 id=&#34;朋友圈系统设计好友关系与-fan-out-feed&#34;&gt;朋友圈系统设计：好友关系与 Fan-out Feed&lt;/h1&gt;
+&lt;p&gt;在社交应用里，一个常见的系统就是朋友圈系统。其主要功能有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户发布 Moment（朋友圈动态）后，所有好友应该能看到&lt;/li&gt;
+&lt;li&gt;用户打开朋友圈时，只看到好友发布的内容&lt;/li&gt;
+&lt;li&gt;删除好友后，双方都不应再看到对方的历史动态&lt;/li&gt;
+&lt;li&gt;点赞和评论只对共同好友可见&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;换句话说，就是要实现 private social feed/friends-only feed。&lt;/p&gt;
+&lt;h2 id=&#34;feed-系统的两种经典模式&#34;&gt;Feed 系统的两种经典模式&lt;/h2&gt;
+&lt;p&gt;在社交应用中，Feed 系统主要有两种实现模式：&lt;/p&gt;
+&lt;h3 id=&#34;fan-out-on-write写扩散&#34;&gt;Fan-out on Write（写扩散）&lt;/h3&gt;
+&lt;p&gt;当用户发布内容时，立即将内容复制到所有粉丝/好友的 Feed 中：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;用户A发布 Moment M
+→ 写入用户B的feed
+→ 写入用户C的feed
+→ 写入用户D的feed
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;优点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;读取极快，用户只需查询自己的 feed&lt;/li&gt;
+&lt;li&gt;适合读多写少的场景&lt;/li&gt;
+&lt;li&gt;实时性好&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;缺点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;写入成本高（N+1 次写入，N=好友数）&lt;/li&gt;
+&lt;li&gt;对好友数多的用户不友好&lt;/li&gt;
+&lt;li&gt;有冗余数据（但一般只存Moment的索引，所以冗余可控）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;fan-out-on-read读扩散&#34;&gt;Fan-out on Read（读扩散）&lt;/h3&gt;
+&lt;p&gt;当用户打开 Feed 时，实时查询所有关注对象的最新内容：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;用户A打开Feed
+→ 查询好友B的moments
+→ 查询好友C的moments
+→ 查询好友D的moments
+→ 聚合排序后返回
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;优点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;写入简单，只需写入一次&lt;/li&gt;
+&lt;li&gt;无冗余数据&lt;/li&gt;
+&lt;li&gt;适合好友数多的用户（超级节点）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;缺点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;读取慢（需要多次查询）&lt;/li&gt;
+&lt;li&gt;复杂的聚合排序逻辑&lt;/li&gt;
+&lt;li&gt;实时性依赖查询性能&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;我的选择fan-out-on-write&#34;&gt;我的选择：Fan-out on Write&lt;/h3&gt;
+&lt;p&gt;考虑到朋友圈的特点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;朋友圈的好友数量通常是有限的（&amp;lt; 500）&lt;/li&gt;
+&lt;li&gt;用户打开朋友圈频率高（读远多于写）&lt;/li&gt;
+&lt;li&gt;需要良好的实时体验&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;我选择了 &lt;strong&gt;Fan-out on Write&lt;/strong&gt; 模式，并结合 Firebase Cloud Functions 实现 Feed 分发。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Firebase 入门指南：从零构建现代 Web 与移动后端</title>
       <link>https://szy1840.github.io/post/2025-10-11-firebase-intro/</link>
