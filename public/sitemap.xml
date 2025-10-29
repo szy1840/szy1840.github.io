@@ -2,6 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://szy1840.github.io/post/</loc>
+    <lastmod>2025-10-29T10:00:00-04:00</lastmod>
+  </url><url>
+    <loc>https://szy1840.github.io/</loc>
+    <lastmod>2025-10-29T10:00:00-04:00</lastmod>
+  </url><url>
     <loc>https://szy1840.github.io/tags/architecture/</loc>
     <lastmod>2025-10-27T15:30:00-04:00</lastmod>
   </url><url>
@@ -14,16 +20,10 @@
     <loc>https://szy1840.github.io/tags/ios/</loc>
     <lastmod>2025-10-27T15:30:00-04:00</lastmod>
   </url><url>
-    <loc>https://szy1840.github.io/post/</loc>
-    <lastmod>2025-10-27T15:30:00-04:00</lastmod>
-  </url><url>
     <loc>https://szy1840.github.io/tags/social-media/</loc>
     <lastmod>2025-10-27T15:30:00-04:00</lastmod>
   </url><url>
     <loc>https://szy1840.github.io/tags/</loc>
-    <lastmod>2025-10-27T15:30:00-04:00</lastmod>
-  </url><url>
-    <loc>https://szy1840.github.io/</loc>
     <lastmod>2025-10-27T15:30:00-04:00</lastmod>
   </url><url>
     <loc>https://szy1840.github.io/post/2025-10-27-social-media-fan-out-feed/</loc>
