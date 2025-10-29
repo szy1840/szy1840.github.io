@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Swiftui on Ziyan's Blog</title><link>https://szy1840.github.io/tags/swiftui/</link><description>Recent content in Swiftui on Ziyan's Blog</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Tue, 28 Oct 2025 10:00:00 -0400</lastBuildDate><atom:link href="https://szy1840.github.io/tags/swiftui/index.xml" rel="self" type="application/rss+xml"/><item><title>SwiftUI 侧边栏实现：三层结构和踩坑记录</title><link>https://szy1840.github.io/post/2025-10-29-build-a-side-drawer-in-swift-ui/</link><pubDate>Tue, 28 Oct 2025 10:00:00 -0400</pubDate><guid>https://szy1840.github.io/post/2025-10-29-build-a-side-drawer-in-swift-ui/</guid><description>&lt;h1 id="swiftui-侧边栏实现三层结构和踩坑记录"&gt;SwiftUI 侧边栏实现：三层结构和踩坑记录&lt;/h1&gt;
+&lt;p&gt;侧边栏（Side Drawer）是移动端中常见的交互模式，从屏幕边缘滑入/点击菜单按键显示菜单或附加功能。本文总结了我在实现 Profile 页侧边栏时的设计思路和踩过的坑：为什么需要三层 ZStack 结构，以及如何避免抖动问题。&lt;/p&gt;
+&lt;p&gt;目标效果，侧边栏打开时：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;视觉焦点 → 侧边栏（最亮、最清晰）
+ ↓ 覆盖
+ 遮罩层（半透明黑色）
+ ↓ 变暗
+ 主内容（仍可见但失焦）
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="三层-zstack-设计"&gt;三层 ZStack 设计&lt;/h2&gt;
+&lt;p&gt;层级结构设计：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-swift" data-lang="swift"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;ZStack&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;alignment&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;topLeading&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 第1层：主内容（Profile 内容）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;ScrollView&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// Profile 页面内容&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 第2层：半透明遮罩层（仅侧边栏显示时出现）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;isDrawerVisible&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Color&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;black&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;opacity&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mf"&gt;0.25&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ignoresSafeArea&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;onTapGesture&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;isDrawerVisible&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gesture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;closeDrawerGesture&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 第3层：侧边栏（始终存在，通过 offset 控制位置）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;ProfileDrawerView&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;frame&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;width&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;300&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;isDrawerVisible&lt;/span&gt; &lt;span class="p"&gt;?&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;320&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;allowsHitTesting&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;isDrawerVisible&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;为什么需要三层结构？首先，第一层，即主内容层必然存在，用于显示本身 Profile 的内容；其次，第三层，侧边栏层也必然存在，用于显示侧边栏内容（账号信息、菜单等）。关键在于还需要有一层半透明遮罩层。&lt;/p&gt;
+&lt;p&gt;另外注意，第三层使用 &lt;code&gt;offset&lt;/code&gt; 动画而非条件渲染（&lt;code&gt;if isDrawerVisible&lt;/code&gt;），性能更好。同时，通过 &lt;code&gt;.allowsHitTesting(isDrawerVisible)&lt;/code&gt; 控制交互性，避免隐藏时拦截事件。从设计思路来讲，Drawer 并不是 显示/隐藏 两种状态下的两个不同视图，它始终存在于视图层级中，只是通过位移控制可见性，通过 hit-testing 控制交互性。&lt;/p&gt;
+&lt;h3 id="遮罩层设计"&gt;遮罩层设计&lt;/h3&gt;
+&lt;p&gt;遮罩层承担多重作用：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;交互拦截 + 自定义响应&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;提供一个全屏的可点击区域&lt;/li&gt;
+&lt;li&gt;点击任意位置关闭侧边栏&lt;/li&gt;
+&lt;li&gt;防止用户的操作穿透到第一层，比如误触主内容层的按钮或交互元素&lt;/li&gt;
+&lt;li&gt;拦截之后，可以用于响应点击/滑动等手势，实现关闭侧边栏&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;视觉引导&lt;/strong&gt;&lt;/p&gt;</description></item></channel></rss>

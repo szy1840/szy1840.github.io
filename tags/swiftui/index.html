@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Posts | Ziyan&#39;s Blog</title>
+<title>Swiftui | Ziyan&#39;s Blog</title>
 <meta name="keywords" content="">
-<meta name="description" content="Posts - Ziyan&#39;s Blog">
+<meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="https://szy1840.github.io/post/">
+<link rel="canonical" href="https://szy1840.github.io/tags/swiftui/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.e1f5c4cae44599655f7ff95195ff89c8cb3adbda94f2b1581a434ab2b4d4e6cf.css" integrity="sha256-4fXEyuRFmWVff/lRlf&#43;JyMs629qU8rFYGkNKsrTU5s8=" rel="preload stylesheet" as="style">
 <link rel="icon" href="https://szy1840.github.io/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="https://szy1840.github.io/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="https://szy1840.github.io/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://szy1840.github.io/post/index.xml">
-<link rel="alternate" hreflang="en" href="https://szy1840.github.io/post/">
+<link rel="alternate" type="application/rss+xml" href="https://szy1840.github.io/tags/swiftui/index.xml">
+<link rel="alternate" hreflang="en" href="https://szy1840.github.io/tags/swiftui/">
 <noscript>
     <style>
         #theme-toggle,
@@ -56,30 +56,15 @@
         }
 
     </style>
-</noscript><meta property="og:url" content="https://szy1840.github.io/post/">
+</noscript><meta property="og:url" content="https://szy1840.github.io/tags/swiftui/">
   <meta property="og:site_name" content="Ziyan&#39;s Blog">
-  <meta property="og:title" content="Posts">
+  <meta property="og:title" content="Swiftui">
   <meta property="og:locale" content="en-us">
   <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Posts">
+<meta name="twitter:title" content="Swiftui">
 <meta name="twitter:description" content="">
 
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Posts",
-      "item": "https://szy1840.github.io/post/"
-    }
-  ]
-}
-</script>
 </head>
 
 <body class="list" id="top">
@@ -128,11 +113,11 @@
 <main class="main"> 
 <header class="page-header">
   <h1>
-    Posts
+    Swiftui
   </h1>
 </header>
 
-<article class="post-entry"> 
+<article class="post-entry tag-entry"> 
   <header class="entry-header">
     <h2 class="entry-hint-parent">SwiftUI 侧边栏实现：三层结构和踩坑记录
     </h2>
@@ -150,65 +135,6 @@ ZStack(alignment: .topLeading) { // 第1层：主内容（Profile 内容） Scro
   </div>
   <footer class="entry-footer"><span title='2025-10-28 10:00:00 -0400 EDT'>October 28, 2025</span></footer>
   <a class="entry-link" aria-label="post link to SwiftUI 侧边栏实现：三层结构和踩坑记录" href="https://szy1840.github.io/post/2025-10-29-build-a-side-drawer-in-swift-ui/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">朋友圈系统设计：好友关系与 Fan-out Feed
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>朋友圈系统设计：好友关系与 Fan-out Feed 在社交应用里，一个常见的系统就是朋友圈系统。其主要功能有：
-用户发布 Moment（朋友圈动态）后，所有好友应该能看到 用户打开朋友圈时，只看到好友发布的内容 删除好友后，双方都不应再看到对方的历史动态 点赞和评论只对共同好友可见 换句话说，就是要实现 private social feed/friends-only feed。
-Feed 系统的两种经典模式 在社交应用中，Feed 系统主要有两种实现模式：
-Fan-out on Write（写扩散） 当用户发布内容时，立即将内容复制到所有粉丝/好友的 Feed 中：
-用户A发布 Moment M → 写入用户B的feed → 写入用户C的feed → 写入用户D的feed ... 优点：
-读取极快，用户只需查询自己的 feed 适合读多写少的场景 实时性好 缺点：
-写入成本高（N&#43;1 次写入，N=好友数） 对好友数多的用户不友好 有冗余数据（但一般只存Moment的索引，所以冗余可控） Fan-out on Read（读扩散） 当用户打开 Feed 时，实时查询所有关注对象的最新内容：
-用户A打开Feed → 查询好友B的moments → 查询好友C的moments → 查询好友D的moments → 聚合排序后返回 优点：
-写入简单，只需写入一次 无冗余数据 适合好友数多的用户（超级节点） 缺点：
-读取慢（需要多次查询） 复杂的聚合排序逻辑 实时性依赖查询性能 我的选择：Fan-out on Write 考虑到朋友圈的特点：
-朋友圈的好友数量通常是有限的（&lt; 500） 用户打开朋友圈频率高（读远多于写） 需要良好的实时体验 我选择了 Fan-out on Write 模式，并结合 Firebase Cloud Functions 实现 Feed 分发。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-10-27 15:30:00 -0400 EDT'>October 27, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to 朋友圈系统设计：好友关系与 Fan-out Feed" href="https://szy1840.github.io/post/2025-10-27-social-media-fan-out-feed/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Firebase 入门指南：从零构建现代 Web 与移动后端
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Firebase 入门指南：从零构建现代 Web 与移动后端 Firebase 是 Google 提供的BaaS平台，非常适合独立开发者、全栈工程师或小团队快速构建 Web、iOS、Android 应用。它集成了数据库、身份验证、托管、函数、存储等核心能力，让开发者几乎不需要传统后端就能构建完整的应用。
-Firebase 的 BaaS 服务 在传统架构中通常需要开发前端后端，其中后端包括：
-搭建服务器（如 Node.js） 管理数据库（MySQL / MongoDB） 配置认证、部署、日志、安全规则…… 而 Firebase 提供了一整套即开即用的托管服务：
-功能 模块 说明 数据库 Firestore / Realtime Database 文档型数据库，实时同步 云函数 Cloud Functions 事件驱动的 Serverless 后端逻辑 认证 Firebase Auth 支持邮箱、Google、Apple登录等 存储 Firebase Storage 文件、图片、视频存储 托管 Firebase Hosting / App Hosting 静态站点或 SPA 托管 分析与通知 Analytics / FCM 用户行为分析与推送服务 这意味着我们可以用前端（Vue / React / SwiftUI）&#43; Firebase 直接构建完整产品，无需再自行部署传统后端。
-项目初始化与结构 Firebase 命令行安装和初始化项目：
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-10-11 15:00:00 -0400 EDT'>October 11, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Firebase 入门指南：从零构建现代 Web 与移动后端" href="https://szy1840.github.io/post/2025-10-11-firebase-intro/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Swift 并发入门：Task、Actor、Async/Await 与线程模型
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Swift 并发入门：Task、Actor、Async/Await 与线程模型 Swift 并发编程是 iOS 15&#43; 引入的现代异步编程范式，通过 Task、Actor 和 async/await 语法提供了更安全、更易用的并发解决方案。
-Swift 并发方案演进 Swift 的并发编程经历了三个主要阶段：
-GCD（Grand Central Dispatch） GCD 是苹果最早提供的并发解决方案，基于队列管理任务执行：
-DispatchQueue.global().async { print(&#34;在后台线程执行&#34;) } DispatchQueue.main.async { print(&#34;回到主线程更新UI&#34;) } Operation / OperationQueue Operation 提供了比 GCD 更面向对象的并发管理，支持任务取消、依赖关系和复用：
-let queue = OperationQueue() queue.addOperation { print(&#34;任务1&#34;) } Swift Concurrency（推荐） Swift Concurrency 是苹果在 iOS 15&#43; 推荐的新方案，通过 async/await 语法避免回调地狱：
-func fetchData() async -&gt; String { return &#34;结果&#34; } Task { let data = await fetchData() print(data) } 核心概念和执行模型 Swift 并发编程基于三个核心概念：Task、async/await 和 Actor。与传统的线程模型不同，Swift 并发采用任务级别的调度，线程作为底层实现细节被抽象化。
-核心概念 Task：表示一个并发执行的工作单元，相当于在 Java 里的 Runnable 或 Callable。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-09-29 11:22:13 -0400 EDT'>September 29, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Swift 并发入门：Task、Actor、Async/Await 与线程模型" href="https://szy1840.github.io/post/2025-09-29-swift-concurrency/"></a>
 </article>
     </main>
     
