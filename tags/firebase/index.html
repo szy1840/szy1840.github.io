@@ -119,6 +119,29 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">朋友圈系统设计：好友关系与 Fan-out Feed
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>朋友圈系统设计：好友关系与 Fan-out Feed 在社交应用里，一个常见的系统就是朋友圈系统。其主要功能有：
+用户发布 Moment（朋友圈动态）后，所有好友应该能看到 用户打开朋友圈时，只看到好友发布的内容 删除好友后，双方都不应再看到对方的历史动态 点赞和评论只对共同好友可见 换句话说，就是要实现 private social feed/friends-only feed。
+Feed 系统的两种经典模式 在社交应用中，Feed 系统主要有两种实现模式：
+Fan-out on Write（写扩散） 当用户发布内容时，立即将内容复制到所有粉丝/好友的 Feed 中：
+用户A发布 Moment M → 写入用户B的feed → 写入用户C的feed → 写入用户D的feed ... 优点：
+读取极快，用户只需查询自己的 feed 适合读多写少的场景 实时性好 缺点：
+写入成本高（N&#43;1 次写入，N=好友数） 对好友数多的用户不友好 有冗余数据（但一般只存Moment的索引，所以冗余可控） Fan-out on Read（读扩散） 当用户打开 Feed 时，实时查询所有关注对象的最新内容：
+用户A打开Feed → 查询好友B的moments → 查询好友C的moments → 查询好友D的moments → 聚合排序后返回 优点：
+写入简单，只需写入一次 无冗余数据 适合好友数多的用户（超级节点） 缺点：
+读取慢（需要多次查询） 复杂的聚合排序逻辑 实时性依赖查询性能 我的选择：Fan-out on Write 考虑到朋友圈的特点：
+朋友圈的好友数量通常是有限的（&lt; 500） 用户打开朋友圈频率高（读远多于写） 需要良好的实时体验 我选择了 Fan-out on Write 模式，并结合 Firebase Cloud Functions 实现 Feed 分发。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-27 15:30:00 -0400 EDT'>October 27, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to 朋友圈系统设计：好友关系与 Fan-out Feed" href="https://szy1840.github.io/post/2025-10-27-social-media-fan-out-feed/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Firebase 入门指南：从零构建现代 Web 与移动后端
     </h2>
   </header>
