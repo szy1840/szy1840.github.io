@@ -6,8 +6,36 @@
     <description>Recent content in Tags on Ziyan&#39;s Blog</description>
     <generator>Hugo -- 0.150.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 27 Oct 2025 15:30:00 -0400</lastBuildDate>
+    <lastBuildDate>Tue, 28 Oct 2025 10:00:00 -0400</lastBuildDate>
     <atom:link href="https://szy1840.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Debug</title>
+      <link>https://szy1840.github.io/tags/debug/</link>
+      <pubDate>Tue, 28 Oct 2025 10:00:00 -0400</pubDate>
+      <guid>https://szy1840.github.io/tags/debug/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ios</title>
+      <link>https://szy1840.github.io/tags/ios/</link>
+      <pubDate>Tue, 28 Oct 2025 10:00:00 -0400</pubDate>
+      <guid>https://szy1840.github.io/tags/ios/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Swift</title>
+      <link>https://szy1840.github.io/tags/swift/</link>
+      <pubDate>Tue, 28 Oct 2025 10:00:00 -0400</pubDate>
+      <guid>https://szy1840.github.io/tags/swift/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Swiftui</title>
+      <link>https://szy1840.github.io/tags/swiftui/</link>
+      <pubDate>Tue, 28 Oct 2025 10:00:00 -0400</pubDate>
+      <guid>https://szy1840.github.io/tags/swiftui/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Architecture</title>
       <link>https://szy1840.github.io/tags/architecture/</link>
@@ -27,13 +55,6 @@
       <link>https://szy1840.github.io/tags/firebase/</link>
       <pubDate>Mon, 27 Oct 2025 15:30:00 -0400</pubDate>
       <guid>https://szy1840.github.io/tags/firebase/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Ios</title>
-      <link>https://szy1840.github.io/tags/ios/</link>
-      <pubDate>Mon, 27 Oct 2025 15:30:00 -0400</pubDate>
-      <guid>https://szy1840.github.io/tags/ios/</guid>
       <description></description>
     </item>
     <item>
@@ -62,13 +83,6 @@
       <link>https://szy1840.github.io/tags/concurrency/</link>
       <pubDate>Mon, 29 Sep 2025 11:22:13 -0400</pubDate>
       <guid>https://szy1840.github.io/tags/concurrency/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Swift</title>
-      <link>https://szy1840.github.io/tags/swift/</link>
-      <pubDate>Mon, 29 Sep 2025 11:22:13 -0400</pubDate>
-      <guid>https://szy1840.github.io/tags/swift/</guid>
       <description></description>
     </item>
   </channel>

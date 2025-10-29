@@ -159,6 +159,26 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">SwiftUI 侧边栏实现：三层结构和踩坑记录
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>SwiftUI 侧边栏实现：三层结构和踩坑记录 侧边栏（Side Drawer）是移动端中常见的交互模式，从屏幕边缘滑入/点击菜单按键显示菜单或附加功能。本文总结了我在实现 Profile 页侧边栏时的设计思路和踩过的坑：为什么需要三层 ZStack 结构，以及如何避免抖动问题。
+目标效果，侧边栏打开时：
+视觉焦点 → 侧边栏（最亮、最清晰） ↓ 覆盖 遮罩层（半透明黑色） ↓ 变暗 主内容（仍可见但失焦） 三层 ZStack 设计 层级结构设计：
+ZStack(alignment: .topLeading) { // 第1层：主内容（Profile 内容） ScrollView { // Profile 页面内容 } // 第2层：半透明遮罩层（仅侧边栏显示时出现） if isDrawerVisible { Color.black.opacity(0.25) .ignoresSafeArea() .onTapGesture { isDrawerVisible = false } .gesture(closeDrawerGesture) } // 第3层：侧边栏（始终存在，通过 offset 控制位置） ProfileDrawerView() .frame(width: 300) .offset(x: isDrawerVisible ? 0 : -320) .allowsHitTesting(isDrawerVisible) } 为什么需要三层结构？首先，第一层，即主内容层必然存在，用于显示本身 Profile 的内容；其次，第三层，侧边栏层也必然存在，用于显示侧边栏内容（账号信息、菜单等）。关键在于还需要有一层半透明遮罩层。
+另外注意，第三层使用 offset 动画而非条件渲染（if isDrawerVisible），性能更好。同时，通过 .allowsHitTesting(isDrawerVisible) 控制交互性，避免隐藏时拦截事件。从设计思路来讲，Drawer 并不是 显示/隐藏 两种状态下的两个不同视图，它始终存在于视图层级中，只是通过位移控制可见性，通过 hit-testing 控制交互性。
+遮罩层设计 遮罩层承担多重作用：
+交互拦截 &#43; 自定义响应
+提供一个全屏的可点击区域 点击任意位置关闭侧边栏 防止用户的操作穿透到第一层，比如误触主内容层的按钮或交互元素 拦截之后，可以用于响应点击/滑动等手势，实现关闭侧边栏 视觉引导
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-28 10:00:00 -0400 EDT'>October 28, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to SwiftUI 侧边栏实现：三层结构和踩坑记录" href="https://szy1840.github.io/post/2025-10-29-build-a-side-drawer-in-swift-ui/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">朋友圈系统设计：好友关系与 Fan-out Feed
     </h2>
   </header>

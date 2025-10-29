@@ -1,8 +1,8 @@
 +++
-date = '2025-10-29T10:00:00-04:00'
+date = '2025-10-28T10:00:00-04:00'
 draft = false
 title = 'SwiftUI 侧边栏实现：三层结构和踩坑记录'
-tags = ['swift', 'swiftui', 'ios', 'ui-architecture']
+tags = ['swift', 'swiftui', 'ios', 'debug']
 ShowToc = true
 +++
 
