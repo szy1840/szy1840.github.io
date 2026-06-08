@@ -1,9 +1,9 @@
-name: Deploy Hugo site to GitHub Pages
+name: Build and deploy site to GitHub Pages
 
 on:
   push:
     branches:
-      - main  # 当 main 分支有更新时触发
+      - main
 
 jobs:
   build-deploy:
@@ -11,19 +11,23 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          hugo-version: '0.150.0'  # 可根据你本地 Hugo 版本调整
+          node-version: "20"
+          cache: "npm"
 
-      - name: Build
-        run: hugo --minify  # 生成静态网站到 public/
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (Eleventy)
+        run: npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PAT_TOKEN }}
-          publish_dir: ./public
+          publish_dir: ./_site
           publish_branch: gh-pages

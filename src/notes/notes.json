@@ -1,0 +1,5 @@
+{
+  "layout": "layouts/note.njk",
+  "permalink": "/technical-notes/{{ page.fileSlug }}/",
+  "htmlLang": "zh"
+}

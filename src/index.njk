@@ -1,0 +1,89 @@
+---
+layout: layouts/base.njk
+title: false
+bodyClass: home
+---
+<section class="hero wrap">
+  <p class="eyebrow">Ziyan Song · Software Engineer &amp; Founder</p>
+  <h1 class="hero__title">
+    I build software,<br />
+    and I write <em>to think.</em>
+  </h1>
+  <p class="hero__lede">
+    An engineer drawn to clean systems and the quiet craft of getting the details right,
+    from iOS apps and serverless backends to side projects and a startup of my own.
+    This is also where I keep my notebook: essays, study notes, and fragments, in
+    <span class="lang-zh">中文</span> and English.
+  </p>
+  <div class="hero__actions">
+    <a class="btn btn--primary" href="/projects/">See my work</a>
+    <a class="btn btn--ghost" href="/about/">About me</a>
+  </div>
+</section>
+
+<section class="home-section wrap">
+  <div class="section-head">
+    <h2 class="section-head__title">Selected Projects</h2>
+    <a class="section-head__more" href="/projects/">All projects →</a>
+  </div>
+  <div class="bento bento--preview">
+    {% for p in collections.projects | limit(3) %}
+      <a class="bento-card bento-card--{{ p.data.size or 'wide' }} {% if p.data.accent %}bento-card--accent{% endif %} {% if p.data.preview %}bento-card--has-media{% endif %}" href="{{ p.url }}">
+        {% if p.data.preview %}<div class="bento-card__media"><img src="{{ p.data.preview }}" alt="" loading="lazy" /></div>{% endif %}
+        <div class="bento-card__top">
+          <span class="bento-card__cat">{{ p.data.category }}</span>
+          <span class="bento-card__year">{{ p.data.year }}</span>
+        </div>
+        <h3 class="bento-card__title">{{ p.data.title }}</h3>
+        <p class="bento-card__blurb">{{ p.data.summary }}</p>
+        <ul class="taglist">
+          {% for t in p.data.tags | limit(3) %}<li>{{ t }}</li>{% endfor %}
+        </ul>
+        <span class="bento-card__more">View project →</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="home-section wrap">
+  <div class="home-split">
+    <div class="home-split__col">
+      <div class="section-head">
+        <h2 class="section-head__title">Technical Notes</h2>
+        <a class="section-head__more" href="/technical-notes/">All →</a>
+      </div>
+      <ul class="mini-list">
+        {% for note in collections.notes | limit(4) %}
+          <li>
+            <a href="{{ note.url }}">
+              <span class="mini-list__title">{{ note | preferredNoteTitle(collections.noteTranslation) }}</span>
+              <time class="mini-list__date" datetime="{{ note.date | isoDate }}">{{ note.date | readableDate }}</time>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="home-split__col">
+      <div class="section-head">
+        <h2 class="section-head__title">From the Notebook</h2>
+        <a class="section-head__more" href="/notes-essays/">All →</a>
+      </div>
+      <ul class="mini-list mini-list--serif">
+        {% for essay in collections.essays | limit(3) %}
+          <li>
+            <a href="{{ essay.url }}">
+              <span class="mini-list__title">{{ essay.data.title }}</span>
+              <time class="mini-list__date" datetime="{{ essay.date | isoDate }}">{{ essay.date | readableDate(essay.data.lang) }}</time>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+      {% if fragments | length %}
+        <blockquote class="home-fragment lang-{{ fragments[0].lang }}">
+          <p>{{ fragments[0].text }}</p>
+          <cite>A fragment, {{ fragments[0].date }}</cite>
+        </blockquote>
+      {% endif %}
+    </div>
+  </div>
+</section>

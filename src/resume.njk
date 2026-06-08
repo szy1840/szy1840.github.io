@@ -1,0 +1,77 @@
+---
+layout: layouts/base.njk
+title: Résumé
+description: Résumé of Ziyan Song, software engineer.
+bodyClass: resume-page
+---
+<section class="wrap--narrow resume">
+  <header class="resume__head">
+    <div>
+      <p class="eyebrow">Résumé</p>
+      <h1 class="resume__name">Ziyan Song</h1>
+      <p class="resume__role">Software Engineer · iOS &amp; Systems · Founder</p>
+    </div>
+    <div class="resume__head-actions">
+      <a class="btn btn--primary btn--sm" href="/resume.pdf">Download PDF</a>
+      <p class="resume__contact">
+        <a href="mailto:szy1840@gmail.com">szy1840@gmail.com</a> ·
+        <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a> ·
+        <a href="https://www.linkedin.com/in/ziyansong02/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+    </div>
+  </header>
+
+  <p class="resume__placeholder"><em>Placeholder résumé. Edit <code>src/resume.njk</code> and drop your real <code>resume.pdf</code> into <code>src/static/</code>.</em></p>
+
+  <section class="resume__section">
+    <h2 class="resume__section-title">Experience</h2>
+    <div class="resume__entry">
+      <div class="resume__entry-head">
+        <h3>Founder &amp; Engineer · <span>Stealth Startup</span></h3>
+        <span class="resume__when">2024 – Present</span>
+      </div>
+      <ul>
+        <li>Designing and building a privacy-first social product end-to-end with SwiftUI and Firebase.</li>
+        <li>Architected a fan-out-on-write feed system with Cloud Functions for distribution and event-driven aggregation.</li>
+      </ul>
+    </div>
+    <div class="resume__entry">
+      <div class="resume__entry-head">
+        <h3>Software Engineer · <span>Company Name</span></h3>
+        <span class="resume__when">2022 – 2024</span>
+      </div>
+      <ul>
+        <li>Shipped features across the iOS app used by [N] users; improved [metric] by [X]%.</li>
+        <li>Led adoption of Swift structured concurrency, reducing data races and callback complexity.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="resume__section">
+    <h2 class="resume__section-title">Education</h2>
+    <div class="resume__entry">
+      <div class="resume__entry-head">
+        <h3>B.S. in Computer Science · <span>University Name</span></h3>
+        <span class="resume__when">20XX – 20XX</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="resume__section">
+    <h2 class="resume__section-title">Skills</h2>
+    <div class="resume__skills">
+      <div><h4>Languages</h4><p>Swift, TypeScript/JavaScript, Python, SQL</p></div>
+      <div><h4>Platforms</h4><p>iOS / SwiftUI, Firebase, Node.js, Cloud Functions</p></div>
+      <div><h4>Focus</h4><p>System design, concurrency, app architecture, serverless</p></div>
+    </div>
+  </section>
+
+  <section class="resume__section">
+    <h2 class="resume__section-title">Selected Writing</h2>
+    <ul class="resume__writing">
+      {% for note in collections.notes | limit(4) %}
+        <li><a href="{{ note.url }}">{{ note.data.title }}</a></li>
+      {% endfor %}
+    </ul>
+  </section>
+</section>

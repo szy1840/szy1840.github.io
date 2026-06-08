@@ -1,0 +1,60 @@
+---
+layout: layouts/base.njk
+bodyClass: note-page
+---
+{%- set translation = ref | findTranslation(collections.noteTranslation) -%}
+{%- if translation -%}
+  {# Pair the two language versions; prefer English for default display. #}
+  {%- if lang == "en" -%}
+    {%- set enTitle = title -%}{%- set enBody = content -%}
+    {%- set zhTitle = translation.data.title -%}{%- set zhBody = translation.templateContent -%}
+  {%- else -%}
+    {%- set enTitle = translation.data.title -%}{%- set enBody = translation.templateContent -%}
+    {%- set zhTitle = title -%}{%- set zhBody = content -%}
+  {%- endif -%}
+{%- endif -%}
+
+<article class="note wrap" {% if translation %}data-bilingual data-default-lang="en"{% endif %}>
+  <header class="note__head">
+    <p class="eyebrow"><a href="/technical-notes/">Technical Notes</a></p>
+    {% if translation %}
+      <h1 class="note__title" data-title data-title-en="{{ enTitle }}" data-title-zh="{{ zhTitle }}">{{ enTitle }}</h1>
+    {% else %}
+      <h1 class="note__title">{{ title }}</h1>
+    {% endif %}
+    <div class="note__meta">
+      <time datetime="{{ page.date | isoDate }}">{{ page.date | readableDate }}</time>
+      {% if tags %}
+        <span class="dot">·</span>
+        <span class="note__tags">
+          {% for t in tags %}<span class="tag">{{ t }}</span>{% endfor %}
+        </span>
+      {% endif %}
+      {% if translation %}
+        <span class="lang-switch" role="group" aria-label="Article language" data-lang-switch>
+          <button type="button" data-lang="en" class="is-active" aria-pressed="true">EN</button>
+          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        </span>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="note__body">
+    <aside class="toc" aria-label="Table of contents">
+      <p class="toc__title">On this page</p>
+      <nav class="toc__nav" data-toc></nav>
+    </aside>
+    <div class="prose prose--doc" data-article>
+      {% if translation %}
+        <div class="note-version" data-version="en" lang="en">{{ enBody | safe }}</div>
+        <div class="note-version prose--zh-note" data-version="zh" lang="zh" hidden>{{ zhBody | safe }}</div>
+      {% else %}
+        {{ content | safe }}
+      {% endif %}
+    </div>
+  </div>
+
+  <footer class="note__foot">
+    <a class="back-link" href="/technical-notes/">← All technical notes</a>
+  </footer>
+</article>

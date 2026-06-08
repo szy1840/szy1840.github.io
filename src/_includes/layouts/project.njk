@@ -1,0 +1,103 @@
+---
+layout: layouts/base.njk
+bodyClass: project-page
+---
+<article class="project wrap">
+  <header class="project__head">
+    <p class="eyebrow"><a href="/projects/">Projects</a>{% if category %} · {{ category }}{% endif %}</p>
+    <h1 class="project__title">{{ title }}</h1>
+    {% if summary %}<p class="project__summary">{{ summary }}</p>{% endif %}
+    {% if links %}
+      <div class="project__links">
+        {% for l in links %}
+          <a class="btn btn--sm {% if loop.first %}btn--primary{% else %}btn--ghost{% endif %}" href="{{ l.url }}"{% if '://' in l.url %} target="_blank" rel="noopener"{% endif %}>{{ l.label }}{% if '://' in l.url %} ↗{% endif %}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </header>
+
+  {% if preview or demo %}
+    {% set siteUrl = demo or (links[0].url if links) %}
+    {% set siteLabel = (siteUrl or "") | replace("https://", "") | replace("http://", "") | replace("/", "") %}
+    <section class="project__demo" aria-label="Preview">
+      <div class="browser">
+        <div class="browser__bar">
+          <span class="browser__dot"></span><span class="browser__dot"></span><span class="browser__dot"></span>
+          {% if siteLabel %}<span class="browser__url">{{ siteLabel }}</span>{% endif %}
+          {% if siteUrl %}<a class="browser__open" href="{{ siteUrl }}" target="_blank" rel="noopener">Open ↗</a>{% endif %}
+        </div>
+        {% if preview %}
+          <a class="browser__shot-link" {% if siteUrl %}href="{{ siteUrl }}" target="_blank" rel="noopener"{% endif %}>
+            <img class="browser__shot" src="{{ preview }}" alt="Screenshot of {{ title }}" loading="lazy" />
+          </a>
+        {% else %}
+          <div class="browser__viewport">
+            <iframe
+              class="browser__frame"
+              data-scale-frame
+              data-base-width="1280"
+              src="{{ demo }}"
+              loading="lazy"
+              title="{{ title }} live demo"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        {% endif %}
+      </div>
+      <p class="project__demo-note">
+        {% if preview %}Screenshot of{% else %}Live preview of{% endif %}
+        {% if siteUrl %}<a href="{{ siteUrl }}" target="_blank" rel="noopener">{{ siteLabel }}</a>{% else %}{{ title }}{% endif %}.
+        {% if not preview %}If the embed stays blank, the site blocks framing, so open it directly.{% endif %}
+      </p>
+
+      {% if gallery %}
+        <div class="project__gallery">
+          {% for g in gallery %}
+            <figure class="shot">
+              <img src="{{ g.src }}" alt="{{ g.label or title }}" loading="lazy" />
+              {% if g.label %}<figcaption>{{ g.label }}</figcaption>{% endif %}
+            </figure>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <div class="project__body">
+    <aside class="project__facts">
+      <dl>
+        {% if role %}<div><dt>Role</dt><dd>{{ role }}</dd></div>{% endif %}
+        {% if year %}<div><dt>Year</dt><dd>{{ year }}</dd></div>{% endif %}
+        {% if status %}<div><dt>Status</dt><dd>{{ status }}</dd></div>{% endif %}
+        {% if stack %}
+          <div><dt>Stack</dt><dd class="project__stack">{% for s in stack %}<span>{{ s }}</span>{% endfor %}</dd></div>
+        {% endif %}
+      </dl>
+    </aside>
+
+    <div class="prose project__prose">
+      {{ content | safe }}
+
+      {% if relatedNotes and relatedNotes | length %}
+        <h2>Related technical notes</h2>
+        <ul class="related-notes">
+          {% for r in relatedNotes %}
+            {% set n = r | noteByRef(collections.notes) %}
+            {% if n %}
+              <li>
+                <a href="{{ n.url }}">
+                  <span class="related-notes__title">{{ n | preferredNoteTitle(collections.noteTranslation) }}</span>
+                  <span class="related-notes__arrow">→</span>
+                </a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  </div>
+
+  <footer class="project__foot">
+    <a class="back-link" href="/projects/">← All projects</a>
+  </footer>
+</article>
