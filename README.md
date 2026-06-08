@@ -2,7 +2,7 @@
 
 A hand-built, theme-free static site. Minimalist editorial design, bento-grid
 projects, documentation-style technical notes, and a warm writing section for
-Chinese essays and fragments.
+Chinese essays and notes.
 
 Built with **[Eleventy (11ty)](https://www.11ty.dev/)** — no client framework, no theme.
 
@@ -21,15 +21,15 @@ src/
 ├── index.njk              # Home
 ├── projects.njk           # Projects (bento grid)
 ├── technical-notes.njk    # Technical Notes index
-├── notes-essays.njk       # Notes & Essays index (essays + fragments)
+├── notes-essays.njk       # Notes & Essays index (two columns: essays + notes)
 ├── about.njk              # About
 ├── resume.njk             # Résumé
 ├── notes/                 # ← Technical notes (Markdown). One file = one note.
-├── writing/              # ← Essays (Markdown). One file = one essay.
+├── essays/                # ← Essays (Markdown). One file = one essay.
+├── journal/               # ← Notes (Markdown). Dated, informal, any length.
+├── projects/              # ← Projects (Markdown). One file = one project.
 ├── _data/
-│   ├── site.js            # Site title, nav, social links
-│   ├── projects.js        # Project cards (edit to add/remove projects)
-│   └── fragments.js       # Short thoughts shown under "Fragments"
+│   └── site.js            # Site title, nav, social links
 ├── _includes/             # Layouts & partials
 ├── css/                   # style.css (design system) + prism.css (code theme)
 ├── js/main.js             # Theme toggle, mobile nav, table of contents
@@ -88,22 +88,26 @@ The translation file is paired into the original page automatically — it does 
 produce its own URL. The original note keeps owning the URL, date, and tags.
 (Notes without a translation simply render in whatever language they're written in.)
 
-## Add an essay
+## Add an essay or a note
 
-Create `src/writing/my-slug.md`:
+The Notes & Essays page has two columns. **Essays** are the considered, titled
+pieces; **Notes** are looser dated entries (study notes, conversations, anything),
+of any length.
+
+Essay → `src/essays/my-slug.md`. Note → `src/journal/my-slug.md`. Same front matter:
 
 ```markdown
 ---
-title: "标题"
+title: "标题"        # notes may omit this (they lead with the date)
 date: 2026-06-01
-lang: zh          # "zh" uses a serif Chinese reading style; "en" for English
+lang: zh             # "zh" uses a serif Chinese reading style; "en" for English
 lede: "One-line summary shown in the index."
 ---
 
 Body in Markdown.
 ```
 
-URL → `/notes-essays/my-slug/`.
+Both render to `/notes-essays/my-slug/` (keep slugs unique across the two folders).
 
 ## Add / edit a project
 

@@ -1,0 +1,19 @@
+---
+layout: layouts/base.njk
+bodyClass: journal-page
+---
+<article class="essay wrap--narrow">
+  <header class="essay__head">
+    <p class="eyebrow"><a href="/notes-essays/">Notes &amp; Essays</a> · Note</p>
+    {% if title %}<h1 class="essay__title">{{ title }}</h1>{% endif %}
+    <div class="essay__meta">
+      <time datetime="{{ page.date | isoDate }}">{{ page.date | readableDate(lang) }}</time>
+    </div>
+  </header>
+  <div class="prose prose--note {% if lang == 'zh' %}prose--zh{% endif %}">
+    {{ content | safe }}
+  </div>
+  <footer class="essay__foot">
+    <a class="back-link" href="/notes-essays/">← Back to writing</a>
+  </footer>
+</article>

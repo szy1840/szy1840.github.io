@@ -53,21 +53,15 @@ bodyClass: home
         <a class="section-head__more" href="/notes-essays/">All →</a>
       </div>
       <ul class="mini-list mini-list--serif">
-        {% for essay in collections.essays | limit(3) %}
+        {% for w in collections.writing | limit(5) %}
           <li>
-            <a href="{{ essay.url }}">
-              <span class="mini-list__title">{{ essay.data.title }}</span>
-              <time class="mini-list__date" datetime="{{ essay.date | isoDate }}">{{ essay.date | readableDate(essay.data.lang) }}</time>
+            <a href="{{ w.url }}">
+              <span class="mini-list__title">{{ w.data.title or (w.date | readableDate(w.data.lang)) }}</span>
+              <time class="mini-list__date" datetime="{{ w.date | isoDate }}">{{ w.date | readableDate(w.data.lang) }}</time>
             </a>
           </li>
         {% endfor %}
       </ul>
-      {% if fragments | length %}
-        <blockquote class="home-fragment lang-{{ fragments[0].lang }}">
-          <p>{{ fragments[0].text }}</p>
-          <cite>A fragment, {{ fragments[0].date }}</cite>
-        </blockquote>
-      {% endif %}
     </div>
   </div>
 </section>

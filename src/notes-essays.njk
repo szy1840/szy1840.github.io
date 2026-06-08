@@ -1,42 +1,49 @@
 ---
 layout: layouts/base.njk
 title: Notes & Essays
-description: Essays, study notes, and fragments, in Chinese and English.
-bodyClass: essays-index
+description: Essays and notes, in Chinese and English.
+bodyClass: writing-index
 ---
-<section class="wrap--narrow page-intro page-intro--warm">
+<section class="wrap page-intro page-intro--warm">
   <p class="eyebrow">Notes &amp; Essays</p>
-  <h1 class="page__title page__title--serif">The notebook.</h1>
+  <h1 class="page__title">The notebook.</h1>
   <p class="page__lede">
-    Slower writing, away from code. Argumentative essays, study notes, and small
-    fragments, mostly in <span class="lang-zh">中文</span>, sometimes in English.
-    This is where I try to think clearly about things that don't compile.
+    Slower writing, away from code. Essays are the considered pieces. Notes are the
+    looser ones: study notes, conversations worth keeping, things I want to remember.
+    Mostly in <span class="lang-zh">中文</span>, sometimes in English.
   </p>
 </section>
 
-<section class="wrap--narrow">
-  <h2 class="stream-head">Essays &amp; Notes</h2>
-  <ol class="essay-list">
-    {% for essay in collections.essays %}
-      <li class="essay-list__item lang-{{ essay.data.lang }}">
-        <a href="{{ essay.url }}">
-          <h3 class="essay-list__title">{{ essay.data.title }}</h3>
-          {% if essay.data.lede %}<p class="essay-list__lede">{{ essay.data.lede }}</p>{% endif %}
-          <time class="essay-list__date" datetime="{{ essay.date | isoDate }}">{{ essay.date | readableDate(essay.data.lang) }}</time>
-        </a>
-      </li>
-    {% endfor %}
-  </ol>
-</section>
+<section class="wrap">
+  <div class="writing-cols">
+    <div class="writing-col">
+      <h2 class="writing-col__head">Essays</h2>
+      <ol class="writing-list">
+        {% for e in collections.essays %}
+          <li class="writing-item lang-{{ e.data.lang }}">
+            <a href="{{ e.url }}">
+              <h3 class="writing-item__title">{{ e.data.title }}</h3>
+              {% if e.data.lede %}<p class="writing-item__lede">{{ e.data.lede }}</p>{% endif %}
+              <time class="writing-item__date" datetime="{{ e.date | isoDate }}">{{ e.date | readableDate(e.data.lang) }}</time>
+            </a>
+          </li>
+        {% endfor %}
+      </ol>
+    </div>
 
-<section class="wrap--narrow">
-  <h2 class="stream-head">Fragments</h2>
-  <ul class="fragment-list">
-    {% for f in fragments %}
-      <li class="fragment lang-{{ f.lang }}">
-        <p class="fragment__text">{{ f.text }}</p>
-        <time class="fragment__date" datetime="{{ f.date }}">{{ f.date }}</time>
-      </li>
-    {% endfor %}
-  </ul>
+    <div class="writing-col writing-col--notes">
+      <h2 class="writing-col__head">Notes</h2>
+      <ol class="writing-list">
+        {% for n in collections.journal %}
+          <li class="writing-item lang-{{ n.data.lang }}">
+            <a href="{{ n.url }}">
+              <time class="writing-item__date writing-item__date--lead" datetime="{{ n.date | isoDate }}">{{ n.date | readableDate(n.data.lang) }}</time>
+              {% if n.data.title %}<h3 class="writing-item__title writing-item__title--sm">{{ n.data.title }}</h3>{% endif %}
+              {% if n.data.lede %}<p class="writing-item__lede">{{ n.data.lede }}</p>{% endif %}
+            </a>
+          </li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
 </section>

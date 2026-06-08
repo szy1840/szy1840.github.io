@@ -82,7 +82,18 @@ export default function (eleventyConfig) {
     api.getFilteredByGlob("./src/notes/*.md").sort((a, b) => b.date - a.date)
   );
   eleventyConfig.addCollection("essays", (api) =>
-    api.getFilteredByGlob("./src/writing/*.md").sort((a, b) => b.date - a.date)
+    api.getFilteredByGlob("./src/essays/*.md").sort((a, b) => b.date - a.date)
+  );
+  // Personal notes / journal entries (any length: jottings, conversations, study notes)
+  eleventyConfig.addCollection("journal", (api) =>
+    api.getFilteredByGlob("./src/journal/*.md").sort((a, b) => b.date - a.date)
+  );
+  // Combined writing stream (essays + notes), newest first
+  eleventyConfig.addCollection("writing", (api) =>
+    [
+      ...api.getFilteredByGlob("./src/essays/*.md"),
+      ...api.getFilteredByGlob("./src/journal/*.md"),
+    ].sort((a, b) => b.date - a.date)
   );
   eleventyConfig.addCollection("noteTranslation", (api) =>
     api.getFilteredByGlob("./src/note-translations/*.md")
