@@ -95,77 +95,27 @@
     <div>
       <p class="eyebrow">Résumé</p>
       <h1 class="resume__name">Ziyan Song</h1>
-      <p class="resume__role">Software Engineer · iOS &amp; Systems · Founder</p>
+      <p class="resume__role">Software Engineer · Founding Engineer · iOS &amp; Systems</p>
     </div>
     <div class="resume__head-actions">
-      <a class="btn btn--primary btn--sm" href="/resume.pdf">Download PDF</a>
+      <a class="btn btn--primary btn--sm" href="/sde_cv.pdf" download>Download PDF</a>
       <p class="resume__contact">
         <a href="mailto:szy1840@gmail.com">szy1840@gmail.com</a> ·
+        <a href="tel:+14017801490">+1 401 780 1490</a> ·
         <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a> ·
-        <a href="https://www.linkedin.com/in/ziyansong02/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/ziyansong02" target="_blank" rel="noopener">LinkedIn</a>
       </p>
     </div>
   </header>
 
-  <p class="resume__placeholder"><em>Placeholder résumé. Edit <code>src/resume.njk</code> and drop your real <code>resume.pdf</code> into <code>src/static/</code>.</em></p>
-
-  <section class="resume__section">
-    <h2 class="resume__section-title">Experience</h2>
-    <div class="resume__entry">
-      <div class="resume__entry-head">
-        <h3>Founder &amp; Engineer · <span>Stealth Startup</span></h3>
-        <span class="resume__when">2024 – Present</span>
-      </div>
-      <ul>
-        <li>Designing and building a privacy-first social product end-to-end with SwiftUI and Firebase.</li>
-        <li>Architected a fan-out-on-write feed system with Cloud Functions for distribution and event-driven aggregation.</li>
-      </ul>
-    </div>
-    <div class="resume__entry">
-      <div class="resume__entry-head">
-        <h3>Software Engineer · <span>Company Name</span></h3>
-        <span class="resume__when">2022 – 2024</span>
-      </div>
-      <ul>
-        <li>Shipped features across the iOS app used by [N] users; improved [metric] by [X]%.</li>
-        <li>Led adoption of Swift structured concurrency, reducing data races and callback complexity.</li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="resume__section">
-    <h2 class="resume__section-title">Education</h2>
-    <div class="resume__entry">
-      <div class="resume__entry-head">
-        <h3>B.S. in Computer Science · <span>University Name</span></h3>
-        <span class="resume__when">20XX – 20XX</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="resume__section">
-    <h2 class="resume__section-title">Skills</h2>
-    <div class="resume__skills">
-      <div><h4>Languages</h4><p>Swift, TypeScript/JavaScript, Python, SQL</p></div>
-      <div><h4>Platforms</h4><p>iOS / SwiftUI, Firebase, Node.js, Cloud Functions</p></div>
-      <div><h4>Focus</h4><p>System design, concurrency, app architecture, serverless</p></div>
-    </div>
-  </section>
-
-  <section class="resume__section">
-    <h2 class="resume__section-title">Selected Writing</h2>
-    <ul class="resume__writing">
-      
-        <li><a href="/technical-notes/build-a-side-drawer-in-swift-ui/">SwiftUI 侧边栏实现：三层结构和踩坑记录</a></li>
-      
-        <li><a href="/technical-notes/social-media-fan-out-feed/">朋友圈系统设计：好友关系与 Fan-out Feed</a></li>
-      
-        <li><a href="/technical-notes/firebase-intro/">Firebase 入门指南：从零构建现代 Web 与移动后端</a></li>
-      
-        <li><a href="/technical-notes/swift-concurrency/">Swift 并发入门：Task、Actor、Async/Await 与线程模型</a></li>
-      
-    </ul>
-  </section>
+  <div class="resume__embed">
+    <object data="/sde_cv.pdf" type="application/pdf" aria-label="Résumé (PDF)">
+      <p class="resume__embed-fallback">
+        Your browser can't display the embedded PDF.
+        <a href="/sde_cv.pdf">Download the résumé</a> instead.
+      </p>
+    </object>
+  </div>
 </section>
 </main>
     <footer class="site-footer">

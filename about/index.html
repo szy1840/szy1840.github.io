@@ -110,11 +110,10 @@
 
   <div class="prose about__body">
     <p>
-      <em>This is placeholder copy. Edit <code>src/about.njk</code> to make it yours.</em>
-      I started in iOS development and kept following the stack downward: concurrency,
-      system design, serverless backends, and the architecture decisions that decide
-      whether a product feels fast or fragile. Lately I've been building a startup of my
-      own and writing about what I learn along the way.
+      I started in iOS and kept following the stack downward: concurrency, system design,
+      serverless backends, and the architecture decisions that decide whether a product
+      feels fast or fragile. Most recently I was a founding engineer at Aigeo, and I build
+      side projects and the occasional startup of my own.
     </p>
 
     <h2>What I care about</h2>
@@ -130,7 +129,53 @@
       learning, and the occasional argument I can't stop having with myself. You'll find
       that side of me under <a href="/notes-essays/">Notes &amp; Essays</a>.
     </p>
+  </div>
 
+  <section class="about__exp">
+    <h2 class="about__exp-title">Experience</h2>
+
+    <div class="exp">
+      <div class="exp__head">
+        <h3>Founding Software Engineer · <span>Aigeo Inc.</span></h3>
+        <span class="exp__when">Nov 2025 – Feb 2026</span>
+      </div>
+      <p class="exp__loc">San Francisco, CA</p>
+      <ul>
+        <li>Architected and launched an AI search visibility monitoring and optimization platform with React and Node.js, reaching $50K+ ARR and 20+ B2B clients within four months.</li>
+        <li>Engineered a high-concurrency pipeline orchestrating 200+ parallel LLM queries across 7 providers, using a PostgreSQL-backed job queue and async workers with built-in retry logic for fault tolerance.</li>
+        <li>Built core SaaS infrastructure including RBAC, OAuth 2.0, and Stripe subscription billing, with real-time analytics dashboards aggregating GA4 and SerpApi for cross-source visibility insights.</li>
+        <li>Containerized and deployed auto-scaling services with Docker and AWS, with automated CI/CD via GitHub Actions for rapid daily releases.</li>
+      </ul>
+    </div>
+
+    <div class="exp">
+      <div class="exp__head">
+        <h3>Software Engineering Intern · <span>Fanchatsy Inc.</span></h3>
+        <span class="exp__when">May 2025 – Aug 2025</span>
+      </div>
+      <p class="exp__loc">Boston, MA</p>
+      <ul>
+        <li>Delivered a personalized push notification system for iOS using APNs and Python APScheduler, tracking user activity and behavior-triggered notifications for 1,000+ users.</li>
+        <li>Optimized AI chat context by merging recent messages with long-term memory and dynamically generating summaries, cutting LLM token usage by 35% while keeping multi-turn conversations coherent.</li>
+        <li>Built a subscription system with StoreKit 2 and FastAPI, handling receipt validation and Apple Server-to-Server notifications to keep state synchronized across the payment lifecycle.</li>
+      </ul>
+    </div>
+
+    <div class="exp">
+      <div class="exp__head">
+        <h3>Software Engineering Intern · <span>Bosch Automotive Products Co., Ltd.</span></h3>
+        <span class="exp__when">Feb 2023 – Aug 2023</span>
+      </div>
+      <p class="exp__loc">Jiangsu, CN</p>
+      <ul>
+        <li>Implemented high-performance IPC using shared memory and refactored middleware APIs to support dynamic configuration, improving flexibility across heterogeneous environments.</li>
+        <li>Designed a time management module for multi-threaded system simulations, reducing function-call latency by 18% and reaching 100% test coverage with GTest.</li>
+        <li>Automated cross-compilation and benchmarking pipelines with Python and Shell, improving testing efficiency and enabling end-to-end report generation in under three minutes.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="prose about__body">
     <h2>Say hello</h2>
     <p>
       The best way to reach me is email. I'm always happy to talk about systems design,
