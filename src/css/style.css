@@ -492,7 +492,8 @@ main {
     display: block;
     position: sticky;
     top: 6rem;
-    aspect-ratio: 16 / 10;
+    /* matches the ~2:1 screenshots so the sides aren't cropped */
+    aspect-ratio: 2 / 1;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     overflow: hidden;
