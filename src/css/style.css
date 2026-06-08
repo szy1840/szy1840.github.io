@@ -520,22 +520,13 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 0.9rem;
     padding: clamp(1.6rem, 4vw, 2.8rem);
-    background: linear-gradient(150deg, var(--accent-soft), var(--surface-2));
-  }
-  .proj-index__pv-cat {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
   }
   .proj-index__pv-intro {
     font-family: var(--font-serif);
-    font-size: clamp(1.2rem, 1.6vw, 1.6rem);
+    font-size: clamp(1.25rem, 1.7vw, 1.7rem);
     line-height: 1.45;
-    color: var(--ink);
+    color: var(--ink-soft);
   }
 }
 
