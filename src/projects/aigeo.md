@@ -4,7 +4,7 @@ summary: A generative engine optimization platform that measures and improves ho
 category: Startup
 year: 2025
 status: Live
-role: Solo founder and engineer
+role: Cofounder and lead engineer
 stack: [Wasp, React, TypeScript, Node.js, PostgreSQL, PgBoss, Multi-LLM]
 order: 1
 size: lg
@@ -31,7 +31,7 @@ More and more buyers start with an AI assistant instead of a search box. When so
 
 ## My role
 
-I built Aigeo on my own, from product design through to deployment. That includes the data model, the job system, the multi-model probing engine, the analysis features, the React front end, billing, and infrastructure.
+As cofounder, I led engineering and built most of the product end to end: the data model, the job system, the multi-model probing engine, the analysis features, the React front end, billing, and infrastructure.
 
 ## Key features
 
