@@ -1,7 +1,7 @@
 ---
 layout: layouts/base.njk
 title: About
-description: About Ziyan Song, engineer, founder, and writer.
+description: About Ziyan Song, a software engineer building AI-native products.
 bodyClass: about-page
 ---
 <section class="wrap about">
@@ -10,38 +10,82 @@ bodyClass: about-page
       <p class="eyebrow">About</p>
       <h1 class="page__title">Hi, I'm Ziyan.</h1>
       <p class="about__lede">
-        I'm a software engineer and founder. I like building products end to end,
-        from the SwiftUI on the screen to the data model underneath, and I care a
-        little too much about the parts users never see.
+        I'm a software engineer building AI-native products, agent systems, and
+        full-stack applications. I like turning early ideas into usable products
+        quickly, and I care a little too much about the parts users never see.
       </p>
     </div>
-    <div class="about__portrait" aria-hidden="true">
+    <div class="about__portrait">
       <div class="about__portrait-frame">
-        <span>Z</span>
+        <img src="/portrait.jpg" width="720" height="720"
+          alt="Ziyan Song, in Yosemite Valley" loading="lazy" />
       </div>
     </div>
   </div>
 
-  <div class="prose about__body">
-    <p>
-      I started in iOS and kept following the stack downward: concurrency, system design,
-      serverless backends, and the architecture decisions that decide whether a product
-      feels fast or fragile. Most recently I was a founding engineer at Aigeo, and I build
-      side projects and the occasional startup of my own.
+  <section class="skills">
+    <h2 class="about__exp-title">Tech I work with</h2>
+    <div class="skills__grid">
+      <div class="skills__group">
+        <h3 class="skills__label">Languages</h3>
+        <ul class="skills__tags">
+          <li>JavaScript</li><li>TypeScript</li><li>Python</li><li>Java</li><li>C++</li><li>Go</li>
+        </ul>
+      </div>
+      <div class="skills__group">
+        <h3 class="skills__label">Frontend</h3>
+        <ul class="skills__tags">
+          <li>React</li><li>Next.js</li><li>Astro</li><li>Tailwind CSS</li><li>Vite</li>
+        </ul>
+      </div>
+      <div class="skills__group">
+        <h3 class="skills__label">Backend</h3>
+        <ul class="skills__tags">
+          <li>Node.js</li><li>NestJS</li><li>FastAPI</li><li>Spring Boot</li>
+        </ul>
+      </div>
+      <div class="skills__group">
+        <h3 class="skills__label">Databases</h3>
+        <ul class="skills__tags">
+          <li>PostgreSQL</li><li>MySQL</li><li>MongoDB</li><li>Redis</li><li>Milvus</li>
+        </ul>
+      </div>
+      <div class="skills__group">
+        <h3 class="skills__label">Cloud &amp; DevOps</h3>
+        <ul class="skills__tags">
+          <li>AWS</li><li>GCP</li><li>Docker</li><li>Kubernetes</li><li>Jenkins</li>
+        </ul>
+      </div>
+      <div class="skills__group">
+        <h3 class="skills__label">AI &amp; Agents</h3>
+        <ul class="skills__tags">
+          <li>Multi-agent systems</li><li>RAG</li><li>MCP</li><li>Tool calling</li><li>LangGraph</li><li>ReAct</li><li>Evals</li><li>Vector search</li>
+        </ul>
+      </div>
+      <div class="skills__group skills__group--wide">
+        <h3 class="skills__label">Built with AI, daily</h3>
+        <ul class="skills__tags skills__tags--accent">
+          <li>Claude Code</li><li>Cursor</li><li>Codex</li><li>Antigravity</li><li>OpenClaw</li>
+        </ul>
+      </div>
+    </div>
+    <p class="skills__note">
+      Honestly, though — does the stack even matter this much in the AI era? These days I
+      lean more on taste, judgment, and shipping the right thing; the tools are increasingly
+      negotiable, and half of this list I'd happily learn over a weekend if the problem
+      asked for it.
     </p>
+  </section>
 
-    <h2>What I care about</h2>
-    <ul>
-      <li><strong>Craft.</strong> Small details compound. The drawer that doesn't jitter, the query that doesn't fan out badly: these are the difference between fine and good.</li>
-      <li><strong>Clarity.</strong> Whether it's code or an essay, I'm trying to make a complicated thing feel simple without lying about the complexity.</li>
-      <li><strong>Thinking in public.</strong> I write to find out what I believe. The notebook on this site is part of that.</li>
-    </ul>
-
+  <div class="prose about__body">
     <h2>Beyond the keyboard</h2>
     <p>
-      Outside of building things, I read and write, often in Chinese, about technology,
-      learning, and the occasional argument I can't stop having with myself. You'll find
-      that side of me under <a href="/notes-essays/">Notes &amp; Essays</a>.
+      I'm also interested in history, philosophy, and linguistics. More than anything,
+      these subjects help me understand people, language, society, and the world we live
+      in. I've found that this curiosity shapes the way I build, too: it gives me a broader
+      lens for thinking about products, user behavior, markets, and what makes technology
+      meaningful to people. I write to think through a lot of this, often in Chinese —
+      you'll find that side of me under <a href="/notes-essays/">Notes &amp; Essays</a>.
     </p>
   </div>
 
@@ -89,11 +133,31 @@ bodyClass: about-page
     </div>
   </section>
 
+  <section class="about__exp">
+    <h2 class="about__exp-title">Education</h2>
+
+    <div class="exp">
+      <div class="exp__head">
+        <h3>M.S. in Computer Science · <span>Brown University</span></h3>
+        <span class="exp__when">Sep 2024 – May 2026</span>
+      </div>
+      <p class="exp__loc">GPA: 4.0 / 4.0</p>
+    </div>
+
+    <div class="exp">
+      <div class="exp__head">
+        <h3>B.E. in Software Engineering · <span>Northeastern University</span></h3>
+        <span class="exp__when">Sep 2020 – Jun 2024</span>
+      </div>
+      <p class="exp__loc">GPA: 3.9 / 4.0</p>
+    </div>
+  </section>
+
   <div class="prose about__body">
     <h2>Say hello</h2>
     <p>
-      The best way to reach me is email. I'm always happy to talk about systems design,
-      iOS, startups, or a good essay.
+      The best way to reach me is email. I'm always happy to talk about AI, agents,
+      building products, startups, or a good essay.
     </p>
     {% import "partials/icons.njk" as icons %}
     <p class="about__contacts">

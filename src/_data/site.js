@@ -9,7 +9,7 @@ export default {
     { label: "Home", url: "/" },
     { label: "Projects", url: "/projects/" },
     { label: "Technical Notes", url: "/technical-notes/" },
-    { label: "Notes & Essays", url: "/notes-essays/" },
+    { label: "Writing", url: "/notes-essays/" },
     { label: "About", url: "/about/" },
     { label: "Résumé", url: "/resume/" },
   ],
