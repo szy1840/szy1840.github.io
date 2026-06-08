@@ -24,8 +24,8 @@
           <img src="{{ p.data.preview }}" alt="" loading="lazy" />
         {% else %}
           <div class="proj-index__pv-ph">
-            <span class="proj-index__pv-title">{{ p.data.title }}</span>
             <span class="proj-index__pv-cat">{{ p.data.category }} · {{ p.data.year }}</span>
+            <span class="proj-index__pv-intro">{{ p.data.summary }}</span>
           </div>
         {% endif %}
       </div>
