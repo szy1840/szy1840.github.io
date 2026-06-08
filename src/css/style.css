@@ -1327,7 +1327,48 @@ a.bento-card {
 .about__contacts {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
+  gap: 0.7rem;
+}
+
+/* Social icon links */
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: color 0.2s var(--ease);
+}
+.social-link:hover {
+  color: var(--accent);
+}
+.social-link svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.icon-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+.resume__social {
+  display: flex;
+  gap: 0.9rem;
+  justify-content: flex-end;
 }
 @media (min-width: 720px) {
   .about__intro {

@@ -13,10 +13,11 @@ bodyClass: resume-page
     </div>
     <div class="resume__head-actions">
       <a class="btn btn--primary btn--sm" href="/sde_cv.pdf" download>Download PDF</a>
-      <p class="resume__contact">
-        <a href="mailto:szy1840@gmail.com">szy1840@gmail.com</a> ·
-        <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a> ·
-        <a href="https://www.linkedin.com/in/ziyansong02" target="_blank" rel="noopener">LinkedIn</a>
+      {% import "partials/icons.njk" as icons %}
+      <p class="resume__contact resume__social">
+        <a class="social-link" href="mailto:szy1840@gmail.com" aria-label="Email">{{ icons.social("Email") | safe }}</a>
+        <a class="social-link" href="https://github.com/szy1840" target="_blank" rel="noopener" aria-label="GitHub">{{ icons.social("GitHub") | safe }}</a>
+        <a class="social-link" href="https://www.linkedin.com/in/ziyansong02" target="_blank" rel="noopener" aria-label="LinkedIn">{{ icons.social("LinkedIn") | safe }}</a>
       </p>
     </div>
   </header>

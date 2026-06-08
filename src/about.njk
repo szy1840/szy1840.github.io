@@ -95,9 +95,10 @@ bodyClass: about-page
       The best way to reach me is email. I'm always happy to talk about systems design,
       iOS, startups, or a good essay.
     </p>
+    {% import "partials/icons.njk" as icons %}
     <p class="about__contacts">
       {% for s in site.socials %}
-        <a class="btn btn--ghost btn--sm" href="{{ s.url }}"{% if '://' in s.url %} target="_blank" rel="noopener"{% endif %}>{{ s.label }}</a>
+        <a class="icon-btn" href="{{ s.url }}" aria-label="{{ s.label }}"{% if '://' in s.url %} target="_blank" rel="noopener"{% endif %}>{{ icons.social(s.label) | safe }}</a>
       {% endfor %}
     </p>
   </div>

@@ -5,8 +5,9 @@
       <p class="site-footer__note">Building software, and writing to think.</p>
     </div>
     <nav class="site-footer__links" aria-label="Social">
+      {% import "partials/icons.njk" as icons %}
       {% for s in site.socials %}
-        <a href="{{ s.url }}"{% if '://' in s.url %} target="_blank" rel="noopener"{% endif %}>{{ s.label }}</a>
+        <a class="social-link" href="{{ s.url }}" aria-label="{{ s.label }}"{% if '://' in s.url %} target="_blank" rel="noopener"{% endif %}>{{ icons.social(s.label) | safe }}</a>
       {% endfor %}
     </nav>
     <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
