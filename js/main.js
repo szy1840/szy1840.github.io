@@ -32,6 +32,21 @@
   });
 })();
 
+// --- Project index: swap the sticky preview on row hover ---
+(function () {
+  document.querySelectorAll("[data-proj-index]").forEach((idx) => {
+    const rows = Array.from(idx.querySelectorAll("[data-proj-row]"));
+    const previews = Array.from(idx.querySelectorAll("[data-preview-for]"));
+    if (!previews.length) return;
+    const setActive = (i) =>
+      previews.forEach((p) =>
+        p.classList.toggle("is-active", Number(p.dataset.previewFor) === i)
+      );
+    rows.forEach((row, i) => row.addEventListener("mouseenter", () => setActive(i)));
+    idx.addEventListener("mouseleave", () => setActive(0));
+  });
+})();
+
 // --- Scale live-demo iframes to fit their viewport (desktop render, scaled down) ---
 (function () {
   const frames = Array.from(document.querySelectorAll("[data-scale-frame]"));
