@@ -839,81 +839,75 @@ a.bento-card {
   color: var(--faint);
 }
 
-/* ---------- Essays index ---------- */
-.stream-head {
+/* ---------- Writing index (Essays | Notes) ---------- */
+.writing-cols {
+  display: grid;
+  gap: clamp(2.2rem, 5vw, 4rem);
+}
+.writing-col__head {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--muted);
-  padding-bottom: 1rem;
-  margin-top: clamp(2.5rem, 6vw, 4rem);
-  border-bottom: 1px solid var(--line);
-}
-.essay-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 1.5rem;
-}
-.essay-list__item {
-  padding: 1.4rem 0;
-  border-bottom: 1px solid var(--line);
-}
-.essay-list__item a:hover .essay-list__title {
   color: var(--accent);
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line-strong);
 }
-.essay-list__title {
+.writing-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.writing-item {
+  border-bottom: 1px solid var(--line);
+}
+.writing-item a {
+  display: block;
+  padding: 1.3rem 0;
+}
+.writing-item__title {
   font-family: var(--font-serif);
   font-weight: 500;
-  font-size: clamp(1.2rem, 1.8vw, 1.45rem);
-  line-height: 1.25;
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  line-height: 1.2;
   transition: color 0.2s var(--ease);
 }
-.essay-list__item.lang-zh .essay-list__title {
+.writing-item.lang-zh .writing-item__title {
   font-family: var(--font-zh-serif);
 }
-.essay-list__lede {
+.writing-item a:hover .writing-item__title {
+  color: var(--accent);
+}
+.writing-item__title--sm {
+  font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+  margin-top: 0.25rem;
+}
+.writing-item__lede {
   margin-top: 0.5rem;
   color: var(--muted);
-  font-size: 0.98rem;
+  font-size: 0.96rem;
+  line-height: 1.5;
 }
-.essay-list__date {
+.writing-item__date {
   display: block;
   margin-top: 0.7rem;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--faint);
-}
-.fragment-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 1.5rem;
-  display: grid;
-  gap: 1rem;
-}
-.fragment {
-  padding: 1.4rem 1.6rem;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-}
-.fragment__text {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 1.18rem;
-  line-height: 1.6;
-  color: var(--ink-soft);
-}
-.fragment.lang-zh .fragment__text {
-  font-family: var(--font-zh-serif);
-  font-style: normal;
-}
-.fragment__date {
-  display: block;
-  margin-top: 0.8rem;
-  font-family: var(--font-mono);
   font-size: 0.74rem;
   color: var(--faint);
+}
+.writing-item__date--lead {
+  margin-top: 0;
+  color: var(--accent);
+}
+
+@media (min-width: 820px) {
+  .writing-cols {
+    grid-template-columns: 1fr 1fr;
+  }
+  .writing-col--notes {
+    border-left: 1px solid var(--line);
+    padding-left: clamp(2rem, 4vw, 3.5rem);
+  }
 }
 
 /* ---------- Prose (shared) ---------- */
@@ -1278,6 +1272,15 @@ a.bento-card {
 }
 .prose--essay blockquote {
   font-size: 0.95em;
+}
+/* Notes: serif reading, no drop cap */
+.prose--note {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+.prose--note.prose--zh {
+  font-family: var(--font-zh-serif);
 }
 .essay__foot {
   margin-top: 3.5rem;
