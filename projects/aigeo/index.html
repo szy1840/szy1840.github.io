@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aigeo · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Aigeo" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/projects/aigeo/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="project-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" aria-current="page">Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" >Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" >Notes &amp; Essays</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="project wrap">
+  <header class="project__head">
+    <p class="eyebrow"><a href="/projects/">Projects</a> · Startup</p>
+    <h1 class="project__title">Aigeo</h1>
+    <p class="project__summary">A generative engine optimization platform that measures and improves how brands show up in AI answers.</p>
+    
+      <div class="project__links">
+        
+          <a class="btn btn--sm btn--primary" href="https://theaigeo.com" target="_blank" rel="noopener">Visit theaigeo.com ↗</a>
+        
+      </div>
+    
+  </header>
+
+  
+    
+    
+    <section class="project__demo" aria-label="Preview">
+      <div class="browser">
+        <div class="browser__bar">
+          <span class="browser__dot"></span><span class="browser__dot"></span><span class="browser__dot"></span>
+          <span class="browser__url">theaigeo.com</span>
+          <a class="browser__open" href="https://theaigeo.com" target="_blank" rel="noopener">Open ↗</a>
+        </div>
+        
+          <a class="browser__shot-link" href="https://theaigeo.com" target="_blank" rel="noopener">
+            <img class="browser__shot" src="/previews/aigeo.png" alt="Screenshot of Aigeo" loading="lazy" />
+          </a>
+        
+      </div>
+      <p class="project__demo-note">
+        Screenshot of
+        <a href="https://theaigeo.com" target="_blank" rel="noopener">theaigeo.com</a>.
+        
+      </p>
+
+      
+        <div class="project__gallery">
+          
+            <figure class="shot">
+              <img src="/previews/aigeo-dashboard.png" alt="Probe results and competitor landscape dashboard" loading="lazy" />
+              <figcaption>Probe results and competitor landscape dashboard</figcaption>
+            </figure>
+          
+        </div>
+      
+    </section>
+  
+
+  <div class="project__body">
+    <aside class="project__facts">
+      <dl>
+        <div><dt>Role</dt><dd>Solo founder and engineer</dd></div>
+        <div><dt>Year</dt><dd>2025</dd></div>
+        <div><dt>Status</dt><dd>Live</dd></div>
+        
+          <div><dt>Stack</dt><dd class="project__stack"><span>Wasp</span><span>React</span><span>TypeScript</span><span>Node.js</span><span>PostgreSQL</span><span>PgBoss</span><span>Multi-LLM</span></dd></div>
+        
+      </dl>
+    </aside>
+
+    <div class="prose project__prose">
+      <h2 id="overview" tabindex="-1"><a class="header-anchor" href="#overview"><span>Overview</span></a></h2>
+<p>Aigeo is a generative engine optimization (GEO) platform. It measures how a brand appears inside AI assistant answers and gives teams a way to improve that visibility. Traditional SEO targets Google’s ranked links. GEO targets the answers that models like ChatGPT, Gemini, and Perplexity produce when someone asks about a product or a category.</p>
+<h2 id="why-i-built-it" tabindex="-1"><a class="header-anchor" href="#why-i-built-it"><span>Why I built it</span></a></h2>
+<p>More and more buyers start with an AI assistant instead of a search box. When someone asks “what is a good tool for X”, the model returns a short list, and most brands have no way of knowing whether they are on it. I wanted to turn that black box into something you can measure: which prompts surface your brand, which models mention you, and what you can change to show up more often.</p>
+<h2 id="my-role" tabindex="-1"><a class="header-anchor" href="#my-role"><span>My role</span></a></h2>
+<p>I built Aigeo on my own, from product design through to deployment. That includes the data model, the job system, the multi-model probing engine, the analysis features, the React front end, billing, and infrastructure.</p>
+<h2 id="key-features" tabindex="-1"><a class="header-anchor" href="#key-features"><span>Key features</span></a></h2>
+<ul>
+<li><strong>Multi-model probes.</strong> Run a set of prompts across several AI models and record whether and how your brand is mentioned.</li>
+<li><strong>Website analysis.</strong> Read a site, infer its positioning, and generate the prompts a real buyer would actually ask.</li>
+<li><strong>Lighthouse audits.</strong> Pull PageSpeed and Core Web Vitals so technical health sits next to AI visibility.</li>
+<li><strong>Trend analysis.</strong> Combine Google Trends with GEO prompt suggestions to find rising topics worth targeting.</li>
+<li><strong>Content generation.</strong> Draft benchmark and authority articles aimed at the prompts that matter.</li>
+<li><strong>Dashboards.</strong> Track visibility, usage, and revenue over time.</li>
+</ul>
+<h2 id="technical-architecture" tabindex="-1"><a class="header-anchor" href="#technical-architecture"><span>Technical architecture</span></a></h2>
+<p>Aigeo is a full-stack TypeScript app built on Wasp, with React on the front end, Node actions on the back end, and PostgreSQL for storage.</p>
+<p>The main architectural decision is that slow work never runs inside an HTTP request. Probe runs, Lighthouse scans, website and trend analysis, article generation, and the nightly stats rollup all run as background jobs. Wasp’s job system uses PgBoss, a queue that lives inside Postgres itself. Job state sits in the same database as the application data, so there is no separate Redis or message broker to operate. An action creates a job record, hands a payload to PgBoss, and returns immediately. A worker then picks the job up, moves it through queued, running, and done or failed, and writes progress as it goes. The client polls that status instead of holding a connection open.</p>
+<h3 id="multi-model-probes-and-concurrency" tabindex="-1"><a class="header-anchor" href="#multi-model-probes-and-concurrency"><span>Multi-model probes and concurrency</span></a></h3>
+<p>A probe run is the heart of the product, and it is slow by nature. Every prompt has to reach every model, and each call is a separate request to a third party. Running them one at a time would stretch a single scan into minutes.</p>
+<p>So inside one probe job, every prompt and model pair runs together. Five prompts across seven models become thirty-five calls fired at once with <code>Promise.all</code>, and results are saved as they return. Failures stay contained: if a single model or prompt fails, it is logged and skipped, and the run still succeeds as long as one probe completes. The job only fails when every probe in the batch does.</p>
+<p>That gives two layers of concurrency. PgBoss handles concurrency between jobs, so many users can start probes at the same time. <code>Promise.all</code> handles concurrency inside a job, which cuts the wall-clock time of a scan without a fleet of workers. In practice the ceiling comes from Node’s async I/O and the rate limits of the model providers, not from my own code.</p>
+<h2 id="interesting-technical-decisions" tabindex="-1"><a class="header-anchor" href="#interesting-technical-decisions"><span>Interesting technical decisions</span></a></h2>
+<p>Keeping the queue inside Postgres was a deliberate trade. A dedicated broker such as Redis or SQS would scale further, but at this stage the added operations cost is not worth it. One database to back up, migrate, and reason about keeps a solo project moving.</p>
+<p>I also chose to tolerate partial failure instead of wrapping a probe batch in a transaction. The models fail in different ways and at different times. A finished scan with clear per-probe errors is far more useful to a user than an all-or-nothing run that throws everything away on a single timeout.</p>
+<h2 id="challenges" tabindex="-1"><a class="header-anchor" href="#challenges"><span>Challenges</span></a></h2>
+<p>The hard parts were rarely a single feature. They lived in the seams: keeping job progress accurate while work runs in parallel, making partial failures visible instead of silent, and presenting a slow asynchronous backend as something that feels responsive in the browser.</p>
+<h2 id="outcome" tabindex="-1"><a class="header-anchor" href="#outcome"><span>Outcome</span></a></h2>
+<p>Aigeo is live at <a href="https://theaigeo.com">theaigeo.com</a>, with more than 20 real paying clients. Building it end to end taught me a lot about running asynchronous work in production and about designing a product around a model layer that moves fast and occasionally misbehaves.</p>
+
+
+      
+    </div>
+  </div>
+
+  <footer class="project__foot">
+    <a class="back-link" href="/projects/">← All projects</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+        <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a>
+      
+        <a href="https://www.linkedin.com/in/ziyansong02/" target="_blank" rel="noopener">LinkedIn</a>
+      
+        <a href="mailto:szy1840@gmail.com">Email</a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>

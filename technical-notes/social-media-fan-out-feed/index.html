@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="zh" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>朋友圈系统设计：好友关系与 Fan-out Feed · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="朋友圈系统设计：好友关系与 Fan-out Feed" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/technical-notes/social-media-fan-out-feed/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="note-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" >Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" aria-current="page">Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" >Notes &amp; Essays</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="note wrap" data-bilingual data-default-lang="en">
+  <header class="note__head">
+    <p class="eyebrow"><a href="/technical-notes/">Technical Notes</a></p>
+    
+      <h1 class="note__title" data-title data-title-en="Designing a Moments Feed: Friendships and a Fan-out Feed" data-title-zh="朋友圈系统设计：好友关系与 Fan-out Feed">Designing a Moments Feed: Friendships and a Fan-out Feed</h1>
+    
+    <div class="note__meta">
+      <time datetime="2025-10-27">Oct 27, 2025</time>
+      
+        <span class="dot">·</span>
+        <span class="note__tags">
+          <span class="tag">iOS</span><span class="tag">Firebase</span><span class="tag">Social</span><span class="tag">Architecture</span><span class="tag">Feed System</span>
+        </span>
+      
+      
+        <span class="lang-switch" role="group" aria-label="Article language" data-lang-switch>
+          <button type="button" data-lang="en" class="is-active" aria-pressed="true">EN</button>
+          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        </span>
+      
+    </div>
+  </header>
+
+  <div class="note__body">
+    <aside class="toc" aria-label="Table of contents">
+      <p class="toc__title">On this page</p>
+      <nav class="toc__nav" data-toc></nav>
+    </aside>
+    <div class="prose prose--doc" data-article>
+      
+        <div class="note-version" data-version="en" lang="en"><p>A common system in social apps is the “Moments” feed (a friends-only timeline). Its main requirements are:</p>
+<ul>
+<li>After a user posts a Moment, all of their friends should see it.</li>
+<li>When a user opens their feed, they only see content posted by friends.</li>
+<li>After unfriending someone, neither side should see the other’s past Moments.</li>
+<li>Likes and comments are only visible to mutual friends.</li>
+</ul>
+<p>In other words, we want to implement a private, friends-only feed.</p>
+<h2 id="two-classic-feed-patterns" tabindex="-1"><a class="header-anchor" href="#two-classic-feed-patterns"><span>Two Classic Feed Patterns</span></a></h2>
+<p>Feed systems in social apps generally come in two flavors.</p>
+<h3 id="fan-out-on-write" tabindex="-1"><a class="header-anchor" href="#fan-out-on-write"><span>Fan-out on Write</span></a></h3>
+<p>When a user posts, the content is immediately copied into every follower’s/friend’s feed:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">User A posts Moment M
+→ written to user B's feed
+→ written to user C's feed
+→ written to user D's feed
+...</code></pre>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>Extremely fast reads — a user only queries their own feed</li>
+<li>Great for read-heavy, write-light workloads</li>
+<li>Good real-time behavior</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>High write cost (N+1 writes, where N is the friend count)</li>
+<li>Unfriendly to users with many friends</li>
+<li>Redundant data (though typically only a Moment <em>index</em> is stored, so the redundancy is manageable)</li>
+</ul>
+<h3 id="fan-out-on-read" tabindex="-1"><a class="header-anchor" href="#fan-out-on-read"><span>Fan-out on Read</span></a></h3>
+<p>When a user opens their feed, you query the latest content from everyone they follow in real time:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">User A opens the feed
+→ query friend B's moments
+→ query friend C's moments
+→ query friend D's moments
+→ aggregate, sort, and return</code></pre>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>Simple writes — just one write</li>
+<li>No redundant data</li>
+<li>Suits users with many friends (super-nodes)</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>Slow reads (many queries)</li>
+<li>Complex aggregation and sorting logic</li>
+<li>Real-time behavior depends on query performance</li>
+</ul>
+<h3 id="my-choice-fan-out-on-write" tabindex="-1"><a class="header-anchor" href="#my-choice-fan-out-on-write"><span>My Choice: Fan-out on Write</span></a></h3>
+<p>Given the characteristics of a Moments feed:</p>
+<ul>
+<li>The number of friends is usually bounded (&lt; 500)</li>
+<li>Users open the feed frequently (reads far outnumber writes)</li>
+<li>A good real-time experience matters</li>
+</ul>
+<p>I chose the <strong>Fan-out on Write</strong> pattern, implementing feed distribution with Firebase Cloud Functions.</p>
+<h2 id="data-model" tabindex="-1"><a class="header-anchor" href="#data-model"><span>Data Model</span></a></h2>
+<p>The core idea: Moment content lives in a global <code>moments</code> collection, while each user’s <code>feed</code> subcollection stores only a reference (<code>momentId</code>) plus a timestamp. The main design question is: should a moment be a top-level collection, or a subcollection of <code>users</code>?</p>
+<p>The key difference: if moments live under <code>users/{authorId}/moments</code>, the IDs Firebase auto-generates are only unique within that author’s subcollection — not necessarily globally unique. That means the feed can’t simply use <code>momentId</code> as its key; it would have to store extra information (such as <code>authorId</code>), turning it into a composite-index structure.</p>
+<p>Access control is also easier with a top-level collection. For non-private content like a Moments feed — and for features it might grow into (blocking, “visible only to X”, etc.) — it’s natural to associate permissions with the content itself, rather than forcibly binding them to the content’s author. As a user subcollection, those access rules would be tightly coupled to the <code>/users/{uid}/moments</code> path permissions, and per-moment access control would be very hard.</p>
+<h3 id="firestore-structure" tabindex="-1"><a class="header-anchor" href="#firestore-structure"><span>Firestore Structure</span></a></h3>
+<pre class="language-text" tabindex="0"><code class="language-text">users/
+  └── {userId}/
+      ├── name: string
+      ├── ...
+      │
+      ├── friends/                      # Friends subcollection
+      │   └── {friendUserId}/
+      │       └── uid: string
+      │
+      └── feed/                         # Personal feed (fan-out target)
+          └── {momentId}/
+              ├── momentId: string
+              └── createdAt: timestamp
+
+moments/                                # Global Moments collection
+  └── {momentId}/
+      ├── authorId: string
+      ├── text: string
+      ├── attachments: array
+      ├── createdAt: timestamp
+      ├── likeCount: number
+      ├── commentCount: number
+      ├── likes/                        # Likes subcollection
+      │   └── {userId}/
+      └── comments/                     # Comments subcollection
+          └── {commentId}/</code></pre>
+<p><strong>Read flow:</strong></p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token comment">// 1. Query the user's feed subcollection</span>
+<span class="token keyword">let</span> feedDocs <span class="token operator">=</span> <span class="token keyword">await</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"users/{userId}/feed"</span></span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">order</span><span class="token punctuation">(</span>by<span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">"createdAt"</span></span><span class="token punctuation">,</span> descending<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">limit</span><span class="token punctuation">(</span>to<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">getDocuments</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 2. Fetch the actual moment content in parallel</span>
+<span class="token keyword">let</span> momentIds <span class="token operator">=</span> feedDocs<span class="token punctuation">.</span>map <span class="token punctuation">{</span> <span class="token short-argument">$0</span><span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"momentId"</span></span><span class="token punctuation">]</span> <span class="token punctuation">}</span>
+<span class="token keyword">let</span> moments <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetchMomentsInParallel</span><span class="token punctuation">(</span>momentIds<span class="token punctuation">)</span></code></pre>
+<h2 id="cloud-functions-feed-distribution" tabindex="-1"><a class="header-anchor" href="#cloud-functions-feed-distribution"><span>Cloud Functions: Feed Distribution</span></a></h2>
+<p>The heart of the fan-out pattern is distributing content automatically when it’s created.</p>
+<h3 id="fan-out-when-a-moment-is-created" tabindex="-1"><a class="header-anchor" href="#fan-out-when-a-moment-is-created"><span>Fan-out When a Moment Is Created</span></a></h3>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">exports<span class="token punctuation">.</span>onMomentCreated <span class="token operator">=</span> <span class="token function">onDocumentCreated</span><span class="token punctuation">(</span>
+  <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/moments/{momentId}</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+  <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> db <span class="token operator">=</span> admin<span class="token punctuation">.</span><span class="token function">firestore</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> momentId <span class="token operator">=</span> event<span class="token punctuation">.</span>params<span class="token punctuation">.</span>momentId<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> moment <span class="token operator">=</span> event<span class="token punctuation">.</span>data<span class="token operator">?.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> authorId <span class="token operator">=</span> moment<span class="token punctuation">.</span>authorId<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> createdAt <span class="token operator">=</span> moment<span class="token punctuation">.</span>createdAt<span class="token operator">?.</span>toDate<span class="token operator">?.</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 1. Get all of the author's friends</span>
+      <span class="token keyword">const</span> friendsSnap <span class="token operator">=</span> <span class="token keyword">await</span> db
+        <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'users'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>authorId<span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'friends'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token keyword">const</span> friendIds <span class="token operator">=</span> friendsSnap<span class="token punctuation">.</span>docs<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">d</span><span class="token punctuation">)</span> <span class="token operator">=></span> d<span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">// 2. Include the author (so they see their own posts)</span>
+      <span class="token keyword">const</span> targets <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">[</span>authorId<span class="token punctuation">,</span> <span class="token operator">...</span>friendIds<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">// 3. Batch-write into every target user's feed</span>
+      <span class="token keyword">const</span> batch <span class="token operator">=</span> db<span class="token punctuation">.</span><span class="token function">batch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> uid <span class="token keyword">of</span> targets<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">const</span> feedRef <span class="token operator">=</span> db
+          <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'users'</span><span class="token punctuation">)</span>
+          <span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>uid<span class="token punctuation">)</span>
+          <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'feed'</span><span class="token punctuation">)</span>
+          <span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>momentId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        batch<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>feedRef<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">momentId</span><span class="token operator">:</span> momentId<span class="token punctuation">,</span>
+          <span class="token literal-property property">createdAt</span><span class="token operator">:</span> createdAt<span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+      <span class="token keyword">await</span> batch<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      logger<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Fanned out moment </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>momentId<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> to </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>targets<span class="token punctuation">.</span>size<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> feeds</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      logger<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"Fan-out failed"</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Using a <code>batch</code> here ensures atomicity — you won’t end up in an inconsistent state where some friends can see the moment and others can’t. And while a batch doesn’t reduce the <em>number</em> of writes (it’s still N write ops), it compresses what would be N separate Firestore API calls (RPCs) into one. That directly cuts the Cloud Function’s network round-trips, auth overhead, connection-reuse pressure, and execution time.</p>
+<h3 id="cleaning-up-the-feed-when-unfriending" tabindex="-1"><a class="header-anchor" href="#cleaning-up-the-feed-when-unfriending"><span>Cleaning Up the Feed When Unfriending</span></a></h3>
+<p>When you unfriend someone, you must clear the other person’s content from both feeds. The best design here is to redundantly store each moment’s <code>authorId</code> in the feed:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token comment">// Query the feed directly</span>
+<span class="token keyword">const</span> feedSnap <span class="token operator">=</span> <span class="token keyword">await</span> db
+  <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'users'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>uid<span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'feed'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'authorId'</span><span class="token punctuation">,</span> <span class="token string">'=='</span><span class="token punctuation">,</span> friendUid<span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> batch <span class="token operator">=</span> db<span class="token punctuation">.</span><span class="token function">batch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+feedSnap<span class="token punctuation">.</span>docs<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">doc</span><span class="token punctuation">)</span> <span class="token operator">=></span> batch<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span>doc<span class="token punctuation">.</span>ref<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">await</span> batch<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>If you didn’t store it, things get more awkward. The procedure becomes:</p>
+<ol>
+<li>Know which author you’re removing (<code>friendUid</code>).</li>
+<li>Query <code>moments/</code> where <code>authorId == friendUid</code> to get all their <code>momentId</code>s.</li>
+<li>Iterate over every <code>momentId</code> and delete it from the feed if present.</li>
+</ol>
+<p>Also note that Firestore caps a batch at 500 write operations, so if a user has posted a great many moments you’ll need to paginate / cursor through the cleanup.</p>
+<h3 id="maintaining-likecomment-counters" tabindex="-1"><a class="header-anchor" href="#maintaining-likecomment-counters"><span>Maintaining Like/Comment Counters</span></a></h3>
+<p>Like and comment counts are also maintained automatically through Cloud Functions:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token comment">// Automatically +1 on a like</span>
+exports<span class="token punctuation">.</span>onLikeCreated <span class="token operator">=</span> <span class="token function">onDocumentCreated</span><span class="token punctuation">(</span>
+  <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/moments/{momentId}/likes/{uid}</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+  <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> momentRef <span class="token operator">=</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'moments'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>params<span class="token punctuation">.</span>momentId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">await</span> momentRef<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">likeCount</span><span class="token operator">:</span> admin<span class="token punctuation">.</span>firestore<span class="token punctuation">.</span>FieldValue<span class="token punctuation">.</span><span class="token function">increment</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Automatically -1 on an unlike</span>
+exports<span class="token punctuation">.</span>onLikeDeleted <span class="token operator">=</span> <span class="token function">onDocumentDeleted</span><span class="token punctuation">(</span>
+  <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/moments/{momentId}/likes/{uid}</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+  <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> momentRef <span class="token operator">=</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'moments'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>params<span class="token punctuation">.</span>momentId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">await</span> momentRef<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">likeCount</span><span class="token operator">:</span> admin<span class="token punctuation">.</span>firestore<span class="token punctuation">.</span>FieldValue<span class="token punctuation">.</span><span class="token function">increment</span><span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>This is the event-driven aggregation pattern. Because <code>likeCount</code> isn’t concrete business data but a derived, aggregated field, you don’t need a transaction — instead, let the server keep it in sync as the likes change. And <code>FieldValue.increment(1)</code> guarantees the operation is atomic.</p>
+<h2 id="the-moments-feed-and-friendships" tabindex="-1"><a class="header-anchor" href="#the-moments-feed-and-friendships"><span>The Moments Feed and Friendships</span></a></h2>
+<h3 id="filtering-by-mutual-friend-visibility" tabindex="-1"><a class="header-anchor" href="#filtering-by-mutual-friend-visibility"><span>Filtering by Mutual-Friend Visibility</span></a></h3>
+<p>An important property of a Moments feed: only show likes and comments from mutual friends.</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token keyword">func</span> <span class="token function-definition function">getMutualLikes</span><span class="token punctuation">(</span>momentId<span class="token punctuation">:</span> <span class="token class-name">String</span><span class="token punctuation">)</span> <span class="token keyword">async</span> <span class="token operator">-></span> <span class="token punctuation">[</span><span class="token class-name">MutualLike</span><span class="token punctuation">]</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> currentUserId <span class="token operator">=</span> <span class="token class-name">SessionManager</span><span class="token punctuation">.</span>currentUserId
+    <span class="token keyword">let</span> friends <span class="token operator">=</span> <span class="token class-name">DataStorageManager</span><span class="token punctuation">.</span>shared<span class="token punctuation">.</span>friends  <span class="token comment">// Set&lt;String></span>
+
+    <span class="token keyword">do</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 1. Get all likes</span>
+        <span class="token keyword">let</span> likesSnapshot <span class="token operator">=</span> <span class="token keyword">try</span> <span class="token keyword">await</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"moments"</span></span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">document</span><span class="token punctuation">(</span>momentId<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"likes"</span></span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">getDocuments</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        <span class="token comment">// 2. Keep only likes from friends</span>
+        <span class="token keyword">let</span> mutualLikes <span class="token operator">=</span> likesSnapshot<span class="token punctuation">.</span>documents<span class="token punctuation">.</span>compactMap <span class="token punctuation">{</span> doc <span class="token operator">-></span> <span class="token class-name">MutualLike</span><span class="token operator">?</span> <span class="token keyword">in</span>
+            <span class="token keyword">guard</span> <span class="token keyword">let</span> userId <span class="token operator">=</span> doc<span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"userId"</span></span><span class="token punctuation">]</span> <span class="token keyword">as</span><span class="token operator">?</span> <span class="token class-name">String</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> <span class="token nil constant">nil</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token comment">// Keep only friends' and the current user's likes</span>
+            <span class="token keyword">guard</span> friends<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>userId<span class="token punctuation">)</span> <span class="token operator">||</span> userId <span class="token operator">==</span> currentUserId <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> <span class="token nil constant">nil</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token keyword">return</span> <span class="token class-name">MutualLike</span><span class="token punctuation">(</span>id<span class="token punctuation">:</span> doc<span class="token punctuation">.</span>documentID<span class="token punctuation">,</span> userId<span class="token punctuation">:</span> userId<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">return</span> mutualLikes
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">{</span>
+        <span class="token function">print</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"Failed to load mutual likes: </span><span class="token interpolation-punctuation punctuation">\(</span><span class="token interpolation">error</span><span class="token interpolation-punctuation punctuation">)</span><span class="token string">"</span></span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>For comments you must check not only whether the commenter is a friend, but also whether the person being replied to is a friend:</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token keyword">func</span> <span class="token function-definition function">getMutualComments</span><span class="token punctuation">(</span>momentId<span class="token punctuation">:</span> <span class="token class-name">String</span><span class="token punctuation">)</span> <span class="token keyword">async</span> <span class="token operator">-></span> <span class="token punctuation">[</span><span class="token class-name">Comment</span><span class="token punctuation">]</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> friends <span class="token operator">=</span> <span class="token class-name">DataStorageManager</span><span class="token punctuation">.</span>shared<span class="token punctuation">.</span>friends
+
+    <span class="token keyword">let</span> commentsSnapshot <span class="token operator">=</span> <span class="token keyword">try</span> <span class="token keyword">await</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"moments"</span></span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">document</span><span class="token punctuation">(</span>momentId<span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"comments"</span></span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">order</span><span class="token punctuation">(</span>by<span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">"createdAt"</span></span><span class="token punctuation">,</span> descending<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">getDocuments</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> commentsSnapshot<span class="token punctuation">.</span>documents<span class="token punctuation">.</span>compactMap <span class="token punctuation">{</span> doc <span class="token operator">-></span> <span class="token class-name">Comment</span><span class="token operator">?</span> <span class="token keyword">in</span>
+        <span class="token keyword">let</span> userId <span class="token operator">=</span> doc<span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"userId"</span></span><span class="token punctuation">]</span> <span class="token keyword">as</span><span class="token operator">?</span> <span class="token class-name">String</span>
+        <span class="token keyword">let</span> replyTo <span class="token operator">=</span> doc<span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"replyTo"</span></span><span class="token punctuation">]</span> <span class="token keyword">as</span><span class="token operator">?</span> <span class="token class-name">String</span>
+
+        <span class="token comment">// Is the commenter a friend?</span>
+        <span class="token keyword">let</span> isAuthorFriend <span class="token operator">=</span> friends<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>userId <span class="token operator">??</span> <span class="token string-literal"><span class="token string">""</span></span><span class="token punctuation">)</span> <span class="token operator">||</span>
+                             userId <span class="token operator">==</span> currentUserId
+
+        <span class="token comment">// Is the person being replied to a friend?</span>
+        <span class="token keyword">var</span> isReplyToFriend <span class="token operator">=</span> <span class="token boolean">true</span>
+        <span class="token keyword">if</span> <span class="token keyword">let</span> replyTo <span class="token operator">=</span> replyTo <span class="token punctuation">{</span>
+            <span class="token comment">// Find the author of the comment being replied to</span>
+            <span class="token keyword">let</span> replyToComment <span class="token operator">=</span> commentsSnapshot<span class="token punctuation">.</span>documents<span class="token punctuation">.</span>first <span class="token punctuation">{</span>
+                <span class="token short-argument">$0</span><span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"commentId"</span></span><span class="token punctuation">]</span> <span class="token keyword">as</span><span class="token operator">?</span> <span class="token class-name">String</span> <span class="token operator">==</span> replyTo
+            <span class="token punctuation">}</span>
+            <span class="token keyword">if</span> <span class="token keyword">let</span> replyToUserId <span class="token operator">=</span> replyToComment<span class="token operator">?</span><span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"userId"</span></span><span class="token punctuation">]</span> <span class="token keyword">as</span><span class="token operator">?</span> <span class="token class-name">String</span> <span class="token punctuation">{</span>
+                isReplyToFriend <span class="token operator">=</span> friends<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>replyToUserId<span class="token punctuation">)</span> <span class="token operator">||</span>
+                                  replyToUserId <span class="token operator">==</span> currentUserId
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                isReplyToFriend <span class="token operator">=</span> <span class="token boolean">false</span>  <span class="token comment">// Can't find the replied-to comment — hide it</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment">// Only show it if both are friends</span>
+        <span class="token keyword">return</span> <span class="token punctuation">(</span>isAuthorFriend <span class="token operator">&amp;&amp;</span> isReplyToFriend<span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token function">parseComment</span><span class="token punctuation">(</span>doc<span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token nil constant">nil</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This filtering happens on the client, because it’s <em>presentation</em> logic (what to show), not <em>permission</em> logic — and doing it this way avoids storing multiple copies of the data.</p>
+<h2 id="future-optimizations-and-extensions" tabindex="-1"><a class="header-anchor" href="#future-optimizations-and-extensions"><span>Future Optimizations and Extensions</span></a></h2>
+<h3 id="a-hybrid-approach" tabindex="-1"><a class="header-anchor" href="#a-hybrid-approach"><span>A Hybrid Approach</span></a></h3>
+<p>For users with too many friends, consider a hybrid approach:</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token comment">// Pseudocode</span>
+<span class="token keyword">func</span> <span class="token function-definition function">getFeed</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">async</span> <span class="token operator">-></span> <span class="token punctuation">[</span><span class="token class-name">Moment</span><span class="token punctuation">]</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> popularFriends <span class="token operator">=</span> friends<span class="token punctuation">.</span>filter <span class="token punctuation">{</span> <span class="token short-argument">$0</span><span class="token punctuation">.</span>followerCount <span class="token operator">></span> <span class="token number">1000</span> <span class="token punctuation">}</span>
+    <span class="token keyword">let</span> normalFriends <span class="token operator">=</span> friends<span class="token punctuation">.</span>filter <span class="token punctuation">{</span> <span class="token short-argument">$0</span><span class="token punctuation">.</span>followerCount <span class="token operator">&lt;=</span> <span class="token number">1000</span> <span class="token punctuation">}</span>
+
+    <span class="token comment">// Normal friends: read from the feed (fan-out)</span>
+    <span class="token keyword">let</span> feedMoments <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">loadFromFeed</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment">// Popular friends: query in real time (fan-in)</span>
+    <span class="token keyword">let</span> popularMoments <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">loadFromAuthors</span><span class="token punctuation">(</span>popularFriends<span class="token punctuation">)</span>
+
+    <span class="token comment">// Merge and sort</span>
+    <span class="token keyword">return</span> <span class="token function">merge</span><span class="token punctuation">(</span>feedMoments<span class="token punctuation">,</span> popularMoments<span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="backfilling-moments-after-adding-a-friend" tabindex="-1"><a class="header-anchor" href="#backfilling-moments-after-adding-a-friend"><span>Backfilling Moments After Adding a Friend</span></a></h3>
+<p>In the current design, fan-out only runs when a Moment is created — becoming friends doesn’t backfill historical feeds. To implement that backfill, the idea is:</p>
+<ol>
+<li>When <code>friendUid</code> is written, trigger a Cloud Function to perform the backfill.</li>
+<li>Read <code>friendUid</code>’s most recent N moments (newest first — a full backfill is usually unnecessary).</li>
+<li>For each moment, write <code>feed/{momentId}</code> for the current user <code>uid</code>.</li>
+</ol>
+<h2 id="summary" tabindex="-1"><a class="header-anchor" href="#summary"><span>Summary</span></a></h2>
+<p>Building a Moments feed means trading off read/write performance, storage cost, real-time behavior, and consistency. The fan-out pattern carries a high write cost, but for social apps where friend counts are bounded it delivers the best read performance and user experience.</p>
+<p>With Firebase Cloud Functions, we can automate the complex business logic (feed distribution, aggregated counters) — preserving data consistency while keeping the client implementation simple.</p>
+</div>
+        <div class="note-version prose--zh-note" data-version="zh" lang="zh" hidden><p>在社交应用里，一个常见的系统就是朋友圈系统。其主要功能有：</p>
+<ul>
+<li>用户发布 Moment（朋友圈动态）后，所有好友应该能看到</li>
+<li>用户打开朋友圈时，只看到好友发布的内容</li>
+<li>删除好友后，双方都不应再看到对方的历史动态</li>
+<li>点赞和评论只对共同好友可见</li>
+</ul>
+<p>换句话说，就是要实现 private social feed / friends-only feed。</p>
+<h2 id="feed-系统的两种经典模式" tabindex="-1"><a class="header-anchor" href="#feed-系统的两种经典模式"><span>Feed 系统的两种经典模式</span></a></h2>
+<p>在社交应用中，Feed 系统主要有两种实现模式：</p>
+<h3 id="fan-out-on-write写扩散" tabindex="-1"><a class="header-anchor" href="#fan-out-on-write写扩散"><span>Fan-out on Write（写扩散）</span></a></h3>
+<p>当用户发布内容时，立即将内容复制到所有粉丝/好友的 Feed 中：</p>
+<pre class="language-text" tabindex="0"><code class="language-text">用户A发布 Moment M
+→ 写入用户B的feed
+→ 写入用户C的feed
+→ 写入用户D的feed
+...</code></pre>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>读取极快，用户只需查询自己的 feed</li>
+<li>适合读多写少的场景</li>
+<li>实时性好</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>写入成本高（N+1 次写入，N=好友数）</li>
+<li>对好友数多的用户不友好</li>
+<li>有冗余数据（但一般只存Moment的索引，所以冗余可控）</li>
+</ul>
+<h3 id="fan-out-on-read读扩散" tabindex="-1"><a class="header-anchor" href="#fan-out-on-read读扩散"><span>Fan-out on Read（读扩散）</span></a></h3>
+<p>当用户打开 Feed 时，实时查询所有关注对象的最新内容：</p>
+<pre class="language-text" tabindex="0"><code class="language-text">用户A打开Feed
+→ 查询好友B的moments
+→ 查询好友C的moments
+→ 查询好友D的moments
+→ 聚合排序后返回</code></pre>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>写入简单，只需写入一次</li>
+<li>无冗余数据</li>
+<li>适合好友数多的用户（超级节点）</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>读取慢（需要多次查询）</li>
+<li>复杂的聚合排序逻辑</li>
+<li>实时性依赖查询性能</li>
+</ul>
+<h3 id="我的选择fan-out-on-write" tabindex="-1"><a class="header-anchor" href="#我的选择fan-out-on-write"><span>我的选择：Fan-out on Write</span></a></h3>
+<p>考虑到朋友圈的特点：</p>
+<ul>
+<li>朋友圈的好友数量通常是有限的（&lt; 500）</li>
+<li>用户打开朋友圈频率高（读远多于写）</li>
+<li>需要良好的实时体验</li>
+</ul>
+<p>我选择了 <strong>Fan-out on Write</strong> 模式，并结合 Firebase Cloud Functions 实现 Feed 分发。</p>
+<h2 id="数据结构设计" tabindex="-1"><a class="header-anchor" href="#数据结构设计"><span>数据结构设计</span></a></h2>
+<p>这些数据结构的设计理念主要是：Moment 内容存储在全局 <code>moments</code> 集合，而每个用户的 <code>feed</code> 子集合只存储引用（momentId）和时间戳。这里主要的设计考虑是：moment 应该作为顶层集合，还是作为 users 的子集合？</p>
+<p>这里的主要区别是，如果 moments 放在 <code>users/{authorId}/moments</code> 这种用户下的子集合里，那么 firebase 自动生成的 ID 只在该作者的子集合范围内不重复，并不一定全局唯一，导致 feed 里面也无法简单地使用 momentId 作为 Id，必须额外存信息，比如 authorId，变成复合索引结构。</p>
+<p>另外，对于权限控制而言，也是作为顶层集合更方便。对于朋友圈这种非个人私有的内容以及其未来可能需要扩展的功能（拉黑、仅对xxx可见等），天然适合将权限和内容本身关联，而不需要强行绑定内容的作者。如果作为用户的子集合，则这些访问规则就不得不和 <code>/users/{uid}/moments</code> 的路径访问权限强耦合，并且很难做 per-moment 的权限控制。</p>
+<h3 id="firestore-结构" tabindex="-1"><a class="header-anchor" href="#firestore-结构"><span>Firestore 结构</span></a></h3>
+<pre class="language-text" tabindex="0"><code class="language-text">users/
+  └── {userId}/
+      ├── name: string
+      ├── ...
+      │
+      ├── friends/                      # 好友子集合
+      │   └── {friendUserId}/
+      │       └── uid: string
+      │
+      └── feed/                         # 个人 Feed（写扩散目标）
+          └── {momentId}/
+              ├── momentId: string
+              └── createdAt: timestamp
+
+moments/                                # 全局 Moments 集合
+  └── {momentId}/
+      ├── authorId: string
+      ├── text: string
+      ├── attachments: array
+      ├── createdAt: timestamp
+      ├── likeCount: number
+      ├── commentCount: number
+      ├── likes/                        # 点赞子集合
+      │   └── {userId}/
+      └── comments/                     # 评论子集合
+          └── {commentId}/</code></pre>
+<p><strong>读取流程</strong>：</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token comment">// 1. 查询用户的 feed 子集合</span>
+<span class="token keyword">let</span> feedDocs <span class="token operator">=</span> <span class="token keyword">await</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"users/{userId}/feed"</span></span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">order</span><span class="token punctuation">(</span>by<span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">"createdAt"</span></span><span class="token punctuation">,</span> descending<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">limit</span><span class="token punctuation">(</span>to<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">getDocuments</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 2. 并行获取实际的 moment 内容</span>
+<span class="token keyword">let</span> momentIds <span class="token operator">=</span> feedDocs<span class="token punctuation">.</span>map <span class="token punctuation">{</span> <span class="token short-argument">$0</span><span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"momentId"</span></span><span class="token punctuation">]</span> <span class="token punctuation">}</span>
+<span class="token keyword">let</span> moments <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetchMomentsInParallel</span><span class="token punctuation">(</span>momentIds<span class="token punctuation">)</span></code></pre>
+<h2 id="cloud-functionsfeed-分发" tabindex="-1"><a class="header-anchor" href="#cloud-functionsfeed-分发"><span>Cloud Functions：Feed 分发</span></a></h2>
+<p>Fan-out 模式的核心是在内容创建时进行自动分发。</p>
+<h3 id="moment-创建时的-fan-out" tabindex="-1"><a class="header-anchor" href="#moment-创建时的-fan-out"><span>Moment 创建时的 Fan-out</span></a></h3>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">exports<span class="token punctuation">.</span>onMomentCreated <span class="token operator">=</span> <span class="token function">onDocumentCreated</span><span class="token punctuation">(</span>
+  <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/moments/{momentId}</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+  <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> db <span class="token operator">=</span> admin<span class="token punctuation">.</span><span class="token function">firestore</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> momentId <span class="token operator">=</span> event<span class="token punctuation">.</span>params<span class="token punctuation">.</span>momentId<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> moment <span class="token operator">=</span> event<span class="token punctuation">.</span>data<span class="token operator">?.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> authorId <span class="token operator">=</span> moment<span class="token punctuation">.</span>authorId<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> createdAt <span class="token operator">=</span> moment<span class="token punctuation">.</span>createdAt<span class="token operator">?.</span>toDate<span class="token operator">?.</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 1. 获取作者的所有好友</span>
+      <span class="token keyword">const</span> friendsSnap <span class="token operator">=</span> <span class="token keyword">await</span> db
+        <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'users'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>authorId<span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'friends'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token keyword">const</span> friendIds <span class="token operator">=</span> friendsSnap<span class="token punctuation">.</span>docs<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">d</span><span class="token punctuation">)</span> <span class="token operator">=></span> d<span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">// 2. 包括作者自己（能看到自己的动态）</span>
+      <span class="token keyword">const</span> targets <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">[</span>authorId<span class="token punctuation">,</span> <span class="token operator">...</span>friendIds<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">// 3. 批量写入所有目标用户的 feed</span>
+      <span class="token keyword">const</span> batch <span class="token operator">=</span> db<span class="token punctuation">.</span><span class="token function">batch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> uid <span class="token keyword">of</span> targets<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">const</span> feedRef <span class="token operator">=</span> db
+          <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'users'</span><span class="token punctuation">)</span>
+          <span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>uid<span class="token punctuation">)</span>
+          <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'feed'</span><span class="token punctuation">)</span>
+          <span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>momentId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        batch<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>feedRef<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">momentId</span><span class="token operator">:</span> momentId<span class="token punctuation">,</span>
+          <span class="token literal-property property">createdAt</span><span class="token operator">:</span> createdAt<span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+      <span class="token keyword">await</span> batch<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      logger<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Fanned out moment </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>momentId<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> to </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>targets<span class="token punctuation">.</span>size<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> feeds</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      logger<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"Fan-out failed"</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>这里，使用 <code>batch</code> 操作确保原子性，可以保证不会出现“部分好友能看到、部分好友看不到”的不一致场景。另外，虽然使用 <code>batch</code> 没有减少写入次数（write ops 依然是 N），但把原本 N 次的 Firestore API 调用（RPC）压缩成 1 次，直接减少了 Cloud Functions 的网络往返时间、认证开销、连接复用压力以及执行时长。</p>
+<h3 id="好友删除时的-feed-清理" tabindex="-1"><a class="header-anchor" href="#好友删除时的-feed-清理"><span>好友删除时的 Feed 清理</span></a></h3>
+<p>删除好友时，必须清理双方 Feed 中对方的内容。这里一个最好的设计是，在 feed 里面冗余地存每个 moment 的 authorId：</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token comment">// 直接查 feed</span>
+<span class="token keyword">const</span> feedSnap <span class="token operator">=</span> <span class="token keyword">await</span> db
+  <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'users'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>uid<span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'feed'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string">'authorId'</span><span class="token punctuation">,</span> <span class="token string">'=='</span><span class="token punctuation">,</span> friendUid<span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> batch <span class="token operator">=</span> db<span class="token punctuation">.</span><span class="token function">batch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+feedSnap<span class="token punctuation">.</span>docs<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">doc</span><span class="token punctuation">)</span> <span class="token operator">=></span> batch<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span>doc<span class="token punctuation">.</span>ref<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">await</span> batch<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>如果没有存的话，相对比较麻烦，查询方法是：</p>
+<ol>
+<li>知道要删除的作者是谁 (friendUid)</li>
+<li>去 moments/ where authorId == friendUid，拿到所有 momentId</li>
+<li>遍历所有 momentId，若在 feed 里有则删除</li>
+</ol>
+<p>不过，由于 Firestore 有每个 batch 最大 500 写操作的限制，因此如果一个用户发布动态特别多，需要做分页/游标清理。</p>
+<h3 id="点赞评论计数器维护" tabindex="-1"><a class="header-anchor" href="#点赞评论计数器维护"><span>点赞/评论计数器维护</span></a></h3>
+<p>点赞数和评论数也通过 Cloud Functions 自动维护：</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token comment">// 点赞时自动 +1</span>
+exports<span class="token punctuation">.</span>onLikeCreated <span class="token operator">=</span> <span class="token function">onDocumentCreated</span><span class="token punctuation">(</span>
+  <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/moments/{momentId}/likes/{uid}</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+  <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> momentRef <span class="token operator">=</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'moments'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>params<span class="token punctuation">.</span>momentId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">await</span> momentRef<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">likeCount</span><span class="token operator">:</span> admin<span class="token punctuation">.</span>firestore<span class="token punctuation">.</span>FieldValue<span class="token punctuation">.</span><span class="token function">increment</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 取消点赞时自动 -1</span>
+exports<span class="token punctuation">.</span>onLikeDeleted <span class="token operator">=</span> <span class="token function">onDocumentDeleted</span><span class="token punctuation">(</span>
+  <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/moments/{momentId}/likes/{uid}</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+  <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> momentRef <span class="token operator">=</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string">'moments'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">doc</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>params<span class="token punctuation">.</span>momentId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">await</span> momentRef<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">likeCount</span><span class="token operator">:</span> admin<span class="token punctuation">.</span>firestore<span class="token punctuation">.</span>FieldValue<span class="token punctuation">.</span><span class="token function">increment</span><span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>这里是 Event-driven Aggregation Pattern。由于 likeCount 并不是具体业务数据，而是一个聚合的派生字段，因此不需要使用事务，而是应该让服务端根据 likes 变化同步维护。另外，使用 <code>FieldValue.increment(1)</code> 来保证原子操作。</p>
+<h2 id="朋友圈与好友关系" tabindex="-1"><a class="header-anchor" href="#朋友圈与好友关系"><span>朋友圈与好友关系</span></a></h2>
+<h3 id="好友可见性过滤" tabindex="-1"><a class="header-anchor" href="#好友可见性过滤"><span>好友可见性过滤</span></a></h3>
+<p>朋友圈的一个重要特性是：只显示共同好友的点赞和评论。</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token keyword">func</span> <span class="token function-definition function">getMutualLikes</span><span class="token punctuation">(</span>momentId<span class="token punctuation">:</span> <span class="token class-name">String</span><span class="token punctuation">)</span> <span class="token keyword">async</span> <span class="token operator">-></span> <span class="token punctuation">[</span><span class="token class-name">MutualLike</span><span class="token punctuation">]</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> currentUserId <span class="token operator">=</span> <span class="token class-name">SessionManager</span><span class="token punctuation">.</span>currentUserId
+    <span class="token keyword">let</span> friends <span class="token operator">=</span> <span class="token class-name">DataStorageManager</span><span class="token punctuation">.</span>shared<span class="token punctuation">.</span>friends  <span class="token comment">// Set&lt;String></span>
+
+    <span class="token keyword">do</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 1. 获取所有点赞</span>
+        <span class="token keyword">let</span> likesSnapshot <span class="token operator">=</span> <span class="token keyword">try</span> <span class="token keyword">await</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"moments"</span></span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">document</span><span class="token punctuation">(</span>momentId<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"likes"</span></span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">getDocuments</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        <span class="token comment">// 2. 过滤出好友的点赞</span>
+        <span class="token keyword">let</span> mutualLikes <span class="token operator">=</span> likesSnapshot<span class="token punctuation">.</span>documents<span class="token punctuation">.</span>compactMap <span class="token punctuation">{</span> doc <span class="token operator">-></span> <span class="token class-name">MutualLike</span><span class="token operator">?</span> <span class="token keyword">in</span>
+            <span class="token keyword">guard</span> <span class="token keyword">let</span> userId <span class="token operator">=</span> doc<span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"userId"</span></span><span class="token punctuation">]</span> <span class="token keyword">as</span><span class="token operator">?</span> <span class="token class-name">String</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> <span class="token nil constant">nil</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token comment">// 只保留好友和自己的点赞</span>
+            <span class="token keyword">guard</span> friends<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>userId<span class="token punctuation">)</span> <span class="token operator">||</span> userId <span class="token operator">==</span> currentUserId <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> <span class="token nil constant">nil</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token keyword">return</span> <span class="token class-name">MutualLike</span><span class="token punctuation">(</span>id<span class="token punctuation">:</span> doc<span class="token punctuation">.</span>documentID<span class="token punctuation">,</span> userId<span class="token punctuation">:</span> userId<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">return</span> mutualLikes
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">{</span>
+        <span class="token function">print</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"Failed to load mutual likes: </span><span class="token interpolation-punctuation punctuation">\(</span><span class="token interpolation">error</span><span class="token interpolation-punctuation punctuation">)</span><span class="token string">"</span></span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>评论不仅要检查评论者是否是好友，还要检查被回复者是否是好友：</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token keyword">func</span> <span class="token function-definition function">getMutualComments</span><span class="token punctuation">(</span>momentId<span class="token punctuation">:</span> <span class="token class-name">String</span><span class="token punctuation">)</span> <span class="token keyword">async</span> <span class="token operator">-></span> <span class="token punctuation">[</span><span class="token class-name">Comment</span><span class="token punctuation">]</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> friends <span class="token operator">=</span> <span class="token class-name">DataStorageManager</span><span class="token punctuation">.</span>shared<span class="token punctuation">.</span>friends
+
+    <span class="token keyword">let</span> commentsSnapshot <span class="token operator">=</span> <span class="token keyword">try</span> <span class="token keyword">await</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"moments"</span></span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">document</span><span class="token punctuation">(</span>momentId<span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"comments"</span></span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">order</span><span class="token punctuation">(</span>by<span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">"createdAt"</span></span><span class="token punctuation">,</span> descending<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">getDocuments</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> commentsSnapshot<span class="token punctuation">.</span>documents<span class="token punctuation">.</span>compactMap <span class="token punctuation">{</span> doc <span class="token operator">-></span> <span class="token class-name">Comment</span><span class="token operator">?</span> <span class="token keyword">in</span>
+        <span class="token keyword">let</span> userId <span class="token operator">=</span> doc<span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"userId"</span></span><span class="token punctuation">]</span> <span class="token keyword">as</span><span class="token operator">?</span> <span class="token class-name">String</span>
+        <span class="token keyword">let</span> replyTo <span class="token operator">=</span> doc<span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"replyTo"</span></span><span class="token punctuation">]</span> <span class="token keyword">as</span><span class="token operator">?</span> <span class="token class-name">String</span>
+
+        <span class="token comment">// 检查评论者是否是好友</span>
+        <span class="token keyword">let</span> isAuthorFriend <span class="token operator">=</span> friends<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>userId <span class="token operator">??</span> <span class="token string-literal"><span class="token string">""</span></span><span class="token punctuation">)</span> <span class="token operator">||</span>
+                             userId <span class="token operator">==</span> currentUserId
+
+        <span class="token comment">// 检查被回复者是否是好友</span>
+        <span class="token keyword">var</span> isReplyToFriend <span class="token operator">=</span> <span class="token boolean">true</span>
+        <span class="token keyword">if</span> <span class="token keyword">let</span> replyTo <span class="token operator">=</span> replyTo <span class="token punctuation">{</span>
+            <span class="token comment">// 需要查找被回复评论的作者</span>
+            <span class="token keyword">let</span> replyToComment <span class="token operator">=</span> commentsSnapshot<span class="token punctuation">.</span>documents<span class="token punctuation">.</span>first <span class="token punctuation">{</span>
+                <span class="token short-argument">$0</span><span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"commentId"</span></span><span class="token punctuation">]</span> <span class="token keyword">as</span><span class="token operator">?</span> <span class="token class-name">String</span> <span class="token operator">==</span> replyTo
+            <span class="token punctuation">}</span>
+            <span class="token keyword">if</span> <span class="token keyword">let</span> replyToUserId <span class="token operator">=</span> replyToComment<span class="token operator">?</span><span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string-literal"><span class="token string">"userId"</span></span><span class="token punctuation">]</span> <span class="token keyword">as</span><span class="token operator">?</span> <span class="token class-name">String</span> <span class="token punctuation">{</span>
+                isReplyToFriend <span class="token operator">=</span> friends<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>replyToUserId<span class="token punctuation">)</span> <span class="token operator">||</span>
+                                  replyToUserId <span class="token operator">==</span> currentUserId
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                isReplyToFriend <span class="token operator">=</span> <span class="token boolean">false</span>  <span class="token comment">// 找不到被回复评论，不显示</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment">// 两者都是好友才显示</span>
+        <span class="token keyword">return</span> <span class="token punctuation">(</span>isAuthorFriend <span class="token operator">&amp;&amp;</span> isReplyToFriend<span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token function">parseComment</span><span class="token punctuation">(</span>doc<span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token nil constant">nil</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>在客户端进行过滤，因为这是是否呈现的逻辑，而不是权限逻辑，并且这样实现也不需要存储多份数据。</p>
+<h2 id="未来优化和功能扩展" tabindex="-1"><a class="header-anchor" href="#未来优化和功能扩展"><span>未来优化和功能扩展</span></a></h2>
+<h3 id="混合方案" tabindex="-1"><a class="header-anchor" href="#混合方案"><span>混合方案</span></a></h3>
+<p>对于好友数过多的用户，可以考虑混合方案：</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token comment">// 伪代码</span>
+<span class="token keyword">func</span> <span class="token function-definition function">getFeed</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">async</span> <span class="token operator">-></span> <span class="token punctuation">[</span><span class="token class-name">Moment</span><span class="token punctuation">]</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> popularFriends <span class="token operator">=</span> friends<span class="token punctuation">.</span>filter <span class="token punctuation">{</span> <span class="token short-argument">$0</span><span class="token punctuation">.</span>followerCount <span class="token operator">></span> <span class="token number">1000</span> <span class="token punctuation">}</span>
+    <span class="token keyword">let</span> normalFriends <span class="token operator">=</span> friends<span class="token punctuation">.</span>filter <span class="token punctuation">{</span> <span class="token short-argument">$0</span><span class="token punctuation">.</span>followerCount <span class="token operator">&lt;=</span> <span class="token number">1000</span> <span class="token punctuation">}</span>
+
+    <span class="token comment">// 普通好友：从 feed 读取（Fan-out）</span>
+    <span class="token keyword">let</span> feedMoments <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">loadFromFeed</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment">// 大V好友：实时查询（Fan-in）</span>
+    <span class="token keyword">let</span> popularMoments <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">loadFromAuthors</span><span class="token punctuation">(</span>popularFriends<span class="token punctuation">)</span>
+
+    <span class="token comment">// 合并排序</span>
+    <span class="token keyword">return</span> <span class="token function">merge</span><span class="token punctuation">(</span>feedMoments<span class="token punctuation">,</span> popularMoments<span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="加好友后回填动态" tabindex="-1"><a class="header-anchor" href="#加好友后回填动态"><span>加好友后回填动态</span></a></h3>
+<p>目前实现的逻辑，Fan-out 只在 Moment 创建时执行，成为好友时不会回填历史 Feed。如果需要实现这种 backfill，实现思路就是：</p>
+<ol>
+<li>当 friendUid 写入时触发 Cloud Function，执行回填操作</li>
+<li>读 friendUid 的最近 N 条 moments（按时间倒序，一般不需要全量回填）</li>
+<li>遍历每条 moment，为当前用户 uid 写入 feed/{momentId}</li>
+</ol>
+<h2 id="总结" tabindex="-1"><a class="header-anchor" href="#总结"><span>总结</span></a></h2>
+<p>实现一个朋友圈 Feed 系统，需要在读写性能、存储成本、实时性、一致性之间做权衡。Fan-out 模式虽然写入成本高，但在好友数量有限的社交应用中，提供了最佳的读取性能和用户体验。</p>
+<p>结合 Firebase Cloud Functions，我们可以将复杂的业务逻辑（如 Feed 分发、聚合数据计算）自动化，保证数据一致性的同时，简化客户端实现。</p>
+</div>
+      
+    </div>
+  </div>
+
+  <footer class="note__foot">
+    <a class="back-link" href="/technical-notes/">← All technical notes</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+        <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a>
+      
+        <a href="https://www.linkedin.com/in/ziyansong02/" target="_blank" rel="noopener">LinkedIn</a>
+      
+        <a href="mailto:szy1840@gmail.com">Email</a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>

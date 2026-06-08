@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>This Website · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="This Website" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/projects/personal-website/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="project-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" aria-current="page">Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" >Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" >Notes &amp; Essays</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="project wrap">
+  <header class="project__head">
+    <p class="eyebrow"><a href="/projects/">Projects</a> · Side project</p>
+    <h1 class="project__title">This Website</h1>
+    <p class="project__summary">A hand-built, theme-free personal site with a minimalist editorial design.</p>
+    
+      <div class="project__links">
+        
+          <a class="btn btn--sm btn--primary" href="https://github.com/szy1840/szy1840.github.io" target="_blank" rel="noopener">Source ↗</a>
+        
+      </div>
+    
+  </header>
+
+  
+
+  <div class="project__body">
+    <aside class="project__facts">
+      <dl>
+        <div><dt>Role</dt><dd>Design and build</dd></div>
+        <div><dt>Year</dt><dd>2026</dd></div>
+        <div><dt>Status</dt><dd>Live</dd></div>
+        
+          <div><dt>Stack</dt><dd class="project__stack"><span>Eleventy</span><span>Nunjucks</span><span>CSS</span></dd></div>
+        
+      </dl>
+    </aside>
+
+    <div class="prose project__prose">
+      <h2 id="overview" tabindex="-1"><a class="header-anchor" href="#overview"><span>Overview</span></a></h2>
+<p>The site you are reading. It is built with Eleventy and a fully custom design system, with no theme and no client framework. Technical notes can carry both a Chinese and an English version with an inline language toggle, and writing lives in its own quieter section.</p>
+<h2 id="why-i-built-it" tabindex="-1"><a class="header-anchor" href="#why-i-built-it"><span>Why I built it</span></a></h2>
+<p>I wanted something that felt like mine rather than a portfolio template, and that stayed simple to maintain. Markdown in, static HTML out.</p>
+<h2 id="notes" tabindex="-1"><a class="header-anchor" href="#notes"><span>Notes</span></a></h2>
+<p>Type is set in Fraunces and Inter. Everything is one stylesheet and a small amount of JavaScript for the theme toggle, the mobile menu, and the table of contents. If you are curious how a page is put together, the source is linked above.</p>
+
+
+      
+    </div>
+  </div>
+
+  <footer class="project__foot">
+    <a class="back-link" href="/projects/">← All projects</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+        <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a>
+      
+        <a href="https://www.linkedin.com/in/ziyansong02/" target="_blank" rel="noopener">LinkedIn</a>
+      
+        <a href="mailto:szy1840@gmail.com">Email</a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>

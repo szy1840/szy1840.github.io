@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Moments · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Moments" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/projects/moments/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="project-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" aria-current="page">Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" >Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" >Notes &amp; Essays</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="project wrap">
+  <header class="project__head">
+    <p class="eyebrow"><a href="/projects/">Projects</a> · Side project</p>
+    <h1 class="project__title">Moments</h1>
+    <p class="project__summary">A private, friends-only social app focused on small circles instead of the attention economy.</p>
+    
+      <div class="project__links">
+        
+          <a class="btn btn--sm btn--primary" href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub ↗</a>
+        
+      </div>
+    
+  </header>
+
+  
+
+  <div class="project__body">
+    <aside class="project__facts">
+      <dl>
+        <div><dt>Role</dt><dd>Designer and iOS engineer</dd></div>
+        <div><dt>Year</dt><dd>2025</dd></div>
+        <div><dt>Status</dt><dd>In development</dd></div>
+        
+          <div><dt>Stack</dt><dd class="project__stack"><span>SwiftUI</span><span>Firebase</span><span>Cloud Functions</span></dd></div>
+        
+      </dl>
+    </aside>
+
+    <div class="prose project__prose">
+      <blockquote>
+<p>Placeholder content. Edit <code>src/projects/moments.md</code> to make it yours.</p>
+</blockquote>
+<h2 id="overview" tabindex="-1"><a class="header-anchor" href="#overview"><span>Overview</span></a></h2>
+<p>Moments is a small social app for close friends. There is no public feed, no follower count, and no algorithm deciding what you see. You post a moment, and the people who actually know you see it.</p>
+<h2 id="why-i-built-it" tabindex="-1"><a class="header-anchor" href="#why-i-built-it"><span>Why I built it</span></a></h2>
+<p>I wanted a calmer place to share everyday things with a handful of people, without the performance that comes with a public audience. It was also an excuse to design a feed system properly rather than reach for a library.</p>
+<h2 id="key-features" tabindex="-1"><a class="header-anchor" href="#key-features"><span>Key features</span></a></h2>
+<ul>
+<li>A friends-only timeline with real-time updates</li>
+<li>Likes and comments visible only to mutual friends</li>
+<li>A profile drawer for quick navigation between accounts and settings</li>
+</ul>
+<h2 id="technical-architecture" tabindex="-1"><a class="header-anchor" href="#technical-architecture"><span>Technical architecture</span></a></h2>
+<p>The client is SwiftUI. The backend is Firebase, with Cloud Functions handling distribution and aggregation. Posts use a fan-out-on-write feed, so each user reads a single precomputed timeline rather than querying every friend on open. The deeper engineering write-ups are linked below.</p>
+<h2 id="outcome" tabindex="-1"><a class="header-anchor" href="#outcome"><span>Outcome</span></a></h2>
+<p>Still a work in progress. The most valuable part so far has been the systems work: feed design, concurrency, and the small SwiftUI details that decide whether an app feels solid.</p>
+
+
+      
+        <h2>Related technical notes</h2>
+        <ul class="related-notes">
+          
+            
+            
+              <li>
+                <a href="/technical-notes/social-media-fan-out-feed/">
+                  <span class="related-notes__title">Designing a Moments Feed: Friendships and a Fan-out Feed</span>
+                  <span class="related-notes__arrow">→</span>
+                </a>
+              </li>
+            
+          
+            
+            
+              <li>
+                <a href="/technical-notes/build-a-side-drawer-in-swift-ui/">
+                  <span class="related-notes__title">Building a Side Drawer in SwiftUI: A Three-Layer Structure and the Pitfalls</span>
+                  <span class="related-notes__arrow">→</span>
+                </a>
+              </li>
+            
+          
+            
+            
+              <li>
+                <a href="/technical-notes/swift-concurrency/">
+                  <span class="related-notes__title">Getting Started with Swift Concurrency: Task, Actor, Async/Await, and the Threading Model</span>
+                  <span class="related-notes__arrow">→</span>
+                </a>
+              </li>
+            
+          
+        </ul>
+      
+    </div>
+  </div>
+
+  <footer class="project__foot">
+    <a class="back-link" href="/projects/">← All projects</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+        <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a>
+      
+        <a href="https://www.linkedin.com/in/ziyansong02/" target="_blank" rel="noopener">LinkedIn</a>
+      
+        <a href="mailto:szy1840@gmail.com">Email</a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>

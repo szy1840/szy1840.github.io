@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Résumé · Ziyan Song</title>
+    <meta name="description" content="Résumé of Ziyan Song, software engineer." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Résumé" />
+    <meta property="og:description" content="Résumé of Ziyan Song, software engineer." />
+    <meta property="og:url" content="https://szy1840.github.io/resume/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="resume-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" >Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" >Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" >Notes &amp; Essays</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" aria-current="page">Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><section class="wrap--narrow resume">
+  <header class="resume__head">
+    <div>
+      <p class="eyebrow">Résumé</p>
+      <h1 class="resume__name">Ziyan Song</h1>
+      <p class="resume__role">Software Engineer · iOS &amp; Systems · Founder</p>
+    </div>
+    <div class="resume__head-actions">
+      <a class="btn btn--primary btn--sm" href="/resume.pdf">Download PDF</a>
+      <p class="resume__contact">
+        <a href="mailto:szy1840@gmail.com">szy1840@gmail.com</a> ·
+        <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a> ·
+        <a href="https://www.linkedin.com/in/ziyansong02/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+    </div>
+  </header>
+
+  <p class="resume__placeholder"><em>Placeholder résumé. Edit <code>src/resume.njk</code> and drop your real <code>resume.pdf</code> into <code>src/static/</code>.</em></p>
+
+  <section class="resume__section">
+    <h2 class="resume__section-title">Experience</h2>
+    <div class="resume__entry">
+      <div class="resume__entry-head">
+        <h3>Founder &amp; Engineer · <span>Stealth Startup</span></h3>
+        <span class="resume__when">2024 – Present</span>
+      </div>
+      <ul>
+        <li>Designing and building a privacy-first social product end-to-end with SwiftUI and Firebase.</li>
+        <li>Architected a fan-out-on-write feed system with Cloud Functions for distribution and event-driven aggregation.</li>
+      </ul>
+    </div>
+    <div class="resume__entry">
+      <div class="resume__entry-head">
+        <h3>Software Engineer · <span>Company Name</span></h3>
+        <span class="resume__when">2022 – 2024</span>
+      </div>
+      <ul>
+        <li>Shipped features across the iOS app used by [N] users; improved [metric] by [X]%.</li>
+        <li>Led adoption of Swift structured concurrency, reducing data races and callback complexity.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="resume__section">
+    <h2 class="resume__section-title">Education</h2>
+    <div class="resume__entry">
+      <div class="resume__entry-head">
+        <h3>B.S. in Computer Science · <span>University Name</span></h3>
+        <span class="resume__when">20XX – 20XX</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="resume__section">
+    <h2 class="resume__section-title">Skills</h2>
+    <div class="resume__skills">
+      <div><h4>Languages</h4><p>Swift, TypeScript/JavaScript, Python, SQL</p></div>
+      <div><h4>Platforms</h4><p>iOS / SwiftUI, Firebase, Node.js, Cloud Functions</p></div>
+      <div><h4>Focus</h4><p>System design, concurrency, app architecture, serverless</p></div>
+    </div>
+  </section>
+
+  <section class="resume__section">
+    <h2 class="resume__section-title">Selected Writing</h2>
+    <ul class="resume__writing">
+      
+        <li><a href="/technical-notes/build-a-side-drawer-in-swift-ui/">SwiftUI 侧边栏实现：三层结构和踩坑记录</a></li>
+      
+        <li><a href="/technical-notes/social-media-fan-out-feed/">朋友圈系统设计：好友关系与 Fan-out Feed</a></li>
+      
+        <li><a href="/technical-notes/firebase-intro/">Firebase 入门指南：从零构建现代 Web 与移动后端</a></li>
+      
+        <li><a href="/technical-notes/swift-concurrency/">Swift 并发入门：Task、Actor、Async/Await 与线程模型</a></li>
+      
+    </ul>
+  </section>
+</section>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+        <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a>
+      
+        <a href="https://www.linkedin.com/in/ziyansong02/" target="_blank" rel="noopener">LinkedIn</a>
+      
+        <a href="mailto:szy1840@gmail.com">Email</a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>

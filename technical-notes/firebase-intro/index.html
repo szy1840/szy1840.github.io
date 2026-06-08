@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="zh" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Firebase 入门指南：从零构建现代 Web 与移动后端 · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Firebase 入门指南：从零构建现代 Web 与移动后端" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/technical-notes/firebase-intro/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="note-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" >Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" aria-current="page">Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" >Notes &amp; Essays</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="note wrap" data-bilingual data-default-lang="en">
+  <header class="note__head">
+    <p class="eyebrow"><a href="/technical-notes/">Technical Notes</a></p>
+    
+      <h1 class="note__title" data-title data-title-en="A Firebase Primer: Building a Modern Web &amp; Mobile Backend from Scratch" data-title-zh="Firebase 入门指南：从零构建现代 Web 与移动后端">A Firebase Primer: Building a Modern Web &amp; Mobile Backend from Scratch</h1>
+    
+    <div class="note__meta">
+      <time datetime="2025-10-11">Oct 11, 2025</time>
+      
+        <span class="dot">·</span>
+        <span class="note__tags">
+          <span class="tag">Firebase</span><span class="tag">BaaS</span><span class="tag">Serverless</span>
+        </span>
+      
+      
+        <span class="lang-switch" role="group" aria-label="Article language" data-lang-switch>
+          <button type="button" data-lang="en" class="is-active" aria-pressed="true">EN</button>
+          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        </span>
+      
+    </div>
+  </header>
+
+  <div class="note__body">
+    <aside class="toc" aria-label="Table of contents">
+      <p class="toc__title">On this page</p>
+      <nav class="toc__nav" data-toc></nav>
+    </aside>
+    <div class="prose prose--doc" data-article>
+      
+        <div class="note-version" data-version="en" lang="en"><p>Firebase is Google’s BaaS platform, well suited to indie developers, full-stack engineers, and small teams who want to ship web, iOS, and Android apps quickly. It bundles a database, authentication, hosting, functions, storage, and other core capabilities, so you can build a complete application with almost no traditional backend.</p>
+<h2 id="firebases-baas-services" tabindex="-1"><a class="header-anchor" href="#firebases-baas-services"><span>Firebase’s BaaS Services</span></a></h2>
+<p>In a traditional architecture you usually build both a frontend and a backend, where the backend involves:</p>
+<ul>
+<li>Standing up a server (e.g. Node.js)</li>
+<li>Managing a database (MySQL / MongoDB)</li>
+<li>Configuring auth, deployment, logging, security rules, and so on</li>
+</ul>
+<p>Firebase instead offers a full set of ready-to-use managed services:</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Module</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Database</td>
+<td>Firestore / Realtime Database</td>
+<td>Document database with real-time sync</td>
+</tr>
+<tr>
+<td>Cloud functions</td>
+<td>Cloud Functions</td>
+<td>Event-driven serverless backend logic</td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td>Firebase Auth</td>
+<td>Email, Google, Apple sign-in, etc.</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>Firebase Storage</td>
+<td>Files, images, video</td>
+</tr>
+<tr>
+<td>Hosting</td>
+<td>Firebase Hosting / App Hosting</td>
+<td>Static sites or SPA hosting</td>
+</tr>
+<tr>
+<td>Analytics &amp; messaging</td>
+<td>Analytics / FCM</td>
+<td>User-behavior analytics and push notifications</td>
+</tr>
+</tbody>
+</table>
+<p>This means you can build a complete product with a frontend (Vue / React / SwiftUI) + Firebase, without deploying a traditional backend yourself.</p>
+<h2 id="project-initialization-and-structure" tabindex="-1"><a class="header-anchor" href="#project-initialization-and-structure"><span>Project Initialization and Structure</span></a></h2>
+<p>Installing the Firebase CLI and initializing a project:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> <span class="token parameter variable">-g</span> firebase-tools
+firebase login
+firebase init</code></pre>
+<p>During init, choose the modules you need (Hosting, Firestore, and Functions are common). A typical project structure looks like:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">my-app/
+ ├─ public/           # Frontend build output (Vite / React / Vue build)
+ ├─ functions/        # Cloud functions (Node.js runtime)
+ ├─ firestore.rules   # Database access control
+ ├─ firebase.json     # Global config
+ └─ .firebaserc       # Project aliases and associations</code></pre>
+<h2 id="the-firestore-database-and-its-operations" tabindex="-1"><a class="header-anchor" href="#the-firestore-database-and-its-operations"><span>The Firestore Database and Its Operations</span></a></h2>
+<p>Firestore is a document database; data is organized hierarchically into collections and documents:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">users (collection)
+ └── userId (document)
+     ├── name: "Alice"
+     ├── age: 25
+     └── conversations (subcollection)
+          └── messageId (document)</code></pre>
+<p>Typical usage (using Swift’s Firebase SDK as an example):</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token keyword">let</span> db <span class="token operator">=</span> <span class="token class-name">Firestore</span><span class="token punctuation">.</span><span class="token function">firestore</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">try</span> <span class="token keyword">await</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"users"</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">document</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"alice"</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setData</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token string-literal"><span class="token string">"name"</span></span><span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">"Alice"</span></span><span class="token punctuation">,</span>
+    <span class="token string-literal"><span class="token string">"age"</span></span><span class="token punctuation">:</span> <span class="token number">25</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token keyword">let</span> snapshot <span class="token operator">=</span> <span class="token keyword">try</span> <span class="token keyword">await</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"users"</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDocuments</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> doc <span class="token keyword">in</span> snapshot<span class="token punctuation">.</span>documents <span class="token punctuation">{</span>
+    <span class="token function">print</span><span class="token punctuation">(</span>doc<span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Firestore’s listener mechanism:</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token class-name">Firestore</span><span class="token punctuation">.</span><span class="token function">firestore</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"users"</span></span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span>addSnapshotListener <span class="token punctuation">{</span> snapshot<span class="token punctuation">,</span> <span class="token omit keyword">_</span> <span class="token keyword">in</span>
+        <span class="token keyword">guard</span> <span class="token keyword">let</span> snapshot <span class="token keyword">else</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> <span class="token punctuation">}</span>
+        <span class="token comment">// Update the user list in real time</span>
+    <span class="token punctuation">}</span></code></pre>
+<p>This lets you observe and react to data changes in real time — a great fit for features like instant messaging.</p>
+<h2 id="security-rules-and-access-control" tabindex="-1"><a class="header-anchor" href="#security-rules-and-access-control"><span>Security Rules and Access Control</span></a></h2>
+<p>Firebase relies on Firestore Rules for fine-grained access control. A minimal example:</p>
+<pre><code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null &amp;&amp; request.auth.uid == userId;
+    }
+  }
+}
+</code></pre>
+<h2 id="cloud-functions" tabindex="-1"><a class="header-anchor" href="#cloud-functions"><span>Cloud Functions</span></a></h2>
+<p>When you need to call an external API (such as GPT) or perform heavier computation, use Cloud Functions:</p>
+<pre class="language-ts" tabindex="0"><code class="language-ts"><span class="token keyword">import</span> <span class="token punctuation">{</span> onRequest <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">"firebase-functions/v2/https"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> fetch <span class="token keyword">from</span> <span class="token string">"node-fetch"</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">const</span> callGPT <span class="token operator">=</span> <span class="token function">onRequest</span><span class="token punctuation">(</span><span class="token keyword">async</span> <span class="token punctuation">(</span>req<span class="token punctuation">,</span> res<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetch</span><span class="token punctuation">(</span><span class="token string">"https://api.openai.com/v1/chat/completions"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    method<span class="token operator">:</span> <span class="token string">"POST"</span><span class="token punctuation">,</span>
+    headers<span class="token operator">:</span> <span class="token punctuation">{</span> Authorization<span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Bearer </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">OPENAI_API_KEY</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    body<span class="token operator">:</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token punctuation">{</span> model<span class="token operator">:</span> <span class="token string">"gpt-4o"</span><span class="token punctuation">,</span> messages<span class="token operator">:</span> req<span class="token punctuation">.</span>body<span class="token punctuation">.</span>messages <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token keyword">await</span> response<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  res<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>The command to deploy these Cloud Functions:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">firebase deploy <span class="token parameter variable">--only</span> functions</code></pre>
+<p>In the console you can see statistics such as how many times a function has been invoked.</p>
+<p>Separately, Logs Explorer is GCP’s logging system, where you can view the runtime logs for all your Firebase services — Cloud Functions, Firestore, Hosting, and so on.</p>
+<h2 id="firebase-hosting-and-frontend-deployment" tabindex="-1"><a class="header-anchor" href="#firebase-hosting-and-frontend-deployment"><span>Firebase Hosting and Frontend Deployment</span></a></h2>
+<p>For a frontend project (e.g. Vue + Vite), you just build and deploy:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">npm</span> run build
+firebase deploy <span class="token parameter variable">--only</span> hosting</code></pre>
+<h2 id="summary" tabindex="-1"><a class="header-anchor" href="#summary"><span>Summary</span></a></h2>
+<p>The core Firebase mindset: data is the backend, events are the logic, and rules are the security.</p>
+<p>One last note: Firebase can be hard to reach from mainland China. Tencent CloudBase is a reasonable alternative, and it also has better support for ecosystems such as WeChat login.</p>
+</div>
+        <div class="note-version prose--zh-note" data-version="zh" lang="zh" hidden><p>Firebase 是 Google 提供的 BaaS 平台，非常适合独立开发者、全栈工程师或小团队快速构建 Web、iOS、Android 应用。它集成了数据库、身份验证、托管、函数、存储等核心能力，让开发者几乎不需要传统后端就能构建完整的应用。</p>
+<h2 id="firebase-的-baas-服务" tabindex="-1"><a class="header-anchor" href="#firebase-的-baas-服务"><span>Firebase 的 BaaS 服务</span></a></h2>
+<p>在传统架构中通常需要开发前端后端，其中后端包括：</p>
+<ul>
+<li>搭建服务器（如 Node.js）</li>
+<li>管理数据库（MySQL / MongoDB）</li>
+<li>配置认证、部署、日志、安全规则……</li>
+</ul>
+<p>而 Firebase 提供了一整套即开即用的托管服务：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>模块</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据库</td>
+<td>Firestore / Realtime Database</td>
+<td>文档型数据库，实时同步</td>
+</tr>
+<tr>
+<td>云函数</td>
+<td>Cloud Functions</td>
+<td>事件驱动的 Serverless 后端逻辑</td>
+</tr>
+<tr>
+<td>认证</td>
+<td>Firebase Auth</td>
+<td>支持邮箱、Google、Apple登录等</td>
+</tr>
+<tr>
+<td>存储</td>
+<td>Firebase Storage</td>
+<td>文件、图片、视频存储</td>
+</tr>
+<tr>
+<td>托管</td>
+<td>Firebase Hosting / App Hosting</td>
+<td>静态站点或 SPA 托管</td>
+</tr>
+<tr>
+<td>分析与通知</td>
+<td>Analytics / FCM</td>
+<td>用户行为分析与推送服务</td>
+</tr>
+</tbody>
+</table>
+<p>这意味着我们可以用前端（Vue / React / SwiftUI）+ Firebase 直接构建完整产品，无需再自行部署传统后端。</p>
+<h2 id="项目初始化与结构" tabindex="-1"><a class="header-anchor" href="#项目初始化与结构"><span>项目初始化与结构</span></a></h2>
+<p>Firebase 命令行安装和初始化项目：</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> <span class="token parameter variable">-g</span> firebase-tools
+firebase login
+firebase init</code></pre>
+<p>初始化时选择所需模块（常用的包括 Hosting、Firestore、Functions）。项目结构通常如下：</p>
+<pre class="language-text" tabindex="0"><code class="language-text">my-app/
+ ├─ public/           # 前端构建产物 (Vite / React / Vue build 输出)
+ ├─ functions/        # 云函数（Node.js 运行）
+ ├─ firestore.rules   # 数据库访问控制
+ ├─ firebase.json     # 全局配置
+ └─ .firebaserc       # 项目别名和关联信息</code></pre>
+<h2 id="firestore-数据库与操作" tabindex="-1"><a class="header-anchor" href="#firestore-数据库与操作"><span>Firestore 数据库与操作</span></a></h2>
+<p>Firestore 是一个文档型数据库，数据以集合（collection）和文档（document）层级组织：</p>
+<pre class="language-text" tabindex="0"><code class="language-text">users (collection)
+ └── userId (document)
+     ├── name: "Alice"
+     ├── age: 25
+     └── conversations (subcollection)
+          └── messageId (document)</code></pre>
+<p>典型用法（以 Swift 的 Firebase SDK 为例）：</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token keyword">let</span> db <span class="token operator">=</span> <span class="token class-name">Firestore</span><span class="token punctuation">.</span><span class="token function">firestore</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">try</span> <span class="token keyword">await</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"users"</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">document</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"alice"</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setData</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+    <span class="token string-literal"><span class="token string">"name"</span></span><span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">"Alice"</span></span><span class="token punctuation">,</span>
+    <span class="token string-literal"><span class="token string">"age"</span></span><span class="token punctuation">:</span> <span class="token number">25</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token keyword">let</span> snapshot <span class="token operator">=</span> <span class="token keyword">try</span> <span class="token keyword">await</span> db<span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"users"</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDocuments</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> doc <span class="token keyword">in</span> snapshot<span class="token punctuation">.</span>documents <span class="token punctuation">{</span>
+    <span class="token function">print</span><span class="token punctuation">(</span>doc<span class="token punctuation">.</span><span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Firestore 的监听机制：</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token class-name">Firestore</span><span class="token punctuation">.</span><span class="token function">firestore</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">collection</span><span class="token punctuation">(</span><span class="token string-literal"><span class="token string">"users"</span></span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span>addSnapshotListener <span class="token punctuation">{</span> snapshot<span class="token punctuation">,</span> <span class="token omit keyword">_</span> <span class="token keyword">in</span>
+        <span class="token keyword">guard</span> <span class="token keyword">let</span> snapshot <span class="token keyword">else</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> <span class="token punctuation">}</span>
+        <span class="token comment">// 实时更新用户列表</span>
+    <span class="token punctuation">}</span></code></pre>
+<p>这样可以实时监听并响应数据变更，非常适合比如即时通讯功能的实现。</p>
+<h2 id="安全规则与权限控制" tabindex="-1"><a class="header-anchor" href="#安全规则与权限控制"><span>安全规则与权限控制</span></a></h2>
+<p>Firebase 依靠 Firestore Rules 实现细粒度访问控制。一个最小安全规则示例：</p>
+<pre><code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null &amp;&amp; request.auth.uid == userId;
+    }
+  }
+}
+</code></pre>
+<h2 id="cloud-functions" tabindex="-1"><a class="header-anchor" href="#cloud-functions"><span>Cloud Functions</span></a></h2>
+<p>当需要调用外部 API（如 GPT）或进行复杂计算时，可以使用 Cloud Functions：</p>
+<pre class="language-ts" tabindex="0"><code class="language-ts"><span class="token keyword">import</span> <span class="token punctuation">{</span> onRequest <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">"firebase-functions/v2/https"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> fetch <span class="token keyword">from</span> <span class="token string">"node-fetch"</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">const</span> callGPT <span class="token operator">=</span> <span class="token function">onRequest</span><span class="token punctuation">(</span><span class="token keyword">async</span> <span class="token punctuation">(</span>req<span class="token punctuation">,</span> res<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetch</span><span class="token punctuation">(</span><span class="token string">"https://api.openai.com/v1/chat/completions"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    method<span class="token operator">:</span> <span class="token string">"POST"</span><span class="token punctuation">,</span>
+    headers<span class="token operator">:</span> <span class="token punctuation">{</span> Authorization<span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Bearer </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">OPENAI_API_KEY</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    body<span class="token operator">:</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token punctuation">{</span> model<span class="token operator">:</span> <span class="token string">"gpt-4o"</span><span class="token punctuation">,</span> messages<span class="token operator">:</span> req<span class="token punctuation">.</span>body<span class="token punctuation">.</span>messages <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token keyword">await</span> response<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  res<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>部署这些 Cloud Functions 的命令：</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">firebase deploy <span class="token parameter variable">--only</span> functions</code></pre>
+<p>可以在 console 看到函数被触发了多少次等统计信息。</p>
+<p>另外，Logs Explorer 是 GCP 的日志系统，可以查看 Cloud Functions / Firestore / Hosting 等所有 Firebase 服务的运行日志。</p>
+<h2 id="firebase-hosting-与前端部署" tabindex="-1"><a class="header-anchor" href="#firebase-hosting-与前端部署"><span>Firebase Hosting 与前端部署</span></a></h2>
+<p>对于前端项目（例如 Vue + Vite），只需构建并部署：</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">npm</span> run build
+firebase deploy <span class="token parameter variable">--only</span> hosting</code></pre>
+<h2 id="总结" tabindex="-1"><a class="header-anchor" href="#总结"><span>总结</span></a></h2>
+<p>Firebase 的核心思维：数据即后端，事件即逻辑，规则即安全。</p>
+<p>最后，Firebase 在中国大陆可能存在访问问题，可考虑腾讯云 CloudBase 作为替代方案，对微信登录等相关生态支持也更好。</p>
+</div>
+      
+    </div>
+  </div>
+
+  <footer class="note__foot">
+    <a class="back-link" href="/technical-notes/">← All technical notes</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+        <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a>
+      
+        <a href="https://www.linkedin.com/in/ziyansong02/" target="_blank" rel="noopener">LinkedIn</a>
+      
+        <a href="mailto:szy1840@gmail.com">Email</a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>

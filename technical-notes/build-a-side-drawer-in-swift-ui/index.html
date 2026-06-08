@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="zh" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SwiftUI 侧边栏实现：三层结构和踩坑记录 · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SwiftUI 侧边栏实现：三层结构和踩坑记录" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/technical-notes/build-a-side-drawer-in-swift-ui/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="note-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" >Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" aria-current="page">Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" >Notes &amp; Essays</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="note wrap" data-bilingual data-default-lang="en">
+  <header class="note__head">
+    <p class="eyebrow"><a href="/technical-notes/">Technical Notes</a></p>
+    
+      <h1 class="note__title" data-title data-title-en="Building a Side Drawer in SwiftUI: A Three-Layer Structure and the Pitfalls" data-title-zh="SwiftUI 侧边栏实现：三层结构和踩坑记录">Building a Side Drawer in SwiftUI: A Three-Layer Structure and the Pitfalls</h1>
+    
+    <div class="note__meta">
+      <time datetime="2025-10-28">Oct 28, 2025</time>
+      
+        <span class="dot">·</span>
+        <span class="note__tags">
+          <span class="tag">Swift</span><span class="tag">SwiftUI</span><span class="tag">iOS</span><span class="tag">Debug</span>
+        </span>
+      
+      
+        <span class="lang-switch" role="group" aria-label="Article language" data-lang-switch>
+          <button type="button" data-lang="en" class="is-active" aria-pressed="true">EN</button>
+          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        </span>
+      
+    </div>
+  </header>
+
+  <div class="note__body">
+    <aside class="toc" aria-label="Table of contents">
+      <p class="toc__title">On this page</p>
+      <nav class="toc__nav" data-toc></nav>
+    </aside>
+    <div class="prose prose--doc" data-article>
+      
+        <div class="note-version" data-version="en" lang="en"><p>A side drawer is a common mobile interaction pattern — sliding in from the screen edge, or tapping a menu button to reveal a menu or extra features. This note summarizes the design thinking and the pitfalls I hit while building the side drawer on a Profile screen: why a three-layer <code>ZStack</code> is needed, and how to avoid the jitter problem.</p>
+<p>The target behavior, when the drawer is open:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Visual focus → Drawer (brightest, sharpest)
+              ↓ covers
+        Scrim (semi-transparent black)
+              ↓ dims
+        Main content (still visible but defocused)</code></pre>
+<h2 id="the-three-layer-zstack" tabindex="-1"><a class="header-anchor" href="#the-three-layer-zstack"><span>The Three-Layer ZStack</span></a></h2>
+<p>Layer structure:</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token class-name">ZStack</span><span class="token punctuation">(</span>alignment<span class="token punctuation">:</span> <span class="token punctuation">.</span>topLeading<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Layer 1: main content (the Profile content)</span>
+    <span class="token class-name">ScrollView</span> <span class="token punctuation">{</span>
+        <span class="token comment">// Profile page content</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// Layer 2: semi-transparent scrim (only present while the drawer is shown)</span>
+    <span class="token keyword">if</span> isDrawerVisible <span class="token punctuation">{</span>
+        <span class="token class-name">Color</span><span class="token punctuation">.</span>black<span class="token punctuation">.</span><span class="token function">opacity</span><span class="token punctuation">(</span><span class="token number">0.25</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">ignoresSafeArea</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span>onTapGesture <span class="token punctuation">{</span> isDrawerVisible <span class="token operator">=</span> <span class="token boolean">false</span> <span class="token punctuation">}</span>
+            <span class="token punctuation">.</span><span class="token function">gesture</span><span class="token punctuation">(</span>closeDrawerGesture<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// Layer 3: drawer (always present, positioned via offset)</span>
+    <span class="token class-name">ProfileDrawerView</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">frame</span><span class="token punctuation">(</span>width<span class="token punctuation">:</span> <span class="token number">300</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">offset</span><span class="token punctuation">(</span>x<span class="token punctuation">:</span> isDrawerVisible <span class="token operator">?</span> <span class="token number">0</span> <span class="token punctuation">:</span> <span class="token operator">-</span><span class="token number">320</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">allowsHitTesting</span><span class="token punctuation">(</span>isDrawerVisible<span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Why three layers? First, layer one — the main content layer — must exist, to show the Profile content itself. Layer three — the drawer layer — must also exist, to show the drawer content (account info, menu, and so on). The key insight is that we also need a semi-transparent scrim layer in between.</p>
+<p>Also note that layer three uses an <code>offset</code> animation rather than conditional rendering (<code>if isDrawerVisible</code>), which performs better. Interactivity is controlled with <code>.allowsHitTesting(isDrawerVisible)</code>, so the drawer doesn’t intercept events while hidden. Conceptually, the drawer is not two different views for the shown/hidden states — it always lives in the view hierarchy, and only its visibility is controlled by offset and its interactivity by hit-testing.</p>
+<h3 id="designing-the-scrim" tabindex="-1"><a class="header-anchor" href="#designing-the-scrim"><span>Designing the Scrim</span></a></h3>
+<p>The scrim plays several roles at once:</p>
+<p><strong>Interaction interception + custom response</strong></p>
+<ul>
+<li>Provides a full-screen tappable area</li>
+<li>Tap anywhere to close the drawer</li>
+<li>Prevents touches from passing through to layer one (e.g. accidentally hitting buttons in the main content)</li>
+<li>Once it intercepts input, it can respond to taps/swipes to close the drawer</li>
+</ul>
+<p><strong>Visual guidance</strong></p>
+<ul>
+<li>The semi-transparent black (opacity 0.25) dims the main content</li>
+<li>The user’s attention naturally settles on the drawer</li>
+</ul>
+<p>The scrim clearly has to sit in the middle, because:</p>
+<ul>
+<li>Above the main content: so it can intercept the main content’s interactions</li>
+<li>Below the drawer: the drawer’s own buttons (menu, etc.) must stay tappable and not be intercepted by the scrim</li>
+</ul>
+<h3 id="why-the-built-in-alternatives-fall-short" tabindex="-1"><a class="header-anchor" href="#why-the-built-in-alternatives-fall-short"><span>Why the Built-in Alternatives Fall Short</span></a></h3>
+<p>Using <code>.sheet()</code> or <code>.fullScreenCover()</code>:</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token punctuation">.</span><span class="token function">sheet</span><span class="token punctuation">(</span>isPresented<span class="token punctuation">:</span> $showDrawer<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token class-name">DrawerView</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>A sheet can only present from the bottom, which doesn’t match a drawer sliding in from the left; you also can’t customize the animation direction, and it fully covers the main content.</p>
+<blockquote>
+<p>Why doesn’t Apple ship a left/right drawer? Because the official iOS navigation paradigm is TabBar + NavigationStack, whereas a drawer is closer to Android’s Navigation Drawer pattern.</p>
+</blockquote>
+<h2 id="a-pitfall-structural-stability" tabindex="-1"><a class="header-anchor" href="#a-pitfall-structural-stability"><span>A Pitfall: Structural Stability</span></a></h2>
+<p>While building this, a persistent problem was that the instant the drawer opened, the whole Profile page jumped slightly downward.</p>
+<p>First, ruling things out: the latter two layers in the <code>ZStack</code> are just overlays and don’t affect the layout of layer one’s <code>ScrollView</code>. In particular, the drawer layer uses <code>offset</code>, so showing/hiding it doesn’t affect layout — only its rendered position — and therefore doesn’t trigger a recalculation. These two layers cannot cause the page jump.</p>
+<p>The problem was in the NavigationBar’s toolbar code. The menu button isn’t inside the <code>ScrollView</code> — it lives in the NavigationBar:</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token comment">// Wrong</span>
+<span class="token class-name">ToolbarItem</span><span class="token punctuation">(</span>placement<span class="token punctuation">:</span> <span class="token punctuation">.</span>navigationBarLeading<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token operator">!</span>isDrawerVisible <span class="token punctuation">{</span>
+        <span class="token class-name">Button</span><span class="token punctuation">(</span>action<span class="token punctuation">:</span> <span class="token punctuation">{</span> isDrawerVisible <span class="token operator">=</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">Image</span><span class="token punctuation">(</span>systemName<span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">"line.3.horizontal"</span></span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>When <code>isDrawerVisible</code> becomes <code>true</code>, this button is removed from the view hierarchy. In SwiftUI that isn’t merely showing/hiding a button — the <em>structure</em> of the entire toolbar changes, which triggers a layout pass and makes the whole page jump.</p>
+<p>So the fix is to not let the button disappear, but keep it present — just transparent and disabled:</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token comment">// Correct</span>
+<span class="token class-name">ToolbarItem</span><span class="token punctuation">(</span>placement<span class="token punctuation">:</span> <span class="token punctuation">.</span>navigationBarLeading<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token class-name">Button</span><span class="token punctuation">(</span>action<span class="token punctuation">:</span> <span class="token punctuation">{</span> isDrawerVisible <span class="token operator">=</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">Image</span><span class="token punctuation">(</span>systemName<span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">"line.3.horizontal"</span></span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">foregroundColor</span><span class="token punctuation">(</span>isDrawerVisible <span class="token operator">?</span> <span class="token punctuation">.</span>clear <span class="token punctuation">:</span> <span class="token punctuation">.</span>primary<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token punctuation">.</span><span class="token function">disabled</span><span class="token punctuation">(</span>isDrawerVisible<span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Now the view structure doesn’t change — only the button’s visual style and interaction state do — so no layout recalculation is triggered.</p>
+<p>In short: in SwiftUI, whenever the view hierarchy changes, the layout system recomputes the safe area, navigation bar height, transition baselines, and so on — an expensive relayout. Using <code>if</code> conditional rendering changes the view tree directly and triggers that recomputation. So when you only want to change visual or interaction state, prefer:</p>
+<ul>
+<li><code>.opacity()</code> / <code>.foregroundColor(.clear)</code></li>
+<li><code>.disabled()</code></li>
+<li><code>.hidden()</code></li>
+</ul>
+<p>to preserve <strong>structural stability</strong>.</p>
+</div>
+        <div class="note-version prose--zh-note" data-version="zh" lang="zh" hidden><p>侧边栏（Side Drawer）是移动端中常见的交互模式，从屏幕边缘滑入/点击菜单按键显示菜单或附加功能。本文总结了我在实现 Profile 页侧边栏时的设计思路和踩过的坑：为什么需要三层 ZStack 结构，以及如何避免抖动问题。</p>
+<p>目标效果，侧边栏打开时：</p>
+<pre class="language-text" tabindex="0"><code class="language-text">视觉焦点 → 侧边栏（最亮、最清晰）
+           ↓ 覆盖
+        遮罩层（半透明黑色）
+           ↓ 变暗
+        主内容（仍可见但失焦）</code></pre>
+<h2 id="三层-zstack-设计" tabindex="-1"><a class="header-anchor" href="#三层-zstack-设计"><span>三层 ZStack 设计</span></a></h2>
+<p>层级结构设计：</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token class-name">ZStack</span><span class="token punctuation">(</span>alignment<span class="token punctuation">:</span> <span class="token punctuation">.</span>topLeading<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 第1层：主内容（Profile 内容）</span>
+    <span class="token class-name">ScrollView</span> <span class="token punctuation">{</span>
+        <span class="token comment">// Profile 页面内容</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// 第2层：半透明遮罩层（仅侧边栏显示时出现）</span>
+    <span class="token keyword">if</span> isDrawerVisible <span class="token punctuation">{</span>
+        <span class="token class-name">Color</span><span class="token punctuation">.</span>black<span class="token punctuation">.</span><span class="token function">opacity</span><span class="token punctuation">(</span><span class="token number">0.25</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">ignoresSafeArea</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span>onTapGesture <span class="token punctuation">{</span> isDrawerVisible <span class="token operator">=</span> <span class="token boolean">false</span> <span class="token punctuation">}</span>
+            <span class="token punctuation">.</span><span class="token function">gesture</span><span class="token punctuation">(</span>closeDrawerGesture<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// 第3层：侧边栏（始终存在，通过 offset 控制位置）</span>
+    <span class="token class-name">ProfileDrawerView</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">frame</span><span class="token punctuation">(</span>width<span class="token punctuation">:</span> <span class="token number">300</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">offset</span><span class="token punctuation">(</span>x<span class="token punctuation">:</span> isDrawerVisible <span class="token operator">?</span> <span class="token number">0</span> <span class="token punctuation">:</span> <span class="token operator">-</span><span class="token number">320</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">allowsHitTesting</span><span class="token punctuation">(</span>isDrawerVisible<span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>为什么需要三层结构？首先，第一层，即主内容层必然存在，用于显示本身 Profile 的内容；其次，第三层，侧边栏层也必然存在，用于显示侧边栏内容（账号信息、菜单等）。关键在于还需要有一层半透明遮罩层。</p>
+<p>另外注意，第三层使用 <code>offset</code> 动画而非条件渲染（<code>if isDrawerVisible</code>），性能更好。同时，通过 <code>.allowsHitTesting(isDrawerVisible)</code> 控制交互性，避免隐藏时拦截事件。从设计思路来讲，Drawer 并不是显示/隐藏两种状态下的两个不同视图，它始终存在于视图层级中，只是通过位移控制可见性，通过 hit-testing 控制交互性。</p>
+<h3 id="遮罩层设计" tabindex="-1"><a class="header-anchor" href="#遮罩层设计"><span>遮罩层设计</span></a></h3>
+<p>遮罩层承担多重作用：</p>
+<p><strong>交互拦截 + 自定义响应</strong></p>
+<ul>
+<li>提供一个全屏的可点击区域</li>
+<li>点击任意位置关闭侧边栏</li>
+<li>防止用户的操作穿透到第一层，比如误触主内容层的按钮或交互元素</li>
+<li>拦截之后，可以用于响应点击/滑动等手势，实现关闭侧边栏</li>
+</ul>
+<p><strong>视觉引导</strong></p>
+<ul>
+<li>通过半透明黑色（opacity 0.25）让主内容变暗</li>
+<li>用户注意力自然集中到侧边栏</li>
+</ul>
+<p>很明显遮罩层必须在中间，因为：</p>
+<ul>
+<li>在主内容之上：才能拦截主内容的交互事件</li>
+<li>在侧边栏之下：侧边栏的内的按钮（菜单等）必须可点击，不能被遮罩拦截</li>
+</ul>
+<h3 id="替代方案局限性" tabindex="-1"><a class="header-anchor" href="#替代方案局限性"><span>替代方案局限性</span></a></h3>
+<p>使用 <code>.sheet()</code> 或 <code>.fullScreenCover()</code>：</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token punctuation">.</span><span class="token function">sheet</span><span class="token punctuation">(</span>isPresented<span class="token punctuation">:</span> $showDrawer<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token class-name">DrawerView</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Sheet 只能从底部弹出，不符合侧边栏从左侧滑入的设计，也无法自定义动画方向，并且会完全遮挡主内容。</p>
+<blockquote>
+<p>为什么苹果不提供左/右 Drawer？因为 iOS 官方导航模式是 TabBar + NavigationStack，而 Drawer 是更像 Android Navigation Drawer 的交互范式。</p>
+</blockquote>
+<h2 id="踩坑记录结构稳定性structural-stability" tabindex="-1"><a class="header-anchor" href="#踩坑记录结构稳定性structural-stability"><span>踩坑记录：结构稳定性（Structural Stability）</span></a></h2>
+<p>实现时，一直出现的问题是，侧边栏打开的瞬间，整个 Profile 页面会轻微向下跳动。</p>
+<p>首先，排除可能：ZStack 内的后两个层只是 overlay（覆盖层），并不影响第一层 ScrollView 的 layout。特别是注意到，侧边栏层是使用 offset 实现的，出现/隐藏不影响布局，只影响渲染位置，因此也不会触发 re-calculation。这两层是不可能引发页面跳动的。</p>
+<p>问题出在 NavigationBar 的 toolbar 代码。已知菜单按钮不是放在 ScrollView 里，而是放在 NavigationBar 里：</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token comment">// 错误写法</span>
+<span class="token class-name">ToolbarItem</span><span class="token punctuation">(</span>placement<span class="token punctuation">:</span> <span class="token punctuation">.</span>navigationBarLeading<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token operator">!</span>isDrawerVisible <span class="token punctuation">{</span>
+        <span class="token class-name">Button</span><span class="token punctuation">(</span>action<span class="token punctuation">:</span> <span class="token punctuation">{</span> isDrawerVisible <span class="token operator">=</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">Image</span><span class="token punctuation">(</span>systemName<span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">"line.3.horizontal"</span></span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>当 <code>isDrawerVisible</code> 变为 <code>true</code> 时，这个按钮会从视图层级中移除。SwiftUI 里这不只是一个按钮的显示/隐藏，而是整个 toolbar 的结构发生了变化，于是触发 layout 重排，导致整个页面抖动。</p>
+<p>因此，解决方案就是，不让按钮消失，而是让它依然存在，只是透明且禁用：</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token comment">// 正确写法</span>
+<span class="token class-name">ToolbarItem</span><span class="token punctuation">(</span>placement<span class="token punctuation">:</span> <span class="token punctuation">.</span>navigationBarLeading<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token class-name">Button</span><span class="token punctuation">(</span>action<span class="token punctuation">:</span> <span class="token punctuation">{</span> isDrawerVisible <span class="token operator">=</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">Image</span><span class="token punctuation">(</span>systemName<span class="token punctuation">:</span> <span class="token string-literal"><span class="token string">"line.3.horizontal"</span></span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">foregroundColor</span><span class="token punctuation">(</span>isDrawerVisible <span class="token operator">?</span> <span class="token punctuation">.</span>clear <span class="token punctuation">:</span> <span class="token punctuation">.</span>primary<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token punctuation">.</span><span class="token function">disabled</span><span class="token punctuation">(</span>isDrawerVisible<span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>这样视图结构没有变化，只是按钮的视觉样式和交互状态改变了，不会触发重新计算布局。</p>
+<p>总结就是，在 SwiftUI 中，只要视图结构（View Hierarchy）发生变化，布局系统就会重新计算 Safe Area、导航栏高度、过渡动画基线等，这属于一次昂贵的重新布局。而使用 if 条件渲染会直接改变视图树，从而触发这种重新计算。因此，当只想改变视觉或交互状态时，应该优先使用：</p>
+<ul>
+<li><code>.opacity()</code> / <code>.foregroundColor(.clear)</code></li>
+<li><code>.disabled()</code></li>
+<li><code>.hidden()</code></li>
+</ul>
+<p>等，来保持结构稳定性（Structural Stability）。</p>
+</div>
+      
+    </div>
+  </div>
+
+  <footer class="note__foot">
+    <a class="back-link" href="/technical-notes/">← All technical notes</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+        <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a>
+      
+        <a href="https://www.linkedin.com/in/ziyansong02/" target="_blank" rel="noopener">LinkedIn</a>
+      
+        <a href="mailto:szy1840@gmail.com">Email</a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>
