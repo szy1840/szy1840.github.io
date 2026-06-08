@@ -1,0 +1,34 @@
+<div class="proj-index" data-proj-index>
+  <ol class="proj-index__list">
+    {% for p in collections.projects %}
+      <li class="proj-index__row" data-proj-row>
+        <a class="proj-index__link" href="{{ p.url }}">
+          <span class="proj-index__num">{% if loop.index < 10 %}0{% endif %}{{ loop.index }}</span>
+          <span class="proj-index__title">{{ p.data.title }}</span>
+          <span class="proj-index__meta">{{ p.data.category }} · {{ p.data.year }}</span>
+          <span class="proj-index__arrow" aria-hidden="true">→</span>
+        </a>
+        {% if p.data.preview %}
+          <a class="proj-index__thumb" href="{{ p.url }}" tabindex="-1" aria-hidden="true">
+            <img src="{{ p.data.preview }}" alt="" loading="lazy" />
+          </a>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ol>
+
+  <div class="proj-index__preview" data-proj-preview aria-hidden="true">
+    {% for p in collections.projects %}
+      <div class="proj-index__pv {% if loop.first %}is-active{% endif %}" data-preview-for="{{ loop.index0 }}">
+        {% if p.data.preview %}
+          <img src="{{ p.data.preview }}" alt="" loading="lazy" />
+        {% else %}
+          <div class="proj-index__pv-ph">
+            <span class="proj-index__pv-title">{{ p.data.title }}</span>
+            <span class="proj-index__pv-cat">{{ p.data.category }} · {{ p.data.year }}</span>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>

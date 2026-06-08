@@ -15,23 +15,5 @@ bodyClass: projects-page
 </section>
 
 <section class="wrap">
-  <div class="bento">
-    {% for p in collections.projects %}
-      <a class="bento-card bento-card--{{ p.data.size or 'wide' }} {% if p.data.accent %}bento-card--accent{% endif %} {% if p.data.preview %}bento-card--has-media{% endif %}" href="{{ p.url }}">
-        {% if p.data.preview %}<div class="bento-card__media"><img src="{{ p.data.preview }}" alt="" loading="lazy" /></div>{% endif %}
-        <div class="bento-card__top">
-          <span class="bento-card__cat">{{ p.data.category }}</span>
-          <span class="bento-card__year">{{ p.data.year }}</span>
-        </div>
-        <h2 class="bento-card__title">{{ p.data.title }}</h2>
-        <p class="bento-card__blurb">{{ p.data.summary }}</p>
-        {% if p.data.tags %}
-          <ul class="taglist">
-            {% for t in p.data.tags %}<li>{{ t }}</li>{% endfor %}
-          </ul>
-        {% endif %}
-        <span class="bento-card__more">View project →</span>
-      </a>
-    {% endfor %}
-  </div>
+  {% include "partials/project-index.njk" %}
 </section>
