@@ -24,7 +24,7 @@ MyCapy is a SwiftUI social app I built for close friends. It brings together thr
 
 ## Why I built it
 
-I wanted a social app that behaved the way I actually want to use one: small circles, no public follower counts, and a clear line between what you share with friends and what you publish to everyone. It was also the project where I taught myself iOS in earnest, so several of the engineering notes on this site came straight out of building it.
+I wanted a social app that behaved the way I actually want to use one: small circles, no public follower counts, and a clear line between what you share with friends and what you publish to everyone. Building it meant designing the feed, the visibility model, and the real-time pieces from the ground up, and several of the engineering notes on this site came out of that work.
 
 ## Key features
 
