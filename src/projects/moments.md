@@ -6,7 +6,7 @@ year: 2025
 status: In development
 role: Designer and iOS engineer
 stack: [SwiftUI, Firebase, Cloud Functions]
-order: 3
+order: 4
 size: wide
 tags: [iOS, SwiftUI, Firebase]
 relatedNotes:

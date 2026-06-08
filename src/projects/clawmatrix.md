@@ -7,7 +7,7 @@ status: Live
 role: Founder and lead engineer
 stack: [Next.js 15, React, TypeScript, PostgreSQL, Drizzle, Clerk, Stripe, Vercel]
 order: 2
-size: lg
+size: wide
 accent: true
 tags: [Agents, Next.js, Full-stack]
 links:
