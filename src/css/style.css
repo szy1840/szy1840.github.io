@@ -1338,6 +1338,65 @@ a.bento-card {
   }
 }
 
+/* Experience (About) */
+.about__exp {
+  max-width: 72ch;
+  margin-top: clamp(2.5rem, 6vw, 3.5rem);
+}
+.about__exp-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 1.6rem;
+  color: var(--ink);
+  margin-bottom: 1.6rem;
+}
+.exp + .exp {
+  margin-top: 1.9rem;
+  padding-top: 1.9rem;
+  border-top: 1px solid var(--line);
+}
+.exp__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.4rem 1rem;
+}
+.exp__head h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.exp__head h3 span {
+  color: var(--accent);
+  font-weight: 500;
+}
+.exp__when {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--faint);
+  white-space: nowrap;
+}
+.exp__loc {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+.exp ul {
+  margin-top: 0.75rem;
+  padding-left: 1.2rem;
+  color: var(--ink-soft);
+  font-size: 0.96rem;
+  line-height: 1.6;
+}
+.exp li + li {
+  margin-top: 0.4rem;
+}
+.exp li::marker {
+  color: var(--faint);
+}
+
 /* ---------- Résumé ---------- */
 .resume {
   padding-top: clamp(2.5rem, 6vw, 4rem);
@@ -1372,6 +1431,28 @@ a.bento-card {
 }
 .resume__contact a:hover {
   color: var(--accent);
+}
+.resume__embed {
+  margin-top: 2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.resume__embed object {
+  display: block;
+  width: 100%;
+  height: 85vh;
+  min-height: 600px;
+  border: 0;
+}
+.resume__embed-fallback {
+  padding: 2.5rem;
+  color: var(--muted);
+}
+.resume__embed-fallback a {
+  color: var(--accent);
+  text-decoration: underline;
 }
 .resume__placeholder {
   margin-top: 1.5rem;
