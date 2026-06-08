@@ -20,11 +20,11 @@ links:
 
 ## Overview
 
-MyCapy is a SwiftUI social app I built for close friends. It brings together three things most apps keep apart: a private friends-only feed, a public space for longer posts, and direct messages, all on a Firebase backend. The name and the capybara mascot fit the goal, which was something calm and friendly rather than another attention machine.
+MyCapy is a SwiftUI social app built for small, close-knit circles. It brings together three things most apps keep apart: a private friends-only feed, a public space for longer posts, and direct messages, all on a Firebase backend. The name and the capybara mascot fit the goal, which was something calm and friendly rather than another attention machine.
 
 ## Why I built it
 
-I wanted a social app that behaved the way I actually want to use one: small circles, no public follower counts, and a clear line between what you share with friends and what you publish to everyone. Building it meant designing the feed, the visibility model, and the real-time pieces from the ground up, and several of the engineering notes on this site came out of that work.
+MyCapy is a paid project, and I took it on because the problems behind social apps are the kind I find genuinely interesting: feeds, instant messaging, mutual-friend visibility, and keeping all of it fast and consistent in real time. The product leans toward small circles, with no public follower counts and a clear line between what you share with friends and what you publish to everyone. I designed the feed, the visibility model, and the messaging from the ground up, learning the harder parts as I went, and several of the engineering notes on this site came out of that work.
 
 ## Key features
 
