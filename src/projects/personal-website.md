@@ -6,7 +6,7 @@ year: 2026
 status: Live
 role: Design and build
 stack: [Eleventy, Nunjucks, Markdown, CSS, GitHub Actions]
-order: 5
+order: 4
 size: sm
 tags: [Eleventy, Design]
 links:
