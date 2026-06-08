@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Moments · Ziyan Song</title>
+    <title>MyCapy · Ziyan Song</title>
     <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
     <meta name="author" content="Ziyan Song" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Moments" />
+    <meta property="og:title" content="MyCapy" />
     <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
-    <meta property="og:url" content="https://szy1840.github.io/projects/moments/" />
+    <meta property="og:url" content="https://szy1840.github.io/projects/mycapy/" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -93,12 +93,12 @@
     <main id="main"><article class="project wrap">
   <header class="project__head">
     <p class="eyebrow"><a href="/projects/">Projects</a> · Side project</p>
-    <h1 class="project__title">Moments</h1>
-    <p class="project__summary">A private, friends-only social app focused on small circles instead of the attention economy.</p>
+    <h1 class="project__title">MyCapy</h1>
+    <p class="project__summary">A SwiftUI social app for close friends: a private moments feed, public posts, and direct messages on Firebase.</p>
     
       <div class="project__links">
         
-          <a class="btn btn--sm btn--primary" href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub ↗</a>
+          <a class="btn btn--sm btn--primary" href="https://github.com/szy1840/MyCapy" target="_blank" rel="noopener">GitHub ↗</a>
         
       </div>
     
@@ -113,29 +113,31 @@
         <div><dt>Year</dt><dd>2025</dd></div>
         <div><dt>Status</dt><dd>In development</dd></div>
         
-          <div><dt>Stack</dt><dd class="project__stack"><span>SwiftUI</span><span>Firebase</span><span>Cloud Functions</span></dd></div>
+          <div><dt>Stack</dt><dd class="project__stack"><span>SwiftUI</span><span>Firebase</span><span>Firestore</span><span>Cloud Functions</span><span>WKWebView</span></dd></div>
         
       </dl>
     </aside>
 
     <div class="prose project__prose">
-      <blockquote>
-<p>Placeholder content. Edit <code>src/projects/moments.md</code> to make it yours.</p>
-</blockquote>
-<h2 id="overview" tabindex="-1"><a class="header-anchor" href="#overview"><span>Overview</span></a></h2>
-<p>Moments is a small social app for close friends. There is no public feed, no follower count, and no algorithm deciding what you see. You post a moment, and the people who actually know you see it.</p>
+      <h2 id="overview" tabindex="-1"><a class="header-anchor" href="#overview"><span>Overview</span></a></h2>
+<p>MyCapy is a SwiftUI social app I built for close friends. It brings together three things most apps keep apart: a private friends-only feed, a public space for longer posts, and direct messages, all on a Firebase backend. The name and the capybara mascot fit the goal, which was something calm and friendly rather than another attention machine.</p>
 <h2 id="why-i-built-it" tabindex="-1"><a class="header-anchor" href="#why-i-built-it"><span>Why I built it</span></a></h2>
-<p>I wanted a calmer place to share everyday things with a handful of people, without the performance that comes with a public audience. It was also an excuse to design a feed system properly rather than reach for a library.</p>
+<p>I wanted a social app that behaved the way I actually want to use one: small circles, no public follower counts, and a clear line between what you share with friends and what you publish to everyone. It was also the project where I taught myself iOS in earnest, so several of the engineering notes on this site came straight out of building it.</p>
 <h2 id="key-features" tabindex="-1"><a class="header-anchor" href="#key-features"><span>Key features</span></a></h2>
 <ul>
-<li>A friends-only timeline with real-time updates</li>
-<li>Likes and comments visible only to mutual friends</li>
-<li>A profile drawer for quick navigation between accounts and settings</li>
+<li><strong>Moments.</strong> A private, friends-only feed. Posting a moment fans it out to friends, and likes and comments follow a WeChat-style rule where you only see interactions from mutual friends. Comments support threaded replies.</li>
+<li><strong>Posts.</strong> A public, blog-style space with a rich text editor (Quill.js running inside a WKWebView), image upload to Firebase Storage, a global feed and a cached personal feed, plus likes, comments, bookmarks, and editing after publishing.</li>
+<li><strong>Conversations.</strong> Direct messages between friends.</li>
+<li><strong>Accounts and friends.</strong> Sign-in, profiles, and the friend relationships that drive visibility across the whole app.</li>
 </ul>
 <h2 id="technical-architecture" tabindex="-1"><a class="header-anchor" href="#technical-architecture"><span>Technical architecture</span></a></h2>
-<p>The client is SwiftUI. The backend is Firebase, with Cloud Functions handling distribution and aggregation. Posts use a fan-out-on-write feed, so each user reads a single precomputed timeline rather than querying every friend on open. The deeper engineering write-ups are linked below.</p>
-<h2 id="outcome" tabindex="-1"><a class="header-anchor" href="#outcome"><span>Outcome</span></a></h2>
-<p>Still a work in progress. The most valuable part so far has been the systems work: feed design, concurrency, and the small SwiftUI details that decide whether an app feels solid.</p>
+<p>The client is SwiftUI. The backend is Firebase: Auth for sign-in, Firestore for data, Storage for images, and Cloud Functions for the work that should not run on the client. Functions maintain the like and comment counters and fan moments out to friends’ feeds, which keeps reads fast and the client simple. The rich text editor is Quill.js embedded in a WKWebView and bridged to Swift, since a good editor is one thing the platform does not give you for free.</p>
+<h2 id="interesting-technical-decisions" tabindex="-1"><a class="header-anchor" href="#interesting-technical-decisions"><span>Interesting technical decisions</span></a></h2>
+<ul>
+<li>Mutual-friend visibility for likes and comments is filtered on the client, because it is presentation logic rather than a security boundary, and it avoids storing several copies of the same data.</li>
+<li>Moments use fan-out on write, so each person reads one precomputed feed instead of querying every friend on open. The full design is in the related notes below.</li>
+<li>Counters are derived fields maintained by Cloud Functions with atomic increments, rather than recomputed on every read.</li>
+</ul>
 
 
       
