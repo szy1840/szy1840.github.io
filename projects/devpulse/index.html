@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DevPulse · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="DevPulse" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/projects/devpulse/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="project-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" aria-current="page">Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" >Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" >Notes &amp; Essays</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="project wrap">
+  <header class="project__head">
+    <p class="eyebrow"><a href="/projects/">Projects</a> · Hackathon</p>
+    <h1 class="project__title">DevPulse</h1>
+    <p class="project__summary">A unified team dashboard for how engineers actually use their AI coding tools, without uploading any code.</p>
+    
+      <div class="project__links">
+        
+          <a class="btn btn--sm btn--primary" href="https://7aj5nkyd.insforge.site/" target="_blank" rel="noopener">Open the dashboard ↗</a>
+        
+      </div>
+    
+  </header>
+
+  
+    
+    
+    <section class="project__demo" aria-label="Preview">
+      <div class="browser">
+        <div class="browser__bar">
+          <span class="browser__dot"></span><span class="browser__dot"></span><span class="browser__dot"></span>
+          <span class="browser__url">7aj5nkyd.insforge.site</span>
+          <a class="browser__open" href="https://7aj5nkyd.insforge.site/" target="_blank" rel="noopener">Open ↗</a>
+        </div>
+        
+          <a class="browser__shot-link" href="https://7aj5nkyd.insforge.site/" target="_blank" rel="noopener">
+            <img class="browser__shot" src="/previews/devpulse.png" alt="Screenshot of DevPulse" loading="lazy" />
+          </a>
+        
+      </div>
+      <p class="project__demo-note">
+        Screenshot of
+        <a href="https://7aj5nkyd.insforge.site/" target="_blank" rel="noopener">7aj5nkyd.insforge.site</a>.
+        
+      </p>
+
+      
+        <div class="project__gallery">
+          
+            <figure class="shot">
+              <img src="/previews/devpulse-sessions.png" alt="Sessions: every synced AI session with project, agent, model, and a generated summary" loading="lazy" />
+              <figcaption>Sessions: every synced AI session with project, agent, model, and a generated summary</figcaption>
+            </figure>
+          
+            <figure class="shot">
+              <img src="/previews/devpulse-connect.png" alt="Onboarding: copy one prompt and let your own AI agent install and configure the CLI" loading="lazy" />
+              <figcaption>Onboarding: copy one prompt and let your own AI agent install and configure the CLI</figcaption>
+            </figure>
+          
+        </div>
+      
+    </section>
+  
+
+  <div class="project__body">
+    <aside class="project__facts">
+      <dl>
+        <div><dt>Role</dt><dd>Solo build</dd></div>
+        <div><dt>Year</dt><dd>2026</dd></div>
+        <div><dt>Status</dt><dd>Live demo</dd></div>
+        
+          <div><dt>Stack</dt><dd class="project__stack"><span>Next.js 15</span><span>React 19</span><span>TypeScript</span><span>InsForge</span><span>Recharts</span><span>Node CLI</span></dd></div>
+        
+      </dl>
+    </aside>
+
+    <div class="prose project__prose">
+      <h2 id="overview" tabindex="-1"><a class="header-anchor" href="#overview"><span>Overview</span></a></h2>
+<p>DevPulse turns the AI coding sessions that already happen on your laptop into a single team dashboard. It shows how a team actually uses Cursor, Claude Code, OpenClaw, and Codex across tools, projects, and people, without uploading any code or transcripts. I built it solo in one afternoon for the InsForge hackathon.</p>
+<h2 id="why-i-built-it" tabindex="-1"><a class="header-anchor" href="#why-i-built-it"><span>Why I built it</span></a></h2>
+<p>Engineers rarely stick to one AI tool. A typical day might run Cursor for quick edits, Claude Code for multi-file refactors, and other agents for everything else. Each tool ships its own usage view, but none of them show the full picture across tools, projects, or teammates. For small, AI-native teams, where most of the work already flows through local agents, there is no lightweight way to see whether everyone is aligned or to spot uneven adoption and runaway cost. DevPulse closes that gap with a simple loop: local AI tools, then the devpulse CLI, then a shared team dashboard.</p>
+<h2 id="how-it-works" tabindex="-1"><a class="header-anchor" href="#how-it-works"><span>How it works</span></a></h2>
+<p>A small CLI (published as <code>devpulse-ai</code>) scans the logs your AI tools already write, extracts lightweight metadata, and uploads only what the dashboard needs. The web app aggregates it into Overview, Members, and Sessions views. Setup is a single prompt you can paste into your own agent, which installs and configures the CLI for you, similar to a Claude Code device login.</p>
+<h2 id="key-features" tabindex="-1"><a class="header-anchor" href="#key-features"><span>Key features</span></a></h2>
+<ul>
+<li><strong>One view across tools.</strong> Cursor, Claude Code, OpenClaw, and Codex in the same dashboard, auto-detected on each machine.</li>
+<li><strong>Overview.</strong> Session share by model, token composition, tool mix, and busiest projects.</li>
+<li><strong>Sessions and members.</strong> Per-session history with project, agent, model, duration, and a generated summary, plus per-person activity.</li>
+<li><strong>Background sync.</strong> Device login once, then sync on demand or on a schedule (launchd on macOS, cron on Linux).</li>
+<li><strong>Privacy first.</strong> Only derived metadata leaves the machine: tool, model, tokens, timestamps, a short summary, and a hashed project path. Never code, prompts, or transcripts.</li>
+</ul>
+<h2 id="technical-architecture" tabindex="-1"><a class="header-anchor" href="#technical-architecture"><span>Technical architecture</span></a></h2>
+<p>The dashboard is Next.js 15 (App Router) with React 19 and TypeScript, styled with Tailwind and Radix, with Recharts for the charts. The backend is InsForge, the hackathon’s platform, which provided auth, database, and hosting through its SDK. A separate Node CLI handles local log parsing, browser-based device authorization, and uploads, and OpenAI turns raw sessions into the short summaries that feed the daily recap.</p>
+<h2 id="interesting-technical-decisions" tabindex="-1"><a class="header-anchor" href="#interesting-technical-decisions"><span>Interesting technical decisions</span></a></h2>
+<p>The privacy boundary drove most of the design. The CLI uploads derived metadata only and hashes project paths, so it is safe to point at real work. Onboarding leans on agents rather than docs: instead of walking a user through a manual setup, the dashboard hands them one prompt to paste into their AI agent, which runs the install and login itself. Building on InsForge meant auth, data, and hosting were handled out of the box, which is what made it possible to ship the whole loop, CLI included, in a single afternoon.</p>
+<h2 id="whats-next" tabindex="-1"><a class="header-anchor" href="#whats-next"><span>What’s next</span></a></h2>
+<p>Correlating AI sessions with GitHub commits and PRs, lightweight review and scoring of daily summaries for team leads, and surfacing which workflows and tools actually correlate with the best outcomes.</p>
+
+
+      
+    </div>
+  </div>
+
+  <footer class="project__foot">
+    <a class="back-link" href="/projects/">← All projects</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+        <a href="https://github.com/szy1840" target="_blank" rel="noopener">GitHub</a>
+      
+        <a href="https://www.linkedin.com/in/ziyansong02/" target="_blank" rel="noopener">LinkedIn</a>
+      
+        <a href="mailto:szy1840@gmail.com">Email</a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>
