@@ -123,6 +123,7 @@ a {
 }
 .wrap--narrow > * {
   max-width: var(--narrow);
+  margin-inline: auto;
 }
 main {
   display: block;
