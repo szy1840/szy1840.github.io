@@ -469,7 +469,7 @@ ret</code></pre>
 <p>Drivers program hardware via <strong>memory-mapped I/O</strong>: device address ranges are assigned by the board manufacturer. For example, the UART device in our QEMU board maps to <code>0x10000000</code>–<code>0x10001000</code>:</p>
 <img src="MIT6.S081.assets/image-20220209173555921.png" alt="UART MMIO" style="zoom:50%;" />
 <p>Within that range, the specific registers are defined by the UART model. QEMU simulates a <strong>16550 UART</strong>:</p>
-<img src="MIT6.S081.assets/assets%2F-MHZoT2b_bcLghjAOPsJ%2F-MNYhqAMxdVFIflbpxna%2F-MNYitmruHLfxrVpuvp2%2Fimage.png" alt="16550 registers" style="zoom:67%;" />
+<img src="MIT6.S081.assets/uart-16550-registers.png" alt="16550 UART registers" style="zoom:67%;" />
 <p>THR is the transmit holding register. After each write, the UART transmits the byte and then fires an interrupt indicating it is ready for the next one; writing before the interrupt causes data corruption. (Hardware may buffer internally, but keep this in mind.)</p>
 <h3 id="initialization-flow" tabindex="-1"><a class="header-anchor" href="#initialization-flow"><span>Initialization Flow</span></a></h3>
 <ol>
@@ -1930,7 +1930,7 @@ ret</code></pre>
 <p>驱动代码对于硬件的编程是通过 memory mapped I/O 进行的。各类设备对应的地址区间是由主板制造商决定的，例如，我们的操作系统通过阅读 QEMU 模拟的主板的手册，可以知道 UART设备对应的物理地址是在 0x10000000 到 0x10001000 之间：</p>
 <img src="MIT6.S081.assets/image-20220209173555921.png" alt="image-20220209173555921" style="zoom:50%;" />
 <p>这规定了连到该主板上的 UART 类型的设备是通过这段地址访问的，但是这段地址中，究竟用到了哪些地址，各个地址代表什么硬件的寄存器，这是由某个具体的 UART 设备决定的。比如，我们的 QEMU 模拟的是 16550 型号，它的手册如下：</p>
-<img src="MIT6.S081.assets/assets%2F-MHZoT2b_bcLghjAOPsJ%2F-MNYhqAMxdVFIflbpxna%2F-MNYitmruHLfxrVpuvp2%2Fimage.png" alt="img" style="zoom: 67%;" />
+<img src="MIT6.S081.assets/uart-16550-registers.png" alt="16550 UART registers" style="zoom: 67%;" />
 <p>可以看到，THR 是一个用于保存数据的寄存器，每次写入后， <u>UART 将该份数据（具体大小看硬件细节）传输完毕后，会发出一个中断，这时候才能写入下一个数据，否则可能会造成覆盖。</u>当然，硬件内部可能也实现了一个缓冲队列等，但这里要有这个意识。</p>
 <h3 id="初始化设置流程" tabindex="-1"><a class="header-anchor" href="#初始化设置流程"><span>初始化设置流程</span></a></h3>
 <ol>
