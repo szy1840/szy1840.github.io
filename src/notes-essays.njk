@@ -36,8 +36,7 @@ bodyClass: writing-index
           <li class="writing-item lang-{{ n.data.lang }}">
             <a href="{{ n.url }}">
               <time class="writing-item__date writing-item__date--lead" datetime="{{ n.date | isoDate }}">{{ n.date | readableDate(n.data.lang) }}</time>
-              {% if n.data.title %}<h3 class="writing-item__title writing-item__title--sm">{{ n.data.title }}</h3>{% endif %}
-              {% if n.data.lede %}<p class="writing-item__lede">{{ n.data.lede }}</p>{% endif %}
+              {% if n.data.title %}<h3 class="writing-item__title writing-item__title--sm">{{ n | preferredNoteTitle(collections.journalTranslation) }}</h3>{% endif %}
             </a>
           </li>
         {% endfor %}
