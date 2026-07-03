@@ -35,9 +35,7 @@ export default function (eleventyConfig) {
   // --- Date filters ---
   eleventyConfig.addFilter("readableDate", (dateObj, locale = "en") => {
     const dt = DateTime.fromJSDate(dateObj, { zone: "utc" });
-    return locale === "zh"
-      ? dt.setLocale("zh").toFormat("yyyy 年 M 月 d 日")
-      : dt.setLocale("en").toFormat("LLL d, yyyy");
+    return dt.toFormat("yyyy-MM-dd");
   });
   eleventyConfig.addFilter("isoDate", (dateObj) =>
     DateTime.fromJSDate(dateObj, { zone: "utc" }).toISODate()
