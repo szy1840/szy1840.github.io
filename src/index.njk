@@ -61,7 +61,7 @@ bodyClass: home
         {% for w in collections.writing | limit(5) %}
           <li>
             <a href="{{ w.url }}">
-              <span class="mini-list__title">{{ w.data.title or (w.date | readableDate(w.data.lang)) }}</span>
+              <span class="mini-list__title">{{ w | preferredNoteTitle(collections.writingTranslation) }}</span>
               <time class="mini-list__date" datetime="{{ w.date | isoDate }}">{{ w.date | readableDate(w.data.lang) }}</time>
             </a>
           </li>

@@ -114,6 +114,10 @@ export default function (eleventyConfig) {
   eleventyConfig.addCollection("journalTranslation", (api) =>
     api.getFilteredByGlob("./src/journal-translations/*.md")
   );
+  eleventyConfig.addCollection("writingTranslation", (api) => [
+    ...api.getFilteredByGlob("./src/essay-translations/*.md"),
+    ...api.getFilteredByGlob("./src/journal-translations/*.md"),
+  ]);
   eleventyConfig.addCollection("projects", (api) =>
     api
       .getFilteredByGlob("./src/projects/*.md")
