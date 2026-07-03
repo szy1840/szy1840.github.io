@@ -77,6 +77,12 @@ export default function (eleventyConfig) {
     return note.data.title;
   });
 
+  // --- Bilingual essays: same pattern as notes ---
+  eleventyConfig.addFilter("findEssayTranslation", (ref, translations) => {
+    if (!ref) return null;
+    return (translations || []).find((t) => t.data.ref === ref) || null;
+  });
+
   // --- Collections built from folders (newest-first) ---
   eleventyConfig.addCollection("notes", (api) =>
     api.getFilteredByGlob("./src/notes/*.md").sort((a, b) => b.date - a.date)
@@ -97,6 +103,9 @@ export default function (eleventyConfig) {
   );
   eleventyConfig.addCollection("noteTranslation", (api) =>
     api.getFilteredByGlob("./src/note-translations/*.md")
+  );
+  eleventyConfig.addCollection("essayTranslation", (api) =>
+    api.getFilteredByGlob("./src/essay-translations/*.md")
   );
   eleventyConfig.addCollection("projects", (api) =>
     api

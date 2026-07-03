@@ -2,17 +2,43 @@
 layout: layouts/base.njk
 bodyClass: essay-page
 ---
-<article class="essay wrap--narrow">
+{%- set translation = ref | findEssayTranslation(collections.essayTranslation) -%}
+{%- if translation -%}
+  {%- if lang == "en" -%}
+    {%- set enTitle = title -%}{%- set enBody = content -%}
+    {%- set zhTitle = translation.data.title -%}{%- set zhBody = translation.templateContent -%}
+  {%- else -%}
+    {%- set enTitle = translation.data.title -%}{%- set enBody = translation.templateContent -%}
+    {%- set zhTitle = title -%}{%- set zhBody = content -%}
+  {%- endif -%}
+{%- endif -%}
+
+<article class="essay wrap--narrow" {% if translation %}data-bilingual data-default-lang="en"{% endif %}>
   <header class="essay__head">
     <p class="eyebrow"><a href="/notes-essays/">Notes &amp; Essays</a></p>
-    <h1 class="essay__title">{{ title }}</h1>
+    {% if translation %}
+      <h1 class="essay__title" data-title data-title-en="{{ enTitle }}" data-title-zh="{{ zhTitle }}">{{ enTitle }}</h1>
+    {% else %}
+      <h1 class="essay__title">{{ title }}</h1>
+    {% endif %}
     <div class="essay__meta">
       <time datetime="{{ page.date | isoDate }}">{{ page.date | readableDate(lang) }}</time>
       {% if subtitle %}<span class="dot">·</span><span>{{ subtitle }}</span>{% endif %}
+      {% if translation %}
+        <span class="lang-switch" role="group" aria-label="Article language" data-lang-switch>
+          <button type="button" data-lang="en" class="is-active" aria-pressed="true">EN</button>
+          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        </span>
+      {% endif %}
     </div>
   </header>
-  <div class="prose prose--essay {% if lang == 'zh' %}prose--zh{% endif %}">
-    {{ content | safe }}
+  <div class="prose prose--essay">
+    {% if translation %}
+      <div class="note-version" data-version="en" lang="en">{{ enBody | safe }}</div>
+      <div class="note-version prose--zh" data-version="zh" lang="zh" hidden>{{ zhBody | safe }}</div>
+    {% else %}
+      <div class="{% if lang == 'zh' %}prose--zh{% endif %}">{{ content | safe }}</div>
+    {% endif %}
   </div>
   <footer class="essay__foot">
     <a class="back-link" href="/notes-essays/">← Back to writing</a>
