@@ -21,8 +21,7 @@ bodyClass: writing-index
         {% for e in collections.essays %}
           <li class="writing-item lang-{{ e.data.lang }}">
             <a href="{{ e.url }}">
-              <h3 class="writing-item__title">{{ e.data.title }}</h3>
-              {% if e.data.lede %}<p class="writing-item__lede">{{ e.data.lede }}</p>{% endif %}
+              <h3 class="writing-item__title">{{ e | preferredNoteTitle(collections.essayTranslation) }}</h3>
               <time class="writing-item__date" datetime="{{ e.date | isoDate }}">{{ e.date | readableDate(e.data.lang) }}</time>
             </a>
           </li>
