@@ -1193,6 +1193,36 @@ a.bento-card {
   border: 1px solid var(--line);
 }
 
+/* Fenced blocks without a language (e.g. plain traces) get the same box */
+.prose pre:not([class*="language-"]) {
+  margin-block: 1.5em;
+  padding: 1.1rem 1.3rem;
+  overflow: auto;
+  background: var(--code-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  white-space: pre;
+  tab-size: 2;
+}
+.prose pre:not([class*="language-"]) code {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  padding: 0;
+}
+.prose pre:not([class*="language-"])::-webkit-scrollbar {
+  height: 8px;
+}
+.prose pre:not([class*="language-"])::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 999px;
+}
+
 /* TOC sidebar on wide screens */
 @media (min-width: 1080px) {
   .note__body {
