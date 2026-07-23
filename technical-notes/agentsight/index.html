@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="zh" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AgentSight：用 eBPF 零侵入地观测 AI Agent 的 LLM 流量 · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AgentSight：用 eBPF 零侵入地观测 AI Agent 的 LLM 流量" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/technical-notes/agentsight/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="note-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" >Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" aria-current="page">Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" >Writing</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="note wrap" data-bilingual data-default-lang="en">
+  <header class="note__head">
+    <p class="eyebrow"><a href="/technical-notes/">Technical Notes</a></p>
+    
+      <h1 class="note__title" data-title data-title-en="AgentSight: Zero-Intrusion Observability for AI Agent LLM Traffic with eBPF" data-title-zh="AgentSight：用 eBPF 零侵入地观测 AI Agent 的 LLM 流量">AgentSight: Zero-Intrusion Observability for AI Agent LLM Traffic with eBPF</h1>
+    
+    <div class="note__meta">
+      <time datetime="2026-07-23">2026-07-23</time>
+      
+        <span class="dot">·</span>
+        <span class="note__tags">
+          <span class="tag">AI Agent</span><span class="tag">eBPF</span><span class="tag">Observability</span><span class="tag">LLM</span>
+        </span>
+      
+      
+        <span class="lang-switch" role="group" aria-label="Article language" data-lang-switch>
+          <button type="button" data-lang="en" class="is-active" aria-pressed="true">EN</button>
+          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        </span>
+      
+    </div>
+  </header>
+
+  <div class="note__body">
+    <aside class="toc" aria-label="Table of contents">
+      <p class="toc__title">On this page</p>
+      <nav class="toc__nav" data-toc></nav>
+    </aside>
+    <div class="prose prose--doc" data-article>
+      
+        <div class="note-version" data-version="en" lang="en"><p><strong>ANOLISA</strong> is the Agentic OS that Alibaba Cloud open-sourced in March 2026 (the Agent-oriented evolution of Anolis OS), assembled from components such as Copilot Shell, OS Skills, Agent Sec Core, and AgentSight, and positioned as the first server-side operating system that treats “the Agent as the user.”</p>
+<p>Among them, <strong>AgentSight</strong> comes from the upstream open-source project <a href="https://github.com/eunomia-bpf/agentsight">eunomia-bpf/agentsight</a> (MIT), integrated by ANOLISA as its observability component, whose core is zero-intrusion monitoring of an AI Agent’s LLM traffic built on eBPF.</p>
+<p>These are my study notes on how it works.</p>
+<h2 id="ebpf" tabindex="-1"><a class="header-anchor" href="#ebpf"><span>eBPF</span></a></h2>
+<p>eBPF (extended Berkeley Packet Filter) lets you load a small program into the Linux kernel that runs when a specific event fires (a function is called, a syscall happens, a scheduler event, etc.).</p>
+<p>The workflow is: write an eBPF program, compile it to eBPF bytecode, then load it via the <code>bpf()</code> syscall. At load time the kernel’s <strong>verifier</strong> statically checks the program: no unbounded loops, no out-of-bounds memory access, nothing that can crash the kernel. Once it passes verification, the JIT compiles the bytecode into native machine code and attaches it to a hook point. From then on, every time that event happens, the program runs once in kernel space.</p>
+<p>There are many kinds of hook points:</p>
+<ul>
+<li><strong>kprobe / kretprobe</strong> — attach to the entry/return of any kernel function</li>
+<li><strong>uprobe / uretprobe</strong> — attach to user-space functions</li>
+<li><strong>tracepoint</strong> — stable, predefined instrumentation points in the kernel, e.g. the <code>execve</code> syscall</li>
+<li><strong>XDP / tc</strong> — the network data path, able to process/drop packets at the earliest stage</li>
+<li><strong>LSM hook</strong> — security-policy decision points</li>
+</ul>
+<p>The kernel-side program and the user-space program exchange data through <strong>maps</strong> (shared-memory structures like hash tables, arrays, ring buffers).</p>
+<p>AgentSight mainly uses <strong>uprobe/uretprobe</strong>: it sets breakpoints on functions like <code>SSL_read</code> and <code>SSL_write</code> to run our own eBPF program, so we can read the plaintext of LLM traffic before it is encrypted and after it is decrypted. The final performance overhead is under <strong>3%</strong>.</p>
+<p><strong>Permissions</strong>: obviously, loading eBPF programs and attaching probes requires <code>CAP_BPF</code> + <code>CAP_SYS_ADMIN</code> (reading other processes’ memory, installing kernel hooks). In practice that means sudo, or granting those capabilities.</p>
+<h2 id="the-verifier" tabindex="-1"><a class="header-anchor" href="#the-verifier"><span>The verifier</span></a></h2>
+<p>The safety of an eBPF program is enforced by the kernel verifier at load time:</p>
+<ul>
+<li><strong>Verified programs.</strong> Before a program is accepted, the verifier proves it terminates (only bounded loops allowed), never dereferences an unchecked pointer, and never overflows the stack.</li>
+<li><strong>No raw pointer dereferences.</strong> Reading the target process’s memory must go through helpers like <code>bpf_probe_read_user</code>, which fails gracefully (returns nonzero) instead of crashing when the address is invalid. The code checks the return value: on failure it marks the buffer empty rather than emitting garbage.</li>
+<li><strong>Explicit bounds clamping for the verifier.</strong> The copy length is bit-masked first, then clamped to a maximum.</li>
+<li><strong>Bounded maps.</strong> Every map has a fixed capacity cap (the tables that stash buffer addresses and timestamps hold on the order of ten thousand entries each, and the ring buffer is fixed-length too). Memory in the kernel does not grow unbounded.</li>
+<li><strong>Truncation, not overflow.</strong> A payload exceeding the cap is copied only up to the cap; the real length is still recorded separately.</li>
+<li><strong>AddressSanitizer in debug builds</strong> (<code>cd bpf &amp;&amp; make debug</code>) to test the user-space loader side.</li>
+</ul>
+<h2 id="the-implementation" tabindex="-1"><a class="header-anchor" href="#the-implementation"><span>The implementation</span></a></h2>
+<p>The core trick of SSL capture is to attach one probe at the function’s entry and one at its return:</p>
+<ul>
+<li><strong>On entry</strong>, the function arguments are still in registers, so we can grab the buffer pointer the caller passed in—but the buffer has no data yet (especially obvious for read, where it’s empty at this point). So this pass only stashes the buffer address and a timestamp into a hash map keyed by thread id (tid).</li>
+<li><strong>On return</strong>, the function has finished its work: read’s plaintext is filled in, write’s plaintext is still there. The return value tells us how many bytes were actually read/written, so using the address stashed on entry we copy out exactly that many bytes and submit.</li>
+</ul>
+<p><strong>Why use tid as the key</strong>: entry and return are two independent firings, so there must be an identifier in between to recover “the buffer I just recorded.” A single function call always happens on the same thread, so tid is the most natural choice.</p>
+<p>Data leaves the kernel through a ring buffer map. The user-space loader drains it, emitting one JSON object per line.</p>
+<h3 id="why-not-just-read-on-return" tabindex="-1"><a class="header-anchor" href="#why-not-just-read-on-return"><span>Why not just read on return?</span></a></h3>
+<p>Because arguments are passed in registers, and once the function body starts executing, those argument registers are very likely reused as ordinary scratch registers. So we need to grab the second argument—the buffer address—at function entry.</p>
+<h2 id="ssl" tabindex="-1"><a class="header-anchor" href="#ssl"><span>SSL</span></a></h2>
+<p><strong>What is SSL?</strong> OpenSSL and GnuTLS are both TLS/SSL crypto libraries—the low-level software that lets a program establish encrypted network connections (the “S” in HTTPS).</p>
+<p>When your program sends a request to <code>https://api.anthropic.com</code>, the data cannot travel over the network in plaintext; it has to be encrypted. But “implementing the TLS protocol” is complex: key negotiation, certificate validation, symmetric/asymmetric encryption, all the cipher suites… nobody writes it from scratch. So the vast majority of programs link against an existing TLS library:</p>
+<ul>
+<li><strong>OpenSSL</strong>, Apache-licensed, virtually everywhere: Nginx, Python’s requests, curl, and the underlying HTTP clients of many languages all use OpenSSL.</li>
+<li><strong>GnuTLS</strong>: the GNU project’s alternative implementation, LGPL-licensed. Some projects pick it for license compatibility (OpenSSL’s old license conflicted with the GPL) or preference, e.g. the GnuPG ecosystem and some GNOME components.</li>
+</ul>
+<p>There are also <strong>BoringSSL</strong> (Google’s fork of OpenSSL, used by Chrome/Android), LibreSSL, mbedTLS, and Go’s and Rust’s own native TLS implementations, etc.</p>
+<p>This reveals one of AgentSight’s <strong>limitations</strong>: it depends on the two symbol-name families <code>SSL_read</code>/<code>SSL_write</code> (the OpenSSL family, including BoringSSL and LibreSSL) and <code>gnutls_record_send</code>/<code>gnutls_record_recv</code> (GnuTLS). Go’s <code>crypto/tls</code> and Rust’s rustls are completely independent native implementations; if the Agent uses those, LLM traffic simply cannot be intercepted at all.</p>
+<h3 id="handling-static-linking" tabindex="-1"><a class="header-anchor" href="#handling-static-linking"><span>Handling static linking</span></a></h3>
+<p>As the <code>.so</code> above suggests, this is aimed at dynamically linked libraries. But some agents use static linking. For example:</p>
+<ul>
+<li><strong>Claude Code / Bun</strong>: BoringSSL is statically linked into their own binary, and the symbol table is stripped.</li>
+<li><strong>All of Node.js</strong>: OpenSSL is statically linked in.</li>
+<li><strong>Gemini CLI</strong>: runs on Node, same story.</li>
+</ul>
+<p>This case fails by default, because a uprobe needs to attach to a specific address inside some executable file: the kernel needs a concrete file + in-file offset to set a breakpoint there. With no hints, sslsniff defaults to looking up <code>SSL_read</code>/<code>SSL_write</code> by symbol name in the system <code>libssl.so</code>.</p>
+<p>With static linking, <code>SSL_write</code> is still being called; it’s just that the function isn’t in the system <code>libssl.so</code>, it’s statically linked into the application’s own binary. So we have to find that location.</p>
+<p><strong>A two-tier strategy</strong>:</p>
+<ul>
+<li><strong>Symbol lookup.</strong> If the binary isn’t stripped, the symbol table gives the offset of <code>SSL_write</code> directly.</li>
+<li><strong>Byte signatures when symbols are gone.</strong> A stripped binary has no symbols to look up, so we fall back to scanning the file’s contents for three signature strings: <code>SSL_write</code>, <code>BoringSSLError</code>, and <code>OPENSSL_internal</code>.</li>
+</ul>
+<h2 id="requestresponse-correlation" tabindex="-1"><a class="header-anchor" href="#requestresponse-correlation"><span>Request–response correlation</span></a></h2>
+<p>What the kernel captures is a stream of isolated SSL reads and writes; it doesn’t know which <code>SSL_read</code> (response) corresponds to which <code>SSL_write</code> (request). Only by pairing a request with a response can you compute “how long this call took, how many tokens, success or failure”—i.e. one call record.</p>
+<p>The core matching data structure:</p>
+<ul>
+<li><strong>The key is (pid, tid)</strong>: a request-response pair happens on the same thread.</li>
+<li><strong>The value is the pending-match queue.</strong> Essentially a bounded queue with oldest-first eviction. Size 16, TTL 5 minutes.</li>
+</ul>
+<p>Each time a response comes in, it is matched. Matching goes through three tiers from most to least trustworthy, assigning each match a confidence score:</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Basis</th>
+<th>Score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Response carries a request_id</td>
+<td>exact id match in the queue</td>
+<td>0.95</td>
+</tr>
+<tr>
+<td>Only 1 left in the queue</td>
+<td>unique, matched directly</td>
+<td>0.75</td>
+</tr>
+<tr>
+<td>Multiple pending, only 1 has body/model</td>
+<td>pick the most likely one</td>
+<td>0.70</td>
+</tr>
+<tr>
+<td>Multiple look plausible, indistinguishable</td>
+<td>give up, leave an orphan</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>TTL eviction</strong>: run opportunistically on every incoming event. Its main job is to handle the case where a request is sent but the response never arrives (the network drops, the process crashes); after 5 minutes it ages out of memory automatically.</p>
+<h2 id="token-usage" tabindex="-1"><a class="header-anchor" href="#token-usage"><span>Token usage</span></a></h2>
+<p>It doesn’t rely on any character-to-token estimation and doesn’t use a tokenizer—it relies on the vendors’ own output. There are two main handling paths: streaming and non-streaming.</p>
+<p><strong>Non-streaming responses</strong>: just read the fields in the body. Each vendor names them differently; a few examples:</p>
+<table>
+<thead>
+<tr>
+<th>Unified field</th>
+<th>Anthropic</th>
+<th>OpenAI</th>
+<th>Gemini</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input</td>
+<td><code>input_tokens</code></td>
+<td><code>prompt_tokens</code></td>
+<td><code>promptTokenCount</code></td>
+</tr>
+<tr>
+<td>Output</td>
+<td><code>output_tokens</code></td>
+<td><code>completion_tokens</code></td>
+<td><code>candidatesTokenCount</code> + <code>thoughtsTokenCount</code></td>
+</tr>
+<tr>
+<td>Cache creation</td>
+<td><code>cache_creation_input_tokens</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Cache read</td>
+<td><code>cache_read_input_tokens</code></td>
+<td>—</td>
+<td><code>cachedContentTokenCount</code></td>
+</tr>
+<tr>
+<td>Total</td>
+<td>sum of the four</td>
+<td>sum of the four</td>
+<td><code>totalTokenCount</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Streaming responses</strong>: usage isn’t given all at once but scattered across many small events—the opening event gives the input first, and subsequent incremental events repeatedly report the cumulative output so far. So our merge strategy is simply to <strong>take the maximum</strong>. Since the cumulative value is naturally monotonically increasing, the maximum is the final value. The benefit of this approach is that it’s naturally idempotent.</p>
+<p><strong>Other side channels</strong>: for example, you can read the agent’s native session files. Reading the session records in <code>~/.claude</code> and <code>~/.codex</code> gives you the per-model usage the agent itself recorded. Of course, the response usage observed on the network is the primary source of truth; native session logs are only used to supplement and backfill when a network call wasn’t captured. If multiple pieces of data are observed for the same call, only the highest-priority one is kept.</p>
+<h2 id="reflections" tabindex="-1"><a class="header-anchor" href="#reflections"><span>Reflections</span></a></h2>
+<p>While building dev_pulse, I immediately felt that, to account for usage, my implementation was heavily dependent on the LLM vendors’ specific implementations, e.g. the <code>.claude/</code> directory layout and so on. So I wanted to look for a solution that didn’t depend on vendor implementation details. When I learned about this low-level eBPF-based approach, I found it quite interesting. But on closer inspection it still depends on plenty of specifics: it depends on the SSL library type, token accounting still depends on vendor fields, it may still depend on concrete directories and local storage contents like those under <code>.claude/</code>, and static linking may even depend on byte signatures.</p>
+<p>I can only say this is yet another tradeoff: using higher privileges to intercept and obtain LLM traffic, in exchange for reducing part of the dependence on the LLM vendors’ specific local storage contents and structures. But fundamentally you can’t escape dependence on implementation details of some kind. I suspect that eventually LLM vendors will settle on a common stateless/stateful request-response protocol, which would make everyone’s life easier.</p>
+</div>
+        <div class="note-version prose--zh-note" data-version="zh" lang="zh" hidden><p><strong>ANOLISA</strong> 是阿里云 2026 年 3 月开源的 Agentic OS（Anolis OS 的 Agent 演进版），由 Copilot Shell、OS Skills、Agent Sec Core、AgentSight 等组件组装而成，定位为首个&quot;以 Agent 为用户主体&quot;的服务端操作系统。</p>
+<p>其中 <strong>AgentSight</strong> 来自上游开源项目 <a href="https://github.com/eunomia-bpf/agentsight">eunomia-bpf/agentsight</a>（MIT），被 ANOLISA 集成为可观测性组件，核心是基于 eBPF、对 AI Agent 的 LLM 流量提供零侵入式监控。</p>
+<p>本文是对它的实现思路的一篇学习笔记。</p>
+<h2 id="ebpf" tabindex="-1"><a class="header-anchor" href="#ebpf"><span>eBPF</span></a></h2>
+<p>eBPF（extended Berkeley Packet Filter）可以把一小段程序加载进 Linux 内核，在特定事件触发时运行（某个函数被调用、发生某个系统调用、调度器事件等）。</p>
+<p>使用方法是：写一段 eBPF，编译成 eBPF 字节码，然后通过 <code>bpf()</code> 系统调用加载。加载时内核的 <strong>verifier（校验器）</strong> 会静态检查这段程序：不能有无界循环、不能越界访问内存、不能让内核崩溃。通过校验后，JIT 把字节码编译成本机机器码，挂到某个 hook 点上。之后每次那个事件发生，这段程序就在内核态跑一次。</p>
+<p>hook 点可以是很多种：</p>
+<ul>
+<li><strong>kprobe / kretprobe</strong> —— 挂在任意内核函数的入口/返回</li>
+<li><strong>uprobe / uretprobe</strong> —— 挂在用户态函数上</li>
+<li><strong>tracepoint</strong> —— 内核里预定义的稳定埋点，比如 <code>execve</code> 系统调用</li>
+<li><strong>XDP / tc</strong> —— 网络数据路径，能在最早期处理/丢弃包</li>
+<li><strong>LSM hook</strong> —— 安全策略决策点</li>
+</ul>
+<p>内核态程序和用户态程序之间通过 <strong>maps</strong>（哈希表、数组、ring buffer 等共享内存结构）交换数据。</p>
+<p>AgentSight 用的主要是 <strong>uprobe/uretprobe</strong>，通过在 <code>SSL_read</code>、<code>SSL_write</code> 等函数上触发断点，运行我们自己的 eBPF 程序，这样我们就可以在加密之前、解密之后读到 LLM 流量的明文数据。最终的性能开销不超过 <strong>3%</strong>。</p>
+<p><strong>权限</strong>：很明显，加载 eBPF 程序、挂探针需要 <code>CAP_BPF</code> + <code>CAP_SYS_ADMIN</code>（读别的进程内存、装内核 hook）。实际就是需要 sudo，或授予这些 capability。</p>
+<h2 id="verifier" tabindex="-1"><a class="header-anchor" href="#verifier"><span>verifier</span></a></h2>
+<p>eBPF 程序的安全是内核 verifier 在加载时强制保证的：</p>
+<ul>
+<li><strong>verifier 校验过的程序。</strong> 程序被接受前，verifier 会证明它会终止（只允许有界循环）、绝不解引用未检查的指针、栈不越界。</li>
+<li><strong>不裸解引用指针。</strong> 读目标进程内存必须走 <code>bpf_probe_read_user</code> 这类 helper，地址非法时它优雅失败（返回非零）而不是崩溃。代码会检查返回值：失败时把缓冲区标记为空，而不是输出垃圾。</li>
+<li><strong>给 verifier 的显式边界裁剪。</strong> 拷贝长度先做位掩码再裁到上限。</li>
+<li><strong>有界 map。</strong> 每个 map 都有固定容量上限（暂存缓冲区地址和时间戳的那几张表各一万条量级，ring buffer 也是定长）。内核里内存不会无限增长。</li>
+<li><strong>截断而非溢出。</strong> 超过上限的载荷只拷到上限；真实长度仍单独记着。</li>
+<li><strong>调试构建可用 AddressSanitizer</strong>（<code>cd bpf &amp;&amp; make debug</code>）测用户态加载器那一侧。</li>
+</ul>
+<h2 id="具体实现" tabindex="-1"><a class="header-anchor" href="#具体实现"><span>具体实现</span></a></h2>
+<p>SSL 捕获的核心技巧是在函数的进入和返回处各挂一个探针：</p>
+<ul>
+<li><strong>进入时</strong>，函数参数还在寄存器里，能拿到调用方传进来的缓冲区指针，但缓冲区里还没有数据（read 尤其明显，此时是空的）。所以这一刀只是把缓冲区地址和时间戳暂存进一张以线程号（tid）为 key 的 hash map。</li>
+<li><strong>返回时</strong>，函数已经干完活：read 的明文填好了、write 的明文还在。返回值告诉我们实际读/写了多少字节，于是根据进入时暂存的地址，精确拷贝这么多字节出来并 submit。</li>
+</ul>
+<p><strong>为什么用 tid 当 key</strong>：进入和返回是两次独立触发，中间必须有个标识把&quot;我刚记下的缓冲区&quot;找回来。同一次函数调用一定发生在同一个线程里，所以 tid 是最自然的选择。</p>
+<p>数据通过 ring buffer map 离开内核。用户态加载器抽干它，每行输出一个 JSON 对象。</p>
+<h3 id="为什么不只在返回的时候读" tabindex="-1"><a class="header-anchor" href="#为什么不只在返回的时候读"><span>为什么不只在返回的时候读？</span></a></h3>
+<p>因为函数参数是通过寄存器传的，函数体一开始执行，那几个参数寄存器就很可能被当普通临时寄存器覆盖掉了。因此我们需要在函数进入的时候，拿到第二个参数：缓冲区地址。</p>
+<h2 id="ssl" tabindex="-1"><a class="header-anchor" href="#ssl"><span>SSL</span></a></h2>
+<p><strong>SSL 是什么？</strong> OpenSSL 和 GnuTLS 都是 TLS/SSL 加密库——就是让程序能建立加密网络连接（HTTPS 那个 “S”）的底层软件库。</p>
+<p>当你的程序要往 <code>https://api.anthropic.com</code> 发请求时，数据不能明文过网络，得加密。但&quot;实现 TLS 协议&quot;这件事很复杂：密钥协商、证书验证、对称/非对称加密、各种算法套件……没人会自己从头写。所以绝大多数程序都是链接一个现成的 TLS 库：</p>
+<ul>
+<li><strong>OpenSSL</strong>，Apache 许可证，几乎无处不在：Nginx、Python 的 requests、curl、大量语言的 HTTP 客户端底层都用的是 OpenSSL。</li>
+<li><strong>GnuTLS</strong>：GNU 项目的替代实现，LGPL 许可证。有些项目出于许可证兼容性（早年 OpenSSL 的许可证和 GPL 有冲突）或偏好选它，比如 GnuPG 生态、一些 GNOME 组件。</li>
+</ul>
+<p>此外还有 <strong>BoringSSL</strong>（Google 从 OpenSSL fork 出来的，Chrome/Android 在用）、LibreSSL、mbedTLS、Go 和 Rust 各自的原生 TLS 实现等等。</p>
+<p>这里也能看到 AgentSight 的一个<strong>限制</strong>：AgentSight 依赖 <code>SSL_read</code>/<code>SSL_write</code>（OpenSSL 系，含 BoringSSL、LibreSSL）和 <code>gnutls_record_send</code>/<code>gnutls_record_recv</code>（GnuTLS）这两套符号名。Go 的 <code>crypto/tls</code>、Rust 的 rustls 是完全独立的原生实现，如果 Agent 用的是这些，就完全无法拦截到 LLM 流量了。</p>
+<h3 id="静态链接如何处理" tabindex="-1"><a class="header-anchor" href="#静态链接如何处理"><span>静态链接如何处理</span></a></h3>
+<p>上面的 <code>.so</code> 也能看出来，这是针对动态链接库的。但一些 agent 采用的是静态链接。比如：</p>
+<ul>
+<li><strong>Claude Code / Bun</strong>：把 BoringSSL 静态链进自己的二进制，而且 strip 掉了符号表。</li>
+<li><strong>所有 Node.js</strong>：把 OpenSSL 静态链进去。</li>
+<li><strong>Gemini CLI</strong>：跑在 Node 上，同理。</li>
+</ul>
+<p>这种情况默认会失败，因为 uprobe 需要挂载到某个可执行文件里的某个地址：内核需要一个具体文件 + 文件内偏移，才能在那里下断点。sslsniff 在没有任何提示时，默认去系统 <code>libssl.so</code> 里按符号名找 <code>SSL_read</code>/<code>SSL_write</code>。</p>
+<p>在静态链接的时候，<code>SSL_write</code> 照样在被调用，只是这个函数不在系统 <code>libssl.so</code> 里，而是被静态链进了应用自己的二进制。因此我们就要找到这个位置。</p>
+<p><strong>两级策略</strong>：</p>
+<ul>
+<li><strong>符号查找。</strong> 二进制没 strip 的话，符号表里直接查得到 <code>SSL_write</code> 的偏移。</li>
+<li><strong>符号没了就靠字节特征。</strong> stripped 二进制查不到符号，于是退回去扫描文件内容，找三个特征串：<code>SSL_write</code>、<code>BoringSSLError</code>、<code>OPENSSL_internal</code>。</li>
+</ul>
+<h2 id="请求响应关联correlation" tabindex="-1"><a class="header-anchor" href="#请求响应关联correlation"><span>请求–响应关联（correlation）</span></a></h2>
+<p>内核抓到的是一条条孤立的 SSL 读写，它不知道哪个 <code>SSL_read</code>（响应）对应哪个 <code>SSL_write</code>（请求）。把请求和响应配成一对，才能算出&quot;这次调用多久、多少 token、成功还是失败&quot;，即一行调用记录。</p>
+<p>核心匹配数据结构：</p>
+<ul>
+<li><strong>key 是 (pid, tid)</strong>：一次请求-响应，发生在同一线程。</li>
+<li><strong>value 就是待匹配队列。</strong> 本质就是一个有界队列，最旧优先淘汰。大小 16，TTL 5 分钟。</li>
+</ul>
+<p>每次进来一条响应，进行配对。配对按可信度从高到低三档，并给每次配对 confidence 分：</p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>依据</th>
+<th>分数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>响应带 request_id</td>
+<td>队列里精确 id 匹配</td>
+<td>0.95</td>
+</tr>
+<tr>
+<td>队列里只剩 1 个</td>
+<td>唯一，就直接匹配</td>
+<td>0.75</td>
+</tr>
+<tr>
+<td>多个待配，只有 1 个带 body/model</td>
+<td>取那个最像的</td>
+<td>0.70</td>
+</tr>
+<tr>
+<td>多个都像样，分不清</td>
+<td>放弃，留 orphan</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>TTL 淘汰</strong>：每来一个事件就顺手跑一次。主要是处理请求发出去响应永远不来（网断了、进程崩了）的情况，5 分钟后从内存自动老化。</p>
+<h2 id="token-用量" tabindex="-1"><a class="header-anchor" href="#token-用量"><span>Token 用量</span></a></h2>
+<p>并不依赖任何字符-token 估算，也不使用分词器，就是依靠厂商的输出。主要分流式和非流式两种处理方式。</p>
+<p><strong>非流式响应</strong>：直接读 body 里的字段。各家字段名不同，几个例子是：</p>
+<table>
+<thead>
+<tr>
+<th>统一字段</th>
+<th>Anthropic</th>
+<th>OpenAI</th>
+<th>Gemini</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输入</td>
+<td><code>input_tokens</code></td>
+<td><code>prompt_tokens</code></td>
+<td><code>promptTokenCount</code></td>
+</tr>
+<tr>
+<td>输出</td>
+<td><code>output_tokens</code></td>
+<td><code>completion_tokens</code></td>
+<td><code>candidatesTokenCount</code> + <code>thoughtsTokenCount</code></td>
+</tr>
+<tr>
+<td>新建缓存</td>
+<td><code>cache_creation_input_tokens</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>读缓存</td>
+<td><code>cache_read_input_tokens</code></td>
+<td>—</td>
+<td><code>cachedContentTokenCount</code></td>
+</tr>
+<tr>
+<td>总计</td>
+<td>四项相加</td>
+<td>四项相加</td>
+<td><code>totalTokenCount</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>流式响应</strong>：usage 不是一次给全的，而是散在多个小事件里，开头的事件先给输入，后续的增量事件反复报到目前为止的累计输出。因此我们的合并策略就是<strong>取最大值</strong>。当然，累积值天然是递增的，最大值就是最终值。这个处理方法提供的好处是天然幂等。</p>
+<p><strong>其他旁路</strong>：比如，可以读取 agent 原生会话文件。读 <code>~/.claude</code>、<code>~/.codex</code> 里的会话记录，取它自己记的每模型用量。当然，网络观测到的响应用量是首要事实来源，原生会话日志只在没抓到网络调用时做补充和回填。同一个调用如果观测到多个数据，只保留优先级最高的数据。</p>
+<h2 id="感想" tabindex="-1"><a class="header-anchor" href="#感想"><span>感想</span></a></h2>
+<p>在开发 dev_pulse 的时候，马上就感觉到为了统计用量，我的实现非常依赖 LLM 厂商的具体实现，比如 <code>.claude/</code> 目录结构等等。因此我想尝试找一些不依赖厂商实现方式的解决方案。了解到这个基于 eBPF 的底层方案的时候，感觉还是挺有意思的。但最终细看下来，还是依赖非常多具体实现：依赖 SSL 库类型，token 统计还是依赖厂商字段，还是可能依赖类似 <code>.claude/</code> 下的这种具体目录和本地存储内容，静态链接甚至可能依赖字节特征。</p>
+<p>只能说这又是另一次 tradeoff：用更高的权限去做拦截获取 LLM 流量，换取了减少一部分对 LLM 厂商的具体本地存储内容和结构的依赖。但本质是无法摆脱各种实现细节的依赖的。我觉得或许之后 LLM 厂商会有通用无状态/有状态请求-响应的协议，这样可以让所有人的 life easier。</p>
+</div>
+      
+    </div>
+  </div>
+
+  <footer class="note__foot">
+    <a class="back-link" href="/technical-notes/">← All technical notes</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+      
+        <a class="social-link" href="https://github.com/szy1840" aria-label="GitHub" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.51 11.51 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+      
+        <a class="social-link" href="https://www.linkedin.com/in/ziyansong02/" aria-label="LinkedIn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+      
+        <a class="social-link" href="mailto:szy1840@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v.18l-10 5.6L2 5.68V5.5Zm0 2.07V18.5A1.5 1.5 0 0 0 3.5 20h17a1.5 1.5 0 0 0 1.5-1.5V7.57l-9.51 5.33a1 1 0 0 1-.98 0L2 7.57Z"/></svg></a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>
