@@ -29,7 +29,7 @@ The act of discovering that relationship is, as above, a purely romantic moment.
 
 **Me**: Thinking about it more, I do believe the "romance toward concepts" is real. There are moments when I feel a strong impulse to devote my life to a concept.
 
-**Me**: And there's the intense admiration for brilliant writing, which can shade into envy, jealousy, possessiveness. Take those quiz-style questions in *Wild Bodhisattva* (剧本杀, a scripted murder mystery game), the ones probing how much you recognize yourself in various patterns of romance between people. If you swap the object for certain concepts, in some moments my answer would be yes.
+**Me**: And there's the intense admiration for brilliant writing, which can shade into envy, jealousy, possessiveness. Take those quiz-style questions in *Wild Bodhisattva* (an emotion-driven 剧本杀, a scripted murder mystery game), the ones probing how much you recognize yourself in various patterns of romance between people. If you swap the object for certain concepts, in some moments my answer would be yes.
 
 **Me**: A motto, for instance, is a romantic relationship. A commitment I make to a piece of text: I'm willing to let these words occupy my life, or run through the whole of it.
 
