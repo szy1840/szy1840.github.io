@@ -1,5 +1,5 @@
 ---
-title: "当代艺术：形式、美与思想"
+title: "Contemporary art 批评"
 date: 2026-08-05
 lang: zh
 ref: contemporary-art

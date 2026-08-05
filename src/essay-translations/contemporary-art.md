@@ -1,5 +1,5 @@
 ---
-title: "Contemporary Art: Form, Beauty, and Thought"
+title: "A Critique of Contemporary Art"
 date: 2026-08-05
 lang: en
 ref: contemporary-art
