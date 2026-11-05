@@ -1,5 +1,6 @@
 import syntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
 import markdownItAnchor from "markdown-it-anchor";
+import markdownItFootnote from "markdown-it-footnote";
 import { DateTime } from "luxon";
 
 export default function (eleventyConfig) {
@@ -17,7 +18,7 @@ export default function (eleventyConfig) {
     preAttributes: { tabindex: 0 },
   });
 
-  // --- Markdown: anchored headings for TOC ---
+  // --- Markdown: anchored headings for TOC, footnotes ---
   eleventyConfig.amendLibrary("md", (md) => {
     md.set({ html: true, linkify: true, typographer: true });
     md.use(markdownItAnchor, {
@@ -30,6 +31,12 @@ export default function (eleventyConfig) {
           .replace(/[\s]+/g, "-")
           .replace(/[^\p{L}\p{N}-]/gu, ""),
     });
+    md.use(markdownItFootnote);
+    // Bilingual pages render both versions together; prefix footnote ids by language so they don't collide
+    md.renderer.rules.footnote_anchor_name = (tokens, idx, options, env) => {
+      const n = Number(tokens[idx].meta.id + 1).toString();
+      return env && env.lang ? `-${env.lang}-${n}` : n;
+    };
   });
 
   // --- Date filters ---
