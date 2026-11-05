@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent 的时间感 · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Agent 的时间感" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/notes-essays/agent-time-sense/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="essay-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" >Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" >Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" aria-current="page">Writing</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="essay wrap--narrow" data-bilingual data-default-lang="en">
+  <header class="essay__head">
+    <p class="eyebrow"><a href="/notes-essays/">Notes &amp; Essays</a></p>
+    
+      <h1 class="essay__title" data-title data-title-en="An Agent&#39;s Sense of Time" data-title-zh="Agent 的时间感">An Agent&#39;s Sense of Time</h1>
+    
+    <div class="essay__meta">
+      <time datetime="2026-10-07">2026-10-07</time>
+      
+      
+        <span class="lang-switch" role="group" aria-label="Article language" data-lang-switch>
+          <button type="button" data-lang="en" class="is-active" aria-pressed="true">EN</button>
+          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        </span>
+      
+    </div>
+  </header>
+  <div class="prose prose--essay" data-article>
+    
+      <div class="note-version" data-version="en" lang="en"><p>Lately, working with coding agents, I’ve started to feel a real trust issue with them. After some research and testing, I found what might be the cause, and it’s an interesting one.</p>
+<h2 id="1-estimating-in-human-hours" tabindex="-1"><a class="header-anchor" href="#1-estimating-in-human-hours"><span>1. Estimating in human hours</span></a></h2>
+<p>The first problem is that AI still estimates work the pre-AI way. It will tell you a change needs half a day, a day, or 2–3 days, when in practice a single session often finishes it in 20 minutes. The number it gives you is how long a human engineer in 2022 would need, not how long it needs itself.</p>
+<p>This has already been written about. Martin Monperrus, a software engineering professor at KTH, wrote a blog post in September<sup class="footnote-ref"><a href="#fn-en-1" id="fnref-en-1">[1]</a></sup> that calls it <em>anthropocentric time bias</em>. He sees two main causes, and I agree with both:</p>
+<ul>
+<li><strong>Training data</strong>: blog posts, sprint estimates, and pre-2022 GitHub all record how fast humans work, so the only conversion between effort and time the model has learned is the human one.</li>
+<li><strong>No clock</strong>: the model knows that “writing an API takes a few days,” but it can’t feel that it actually wrote one in 90 seconds.</li>
+</ul>
+<p>There are quantitative studies too. A paper at an ICLR 2026 workshop, “Can LLMs Perceive Time?”<sup class="footnote-ref"><a href="#fn-en-2" id="fnref-en-2">[2]</a></sup>, tested 68 tasks and found that models’ pre-task estimates overshoot actual duration by 4–7x, and by 5–10x in multi-step agent settings. A LessWrong post from August, “Your Agents Are Not Time Aware”<sup class="footnote-ref"><a href="#fn-en-3" id="fnref-en-3">[3]</a></sup>, ran Claude Code and Codex on a few hundred tasks and found that no matter how long a task actually takes, the agents like to predict around “an hour and a half.”</p>
+<blockquote>
+<p>The Claude team has noticed this.</p>
+<p>Claude Code’s system prompt once had a section called “Planning without timelines,” which said: Never suggest timelines like “this will take 2-3 weeks” or “we can do this later.” The npm release history shows it was added in 2.0.43 in November 2025 and removed in 2.1.9 in January 2026<sup class="footnote-ref"><a href="#fn-en-4" id="fnref-en-4">[4]</a></sup>. Why it was removed isn’t known. Either way, the rule only stopped Claude from <em>saying</em> it; it couldn’t change how Claude <em>thinks</em>.</p>
+</blockquote>
+<p>Someone also filed an issue on Claude Code’s GitHub<sup class="footnote-ref"><a href="#fn-en-5" id="fnref-en-5">[5]</a></sup>: the agent kept pushing back on small changes with “not worth the complexity” or “we can do that later,” and those changes turned out to be 4 lines of code that it finished as soon as it was pushed. Even when Claude isn’t allowed to talk about time, it is still budgeting as if the job takes three days; it just says “not worth it,” “later,” or “out of scope” instead.</p>
+<h2 id="2-the-agent-remembers-deadlines" tabindex="-1"><a class="header-anchor" href="#2-the-agent-remembers-deadlines"><span>2. The agent remembers deadlines</span></a></h2>
+<p>The second one is subtler, and it has to do with Claude Code’s auto memory.</p>
+<p>Claude Code writes its own memories. According to the official docs<sup class="footnote-ref"><a href="#fn-en-6" id="fnref-en-6">[6]</a></sup>, it saves only four kinds: user (who you are and how you work), feedback (corrections you’ve given it), project (how the project is going), and reference (where to find outside information). The project type covers “ongoing work, deadlines, and decisions,” as long as they can’t be derived from the code or git history.</p>
+<p>I also dug into the prompt for this inside the Claude Code package<sup class="footnote-ref"><a href="#fn-en-7" id="fnref-en-7">[7]</a></sup>, which is more specific. When should it save a project memory? “When you learn who is doing what, why, or by when.” Relative dates like “Thursday” have to be converted to absolute dates before saving. Each memory also gets a “How to apply” line saying how the fact should shape its suggestions later. The example in the prompt: the user says non-critical merges are frozen after Thursday, and the agent saves “merge freeze begins 2026-03-05 for mobile release cut. Flag any non-critical PR work scheduled after that date.”</p>
+<p>So it really does pay attention to deadlines, and it is explicitly told to let them shape its suggestions. The design is reasonable on its own, but combined with the first bias it can form a chain. Say the memory says we launch in three days, and I want to build a feature and ask the agent which implementation it recommends. Sometimes it will:</p>
+<ol>
+<li>Recommend a simple, temporary workaround</li>
+<li>Suggest holding off, since we’re launching “soon”</li>
+</ol>
+<p>Add the fact that LLMs already lean toward recommending the conservative option<sup class="footnote-ref"><a href="#fn-en-8" id="fnref-en-8">[8]</a></sup><sup class="footnote-ref"><a href="#fn-en-9" id="fnref-en-9">[9]</a></sup>, and the agent becomes more likely to stop, or to work well below the pace we’d expect.</p>
+<h3 id="then-again" tabindex="-1"><a class="header-anchor" href="#then-again"><span>Then again</span></a></h3>
+<p>In a big company, this behavior might well be more acceptable. But in a startup, or when we’re building our own projects, it’s hard to accept. A change often costs one 20-minute session, and rolling it back if something breaks is just as quick. There’s no reason to skip it just because a date is close.</p>
+<p>Seen this way, there are two possible directions. One is to stop the agent from remembering deadlines at all, or at least from using them to shape suggestions unprompted. The other is to give the agent more context, such as telling it we’re working at a startup, or just hacking on a project, and let it work out what a deadline means here.</p>
+<p>It’s an interesting, dialectical question: we could try adjusting the agent’s behavior in two completely opposite directions.</p>
+<h2 id="todo" tabindex="-1"><a class="header-anchor" href="#todo"><span>TODO</span></a></h2>
+<ul>
+<li>Reproduce this in a clean environment</li>
+<li>Test how to adjust this behavior</li>
+</ul>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn-en-1" class="footnote-item"><p>Martin Monperrus (professor of software engineering, KTH Royal Institute of Technology) and Evita Stenqvist, <a href="https://www.monperrus.net/martin/coding-agents-sense-of-time">Coding Agents Have Completely Wrong Sense of Time</a>, blog post, September 2026 <a href="#fnref-en-1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-2" class="footnote-item"><p>Aniketh Garikaparthi, <a href="https://arxiv.org/abs/2604.00010">Can LLMs Perceive Time? An Empirical Investigation</a>, ICLR 2026 workshop <a href="#fnref-en-2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-3" class="footnote-item"><p>Michael Ofengenden and Maksym Andriushchenko, <a href="https://www.lesswrong.com/posts/eAbuPXbjakop5rSJx/your-agents-are-not-time-aware">Your Agents Are Not Time Aware</a>, LessWrong, August 2026 <a href="#fnref-en-3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-4" class="footnote-item"><p><code>cli.js</code> in the npm package <code>@anthropic-ai/claude-code</code>, versions 2.0.43 (2025-11-17) through 2.1.8 (2026-01-15), section “Planning without timelines” <a href="#fnref-en-4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-5" class="footnote-item"><p>anthropics/claude-code issue <a href="https://github.com/anthropics/claude-code/issues/20270">#20270</a>: “No time estimates” rule might be making Claude Code lazy, January 2026 <a href="#fnref-en-5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-6" class="footnote-item"><p>Anthropic, Claude Code docs, <a href="https://code.claude.com/docs/en/memory">How Claude remembers your project</a>, “Auto memory” section <a href="#fnref-en-6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-7" class="footnote-item"><p>The auto memory prompt in the Claude Code 2.1.220 package, definition of the project type <a href="#fnref-en-7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-8" class="footnote-item"><p>anthropics/claude-code issue <a href="https://github.com/anthropics/claude-code/issues/96621">#96621</a>: Claude Code defaults to recommending the narrowest/cheapest option on scope decisions, September 2026 <a href="#fnref-en-8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-9" class="footnote-item"><p>anthropics/claude-code issue <a href="https://github.com/anthropics/claude-code/issues/31815">#31815</a>: Claude defaults to ‘defer’ instead of ‘try’, March 2026 <a href="#fnref-en-9" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+</div>
+      <div class="note-version prose--zh" data-version="zh" lang="zh" hidden><p>最近用 coding agent 的时候，感觉和 agent 产生了严重的 trust issue。研究测试下来，发现了一个可能的、有意思的问题。</p>
+<h2 id="1-用人类工时估算" tabindex="-1"><a class="header-anchor" href="#1-用人类工时估算"><span>1. 用人类工时估算</span></a></h2>
+<p>第一个是，ai 还在用 pre-AI era 的方式估算工作量。它经常会说这个改动需要半天、1 天，或者 2–3 天，但实际上很多时候一个 session 跑 20 分钟就做完了。它报出来的其实是一个 2022 年的人类工程师需要的时间，而不是它自己需要的时间。</p>
+<p>这个问题已经有人专门讨论过。KTH 做软件工程的教授 Martin Monperrus 今年 9 月写过一篇博客<sup class="footnote-ref"><a href="#fn-zh-1" id="fnref-zh-1">[1]</a></sup>，把它叫做 anthropocentric time bias，也就是以人类为中心的时间偏差。他认为（我也非常同意）原因主要有两个：</p>
+<ul>
+<li><strong>训练数据</strong>：博客、sprint 估算、2022 年以前的 GitHub，记录的基本都是人类的产出速度，所以模型学到的工作量和时间之间的换算，只有人类这一种。</li>
+<li><strong>没有时钟</strong>：模型知道&quot;写一个 API 大概要几天&quot;，但它感知不到自己其实 90 秒就写完了。</li>
+</ul>
+<p>也有一些量化的研究。ICLR 2026 一个 workshop 上的论文《Can LLMs Perceive Time?》<sup class="footnote-ref"><a href="#fn-zh-2" id="fnref-zh-2">[2]</a></sup>测了 68 个任务，发现模型事前的预估比实际耗时高 4–7 倍，放到多步的 agent 场景里是 5–10 倍。LessWrong 上 8 月有一篇文章《Your Agents Are Not Time Aware》<sup class="footnote-ref"><a href="#fn-zh-3" id="fnref-zh-3">[3]</a></sup>，作者用 Claude Code 和 Codex 跑了几百个任务，发现不管任务实际要多久，agent 的预测都喜欢落在一个半小时左右。</p>
+<blockquote>
+<p>Claude 团队意识到过这个问题：</p>
+<p>Claude Code 的 system prompt 里曾经有过一条规则：不要说&quot;这要 2–3 周&quot;或者&quot;可以以后再做&quot;。从 npm 上的历史可以查到，这一节是 2025 年 11 月的 2.0.43 加进去的，2026 年 1 月的 2.1.9 又删掉了<sup class="footnote-ref"><a href="#fn-zh-4" id="fnref-zh-4">[4]</a></sup>。具体原因未知。不过，很明显，这条规则本质上只是“不让 Claude 说”，但没办法改变其内部的“思考”方式。</p>
+</blockquote>
+<p>Claude Code 的 GitHub issue 区里有人也发过 issue<sup class="footnote-ref"><a href="#fn-zh-5" id="fnref-zh-5">[5]</a></sup>：agent 一直用 “not worth the complexity”、“we can do that later” 推掉一些小改动，结果那些改动只有 4 行代码，一催它就做完了。就算不让 Claude 说时间，它其实还是按三天在算，只是说出来的话变成了&quot;不值得&quot;、&quot;之后再做&quot;或者 “out of scope”。</p>
+<h2 id="2-agent-自动记忆-deadline" tabindex="-1"><a class="header-anchor" href="#2-agent-自动记忆-deadline"><span>2. Agent 自动记忆 deadline</span></a></h2>
+<p>第二个更隐蔽一些，和 Claude Code 的 auto memory 有关。</p>
+<p>Claude Code 会自己往 memory 里写东西。官方文档<sup class="footnote-ref"><a href="#fn-zh-6" id="fnref-zh-6">[6]</a></sup>里说它只存四类信息：user（你是谁、你的工作习惯）、feedback（你纠正过它什么）、project（项目的进展）和 reference（外部资料在哪）。其中 project 这一类写的是 “ongoing work, deadlines, and decisions”，也就是正在做的事、deadline 和做过的决定，前提是这些从代码和 git 历史里看不出来。</p>
+<p>我又去 Claude Code 的安装包里翻了这部分的 prompt<sup class="footnote-ref"><a href="#fn-zh-7" id="fnref-zh-7">[7]</a></sup>，写得更具体。什么时候存 project memory？“When you learn who is doing what, why, or by when”，也就是谁在做什么、为什么做、什么时候之前要做完；而且要把 “Thursday” 这种相对日期换成具体日期再存。每条 memory 后面还要写一行 How to apply，说明这条信息应该怎么影响它之后的建议。prompt 里给的例子是：用户说周四之后冻结非关键的 merge，agent 就存一条&quot;2026-03-05 起冻结 merge，之后排的非关键 PR 要提醒用户&quot;。</p>
+<p>所以它确实很关注 deadline，而且是被明确要求拿 deadline 去影响建议的。这个设计本身是合理的，但它和第一个 bias 叠在一起，就可能形成一条逻辑链：比如 memory 里写着三天之后 launch，这时候我想做某个 feature，问 agent 推荐哪个 impl 方案，它有时候会：</p>
+<ol>
+<li>推荐给我简单的临时方案</li>
+<li>由于“马上”要 launch 了，所以建议先不做</li>
+</ol>
+<p>再加上 LLM 本来就倾向于推荐保守的方案<sup class="footnote-ref"><a href="#fn-zh-8" id="fnref-zh-8">[8]</a></sup><sup class="footnote-ref"><a href="#fn-zh-9" id="fnref-zh-9">[9]</a></sup>，agent 就更容易停下来，或者达不到我们期待的效率。</p>
+<h3 id="话又说回来" tabindex="-1"><a class="header-anchor" href="#话又说回来"><span>话又说回来</span></a></h3>
+<p>当然，其实换到一个大公司里，这个 Agent 的行为可能更容易被接受的。但 startup 里，或者我们自己写 project 的时候，这种表现就很难接受了。很多时候，改动的成本就是一个二十分钟的 session，出了问题回滚也很快，没有理由因为日期近了就不做。</p>
+<p>所以从这个角度想，可能有两个方向：一是干脆不让 agent 记下 deadline 这类信息，至少不让它主动拿来影响建议；二是让 agent 理解更多的背景，比如告诉它我们正在 startup 里工作，或者只是在 hacking 一个项目，让它自己判断 deadline 在这里意味着什么。</p>
+<p>这是个挺有意思的、辩证的问题：我们可以往两个截然不同的方向去尝试调整 Agent 的表现行为。</p>
+<h2 id="todo" tabindex="-1"><a class="header-anchor" href="#todo"><span>TODO</span></a></h2>
+<ul>
+<li>在干净的环境里复现</li>
+<li>测试怎么调整这个行为</li>
+</ul>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn-zh-1" class="footnote-item"><p>Martin Monperrus（KTH 皇家理工学院软件工程教授）、Evita Stenqvist，<a href="https://www.monperrus.net/martin/coding-agents-sense-of-time">Coding Agents Have Completely Wrong Sense of Time</a>，博客，2026 年 9 月 <a href="#fnref-zh-1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-2" class="footnote-item"><p>Aniketh Garikaparthi，<a href="https://arxiv.org/abs/2604.00010">Can LLMs Perceive Time? An Empirical Investigation</a>，ICLR 2026 workshop <a href="#fnref-zh-2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-3" class="footnote-item"><p>Michael Ofengenden、Maksym Andriushchenko，<a href="https://www.lesswrong.com/posts/eAbuPXbjakop5rSJx/your-agents-are-not-time-aware">Your Agents Are Not Time Aware</a>，LessWrong，2026 年 8 月 <a href="#fnref-zh-3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-4" class="footnote-item"><p>npm 包 <code>@anthropic-ai/claude-code</code> 2.0.43（2025-11-17）到 2.1.8（2026-01-15）的 <code>cli.js</code>，“Planning without timelines” 一节 <a href="#fnref-zh-4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-5" class="footnote-item"><p>anthropics/claude-code issue <a href="https://github.com/anthropics/claude-code/issues/20270">#20270</a>：“No time estimates” rule might be making Claude Code lazy，2026 年 1 月 <a href="#fnref-zh-5" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-6" class="footnote-item"><p>Anthropic，Claude Code 官方文档 <a href="https://code.claude.com/docs/en/memory">How Claude remembers your project</a>，“Auto memory” 一节 <a href="#fnref-zh-6" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-7" class="footnote-item"><p>Claude Code 2.1.220 安装包里 auto memory 的 prompt，project 类型的定义 <a href="#fnref-zh-7" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-8" class="footnote-item"><p>anthropics/claude-code issue <a href="https://github.com/anthropics/claude-code/issues/96621">#96621</a>：defaults to recommending the narrowest/cheapest option on scope decisions，2026 年 9 月 <a href="#fnref-zh-8" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-9" class="footnote-item"><p>anthropics/claude-code issue <a href="https://github.com/anthropics/claude-code/issues/31815">#31815</a>：Claude defaults to ‘defer’ instead of ‘try’，2026 年 3 月 <a href="#fnref-zh-9" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+</div>
+    
+  </div>
+  <footer class="essay__foot">
+    <a class="back-link" href="/notes-essays/">← Back to writing</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+      
+        <a class="social-link" href="https://github.com/szy1840" aria-label="GitHub" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.51 11.51 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+      
+        <a class="social-link" href="https://www.linkedin.com/in/ziyansong02/" aria-label="LinkedIn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+      
+        <a class="social-link" href="mailto:szy1840@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v.18l-10 5.6L2 5.68V5.5Zm0 2.07V18.5A1.5 1.5 0 0 0 3.5 20h17a1.5 1.5 0 0 0 1.5-1.5V7.57l-9.51 5.33a1 1 0 0 1-.98 0L2 7.57Z"/></svg></a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>
