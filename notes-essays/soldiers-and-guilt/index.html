@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>士兵在战场上杀死另一个士兵，是否有罪？ · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="士兵在战场上杀死另一个士兵，是否有罪？" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/notes-essays/soldiers-and-guilt/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="essay-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" >Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" >Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" aria-current="page">Writing</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="essay wrap--narrow" data-bilingual data-default-lang="en">
+  <header class="essay__head">
+    <p class="eyebrow"><a href="/notes-essays/">Notes &amp; Essays</a></p>
+    
+      <h1 class="essay__title" data-title data-title-en="Is a Soldier Guilty of Killing Another Soldier in Battle?" data-title-zh="士兵在战场上杀死另一个士兵，是否有罪？">Is a Soldier Guilty of Killing Another Soldier in Battle?</h1>
+    
+    <div class="essay__meta">
+      <time datetime="2026-11-11">2026-11-11</time>
+      
+      
+        <span class="lang-switch" role="group" aria-label="Article language" data-lang-switch>
+          <button type="button" data-lang="en" class="is-active" aria-pressed="true">EN</button>
+          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        </span>
+      
+    </div>
+  </header>
+  <div class="prose prose--essay" data-article>
+    
+      <div class="note-version" data-version="en" lang="en"><p>Today a friend and I got talking about war and soldiers. When I got home I went another round on it with AI, and learned quite a lot.</p>
+<h2 id="how-it-started" tabindex="-1"><a class="header-anchor" href="#how-it-started"><span>How it started</span></a></h2>
+<p>Let’s set aside the question of whether war can be avoided. Suppose the war has already started, or that it can’t be avoided. A soldier on the battlefield kills a soldier on the other side. Is he guilty or not?</p>
+<p>My friend was clear that he is guilty. Their main point was that soldiers are people too, people are born with a right to life, and that right can’t be violated. Less central to this question, but they went further: even when someone has killed, no one else has the right to put him to death. Life imprisonment is as far as it should go.</p>
+<p>I fully understand this view, and I don’t have a strong intuition myself about which side is right. But I find the other side’s position interesting. In a fairly traditional view, many people hold that a soldier who kills the enemy is not guilty, and that it’s even honorable. What’s the logic behind that? I found it interesting, so I want to try to explain and dig out the arguments that side might make.</p>
+<h2 id="two-lines-of-argument-for-the-other-side" tabindex="-1"><a class="header-anchor" href="#two-lines-of-argument-for-the-other-side"><span>Two lines of argument for the other side</span></a></h2>
+<p>The first: a soldier is a kind of “alienated” state of a person. Once someone becomes a soldier, his goal is to defeat the other side and kill them, which is the complete opposite of how he lives in a stable society. That state is so far from being a person that we can no longer treat him as an ordinary one. So when he kills another soldier who is in the same state, he is not guilty.</p>
+<p>The second: a soldier has joined the army as a collective and become part of it. He accepts and obeys orders, and has handed over the right to freely exercise his own will. Since he has no right to choose, he also bears no responsibility for killing the soldier on the other side.</p>
+<p>What follows is a record of my discussion with AI.</p>
+<h2 id="what-guilty-means" tabindex="-1"><a class="header-anchor" href="#what-guilty-means"><span>What “guilty” means</span></a></h2>
+<p>“Guilty” is actually a vague word. It can be read in four ways:</p>
+<ul>
+<li>Whether it’s a crime in law. International humanitarian law gives combatants the right to take part in hostilities, and lawfully killing an enemy combatant doesn’t count as murder.</li>
+<li>Whether the act itself is right or wrong.</li>
+<li>Blameworthiness. The act is wrong, but the person who did it can be excused, for example because he was coerced, deceived, or simply had no way to judge.</li>
+<li>Honor. Not being guilty is not the same as being honorable. Honor needs reasons of its own.</li>
+</ul>
+<p>What my friend and I mainly discussed was the second layer, right and wrong. My friend brought up the third, but we didn’t discuss it much; or rather, we probably assumed that being guilty just means being blameworthy. Many philosophers take the position that “the act is wrong, but the soldier can be excused.”</p>
+<p><em>Of course, whether guilt and blameworthiness can really be separated may be a question in itself, given that the two of us seemed to assume they come bundled together. Still, noticing what you’ve been assuming is a very good thing.</em></p>
+<h2 id="what-alienation-means" tabindex="-1"><a class="header-anchor" href="#what-alienation-means"><span>What “alienation” means</span></a></h2>
+<p>“Alienation” has a fairly specific meaning in philosophy, so the word wasn’t precise enough here. In Hegel and Marx it’s a critical concept, and the alienated person is a victim.</p>
+<p>The person who has laid out this position most systematically in modern times is Michael Walzer, in his book <em>Just and Unjust Wars</em> (1977). His argument is that by taking up arms, a soldier makes himself a dangerous man, and so loses his right not to be attacked. This holds for soldiers on both sides, so their moral status is equal.</p>
+<p>That is basically what I meant by “alienation”: the soldier is in a state where he has lost certain rights.</p>
+<p>An earlier, similar view comes from Rousseau, in Book I, Chapter 4 of <em>The Social Contract</em>. War, he says, is a relation between states, not between individuals; individuals become enemies only by accident, and they are enemies as soldiers, not as men. He goes on to say that once soldiers lay down their arms, they become men again, and no one has the right to take their lives any longer.</p>
+<h2 id="did-the-soldier-choose-this" tabindex="-1"><a class="header-anchor" href="#did-the-soldier-choose-this"><span>Did the soldier choose this?</span></a></h2>
+<p>So the question the other side has to face is whether the soldier became a soldier voluntarily. If he didn’t, say he was conscripted, or pushed into it by economic hardship, and if “losing the right to life” is supposed to follow from his own choice, then should these people be treated as having made a choice at all?</p>
+<p>This thought of ours is similar to that of the philosopher Jeff McMahan. But it goes further: even if a soldier did join voluntarily, what he agreed to was bearing the risk of being killed, not the other side’s right to kill him. These are two different things. Someone who walks down a dangerous street at night accepts the risk, but doesn’t give up his right not to be robbed. When boxers step into the ring, both of them really have agreed to the rules; soldiers have no such agreement with each other.</p>
+<p><em>This is a really good point, one I hadn’t thought of. It feels worth thinking through carefully.</em></p>
+<h2 id="handing-your-freedom-to-the-collective" tabindex="-1"><a class="header-anchor" href="#handing-your-freedom-to-the-collective"><span>Handing your freedom to the collective</span></a></h2>
+<p>This argument has a long history.</p>
+<p>In <em>City of God</em>, Augustine says that a man who kills on the order of a lawful authority is like a sword in another’s hand; it isn’t he who kills. In Shakespeare’s <em>Henry V</em>, a few soldiers talk on the night before battle, and one of them says that if the king’s cause is unjust, our obedience to the king washes the crime off us.</p>
+<p>In Chapter 16 of <em>Leviathan</em>, Hobbes distinguishes the “author” from the “actor”: an actor who acts on the author’s command is performing the author’s act, and if the act breaks the law of nature, it is the author who breaks it. In his theory of the state, people hand the right to judge right and wrong over to the sovereign in order to leave the state of nature, where everyone is against everyone. Whether a war is just is for the sovereign to judge, not the soldier. In <em>De Cive</em> he puts it more bluntly: fighting a war you believe unjust on your sovereign’s command is not doing an injustice; refusing to obey is, because it takes the sovereign’s right of judgment into your own hands.</p>
+<p>Some people still defend this line today. David Estlund, for example, argues that soldiers should, to a degree, trust and obey decisions made by a legitimate democratic process.</p>
+<p>There are four main objections:</p>
+<ul>
+<li>
+<p>The principle established at the Nuremberg trials: superior orders do not relieve a person of individual responsibility. But Nuremberg went after specific war crimes and the leaders who launched wars of aggression; it didn’t prosecute ordinary soldiers for “taking part in the war.”</p>
+</li>
+<li>
+<p>Arendt’s account of Eichmann. The man wasn’t monstrous; he simply didn’t think, and treated himself as a part that carried out orders. Milgram’s obedience experiments also found that ordinary people, once they feel they are only acting for someone else, can do terrible things. Here “handing over your freedom” is the problem itself, so it can’t be used as a defense.</p>
+</li>
+<li>
+<p>Rousseau. Again Book I, Chapter 4 of <em>The Social Contract</em>: he says that to renounce your liberty is to renounce your quality as a man; taking away all freedom of the will takes away all morality from one’s actions. He was originally arguing against the idea that a person can voluntarily sell himself into slavery, but the reasoning applies here too: moral responsibility can’t be transferred to someone else by contract. The same chapter supports my first argument and refutes my second, which I find rather interesting.</p>
+</li>
+<li>
+<p>What postwar Germany did. When West Germany rebuilt its army in the 1950s, it put forward the idea of the “citizen in uniform” (<em>Staatsbürger in Uniform</em>): a soldier is first of all a citizen, and putting on a uniform doesn’t take away his conscience or his basic rights. Germany’s Soldiers’ Act says that orders violating human dignity need not be obeyed, and orders that would amount to a crime must not be obeyed. In 2005 there was a case in which a major who considered the Iraq War illegal refused to take part in a software project that might support it, and the Federal Administrative Court ultimately ruled in his favor.</p>
+</li>
+</ul>
+<p><em>That handing over your freedom is itself the problem is something my friend and I actually discussed that same evening. I basically agree.</em></p>
+<h2 id="pacifism" tabindex="-1"><a class="header-anchor" href="#pacifism"><span>Pacifism</span></a></h2>
+<p>My friend thinks the right to life can never be lost, so much so that even a murderer can’t be executed. By that standard, killing on the battlefield is wrong no matter which side does it. This is closer to pacifism, Tolstoy’s for example.</p>
+<p>The problem this position has to face is self-defense. The death penalty is applied to someone who has already been subdued and is no longer a threat, while on the battlefield the person across from you is shooting at you. If the right to life can never be violated, does killing someone who is attacking you, in order to save your own life, count as violating his right to life?</p>
+<p><em>Actually, in an earlier discussion about war, I asked exactly the same question, haha.</em></p>
+<h2 id="camus-and-sartre" tabindex="-1"><a class="header-anchor" href="#camus-and-sartre"><span>Camus and Sartre</span></a></h2>
+<p>My friend mentioned that “guilty” sounds more like Camus. Here’s a summary of how the two of them saw war:</p>
+<ul>
+<li>
+<p>Camus was not a pacifist; during the Second World War he joined the Resistance. His position was that killing is sometimes unavoidable but can never be justified. In <em>The Rebel</em> he writes about the Russian assassins of 1905, saying that in their eyes killing was “necessary and inexcusable.” In his play <em>The Just Assassins</em>, Kaliayev assassinates the Grand Duke and then insists on paying for it with his own life. He also wrote <em>Reflections on the Guillotine</em> against the death penalty, which is almost exactly my friend’s line of reasoning.</p>
+</li>
+<li>
+<p>Sartre went the opposite way. In his play <em>Dirty Hands</em>, the revolutionary leader Hoederer says his hands are dirty right up to the elbows, and asks the other man whether he thinks anyone can govern innocently. In 1961 he wrote the preface to Fanon’s <em>The Wretched of the Earth</em> and went even further, arguing that the violence of the oppressed is how they re-create themselves. As he saw it, insisting on clean hands is also a choice, and a choice on the side of the status quo.</p>
+</li>
+</ul>
+<h2 id="just-and-unjust-wars" tabindex="-1"><a class="header-anchor" href="#just-and-unjust-wars"><span>Just and unjust wars</span></a></h2>
+<p>From start to finish, my friend and I never distinguished whether this soldier’s side was just or unjust. The reason:</p>
+<p>The argument for guilt is: people have an inviolable right to life, soldiers are people, so killing a soldier is wrong. The argument I tried to make for the other side is: a person in the state of being a soldier no longer has the right to life an ordinary person has, the one across from him is also a soldier, so killing him is not a crime. Both are standard syllogisms, so their conclusions hold for the just side and the unjust side alike.</p>
+<p>I want to first look for this kind of more general line of argument. If I can’t find one, then I can try splitting it into cases.</p>
+<h2 id="further-where-the-right-to-life-comes-from" tabindex="-1"><a class="header-anchor" href="#further-where-the-right-to-life-comes-from"><span>Further: where the right to life comes from</span></a></h2>
+<p>Push this question further and it links up with a bigger one: the right to life that people are born with, what gives them that right?</p>
+<p>Philosophy has no single answer. The mainstream accounts fall roughly into four:</p>
+<ul>
+<li>Theology and natural law (Aquinas, Locke): humans are made by God, so no one has the right to destroy another’s life. “Inherent and inalienable” originally comes from here.</li>
+<li>Reason and dignity (Kant): humans have reason and can give laws to themselves, so they are ends and must never be treated merely as means.</li>
+<li>Interests and utility (Bentham, Mill, Singer): the right to life is an especially important rule, grounded in the fact that people can feel pain and have an interest in staying alive.</li>
+<li>Contract (Hobbes, Rawls): the right to life is a rule that rational people would agree to with one another.</li>
+</ul>
+<blockquote>
+<p>Modern human rights law actually sidesteps this question. The <em>Universal Declaration of Human Rights</em> only says that people have “inherent dignity,” without saying where the dignity comes from. The philosopher Jacques Maritain, who took part in the discussions around its drafting, said something to the effect of: we agree about these rights, on condition that no one asks us why.</p>
+</blockquote>
+<p>These four can be roughly sorted into two groups.</p>
+<p>One group says you have it simply by belonging to the human species, which is close to the theological account. Then soldiers obviously have it too, and the other side’s first argument falls apart. The other group says it’s because humans have some particular trait, like reason (Kant) or the capacity to feel pain (Singer). If that’s the case, you can go on to ask: if that trait is lost in a soldier, or changes, or is given up by the soldier himself, does the right to life go with it?</p>
+<p>This isn’t only a question about soldiers. If the right to life comes from some trait, do people with mental illness have it? Does AI? In philosophy this question is called “moral status”: what kinds of beings should be treated morally, and on what grounds. The question about people with mental illness even has its own name, the “argument from marginal cases”: if rights come from some trait, what about the humans who don’t have it? Peter Singer uses it to criticize the idea that being human is enough to have rights, an idea he calls speciesism.</p>
+<p>A further note: the concept of moral status is a bit fuzzy here. Moral status is an “entitlement,” and the right to life is one of the things you get once you have it. Moral status depends on what you are, so it doesn’t change because of what you do. Specific rights depend on status, but can be lost because of what you do. For example, a person may kill an attacker in self-defense, but may not torture him, and once he has been subdued may no longer kill him. This shows that his moral status was there all along; what he lost was only the right “not to be attacked at this moment.” Soldiers have the same structure, which is why there are rules like not killing prisoners and treating the wounded.</p>
+<p><em>A concept I’d only just learned about, and a very interesting one. But I feel I’ve only learned the concept; I haven’t taken it back through all the earlier arguments, because I’m sleepy :)</em></p>
+</div>
+      <div class="note-version prose--zh" data-version="zh" lang="zh" hidden><p>今天和朋友聊到战争和士兵，回来之后我又和 AI 聊了一轮，学到不少东西。</p>
+<h2 id="起因" tabindex="-1"><a class="header-anchor" href="#起因"><span>起因</span></a></h2>
+<p>我们先把&quot;战争能不能避免&quot;放在一边。假设战争已经发生了，或者战争是不可避免的。一个士兵在战场上杀死了对面的士兵，他有罪还是无罪？</p>
+<p>朋友明确地认为有罪。他的主要观点是，士兵也是人，人生来就有生命权，这个权利不能被侵犯。和这个论题关系不算大，但他还进一步认为，即使一个人杀了人，其他人也没有权利处死他，最多是终身监禁。</p>
+<p>这个想法我完全理解，我自己也没有很强的直觉说哪边对。但我觉得反方的论点挺有意思：在比较传统的观念里，很多人认为士兵杀敌是无罪的，甚至是一种荣誉。这背后的逻辑是什么？感觉很有意思，因此我想尝试解释和发掘反方可能的论证。</p>
+<h2 id="反方的两个论证思路" tabindex="-1"><a class="header-anchor" href="#反方的两个论证思路"><span>反方的两个论证思路</span></a></h2>
+<p>第一个，士兵是人的一种&quot;异化&quot;状态。一个人成为士兵之后，目标就是战胜对方、杀死对方，这和他在稳定的社会生活里的状态完全相反。这种状态离人太远了，我们不能再把他当普通人来看。所以他杀死另一个同样处在这种状态里的士兵，是无罪的。</p>
+<p>第二个，士兵进入了军队这个集体，成了集体的一部分，接受和服从命令，把自由行使自己意志的权利让渡了出去。既然他没有权利选择，那么对于杀死对方的士兵他也没有责任。</p>
+<p>下面是我和 ai 讨论后的记录。</p>
+<h2 id="有罪的定义" tabindex="-1"><a class="header-anchor" href="#有罪的定义"><span>&quot;有罪&quot;的定义</span></a></h2>
+<p>有罪这个词其实是模糊的，可以有四种理解：</p>
+<ul>
+<li>法律上有没有罪。国际人道法给了战斗员参加敌对行动的权利，合法地杀死敌方战斗员不算谋杀。</li>
+<li>这件事本身是对还是错。</li>
+<li>可责性。事情是错的，但做这件事的人可以被原谅，比如他是被胁迫的、被欺骗的，或者根本没办法判断。</li>
+<li>荣誉。无罪不等于光荣，光荣需要另外的理由。</li>
+</ul>
+<p>我和朋友讨论的主要是第二层，对和错。第三层朋友提到了但我们讨论不多，或者说我们可能默认有罪就是可责。很多哲学家的立场就是&quot;事情是错的，但士兵可以被原谅&quot;。</p>
+<p><em>当然其实有罪和可责是否能区分可能本身也是一个问题，就像我们俩似乎默认有罪和可责就是绑定的。不过发现自己默认的地方，是一件很好的事情。</em></p>
+<h2 id="异化的定义" tabindex="-1"><a class="header-anchor" href="#异化的定义"><span>&quot;异化&quot;的定义</span></a></h2>
+<p>异化这个词在哲学语境里面有点特殊的指代了，这里用词不够精确。&quot;异化&quot;在黑格尔和马克思那里是个批判性的概念，被异化的人是受害者。</p>
+<p>当代把这个立场讲得最系统的是 Michael Walzer，书叫《正义与非正义战争》（1977）。他的说法是，士兵拿起武器，就让自己成了危险的人，因此失去了免受攻击的权利。这对双方的士兵都成立，所以双方士兵的道德地位是平等的。</p>
+<p>这个基本就是我说的“异化”了，士兵的状态是处于一种权利丧失的状态。</p>
+<p>更早的一个类似的观点是，卢梭在《社会契约论》第一卷第四章里说，战争是国家和国家之间的关系，个人只是偶然地成了敌人，他们是作为士兵在互相为敌，不是作为人。他接着说，士兵一旦放下武器，就又变回了人，谁也没有权利再要他的命。</p>
+<h2 id="士兵是否是自愿的" tabindex="-1"><a class="header-anchor" href="#士兵是否是自愿的"><span>士兵是否是自愿的？</span></a></h2>
+<p>这样，反方的论述需要面对的一个问题是：这个士兵是否是自愿成为士兵的？因为如果他不是自愿的，比如说他是被征召的，他是受到生活所迫的等等，那么，如果说&quot;失去生命权&quot;是因为他自己的选择，那这些人是否应该被视为进行过选择呢？</p>
+<p>我们的这个想法和哲学家 Jeff McMahan 是类似的。但是更进一步来说：就算士兵是自愿成为士兵的，他同意的也只是承担被杀的风险，没有同意对方有权杀他。这是两回事。一个人晚上走进一条危险的街，他接受了风险，但没有放弃不被抢的权利。拳击手上台是双方真的同意了规则，士兵之间没有这种约定。</p>
+<p><em>这点非常好，没想到，感觉值得细想。</em></p>
+<h2 id="让渡自由给集体" tabindex="-1"><a class="header-anchor" href="#让渡自由给集体"><span>让渡自由给集体</span></a></h2>
+<p>这是一个历史悠久的论证。</p>
+<p>奥古斯丁在《上帝之城》里说，奉合法权威的命令杀人的人，就像别人手里的一把剑，杀人的不是他。莎士比亚的《亨利五世》里，几个士兵在开战前一晚聊天，其中一个说，如果国王的事业不正义，我们的服从就把罪从我们身上洗掉了。</p>
+<p>霍布斯在《利维坦》第十六章区分了&quot;授权者&quot;和&quot;代理人&quot;：代理人按授权者的命令做事，这个行为算授权者的；如果行为违反了自然法，违反的也是授权者。在他的国家理论里，人们为了离开人人相争的自然状态，把判断是非的权利交给了主权者。一场战争正不正义，是主权者判断的事，不是士兵判断的事。他在《论公民》里说得更直接：奉君主的命令去打一场自己认为不正义的仗，不算做了不义的事；拒绝服从才是，因为这等于把属于君主的判断权拿到了自己手里。</p>
+<p>现在也还有人为这个思路辩护。比如 David Estlund 认为，一个合法的民主程序做出的决定，士兵在一定程度上应该信任和服从。</p>
+<p>反对的理由主要有四个：</p>
+<ul>
+<li>
+<p>纽伦堡审判确立的原则，上级命令不能免除个人的责任。但纽伦堡追究的是具体的战争罪行和发动侵略的领导人，没有因为&quot;参加了战争&quot;去追究普通士兵。</p>
+</li>
+<li>
+<p>阿伦特写的艾希曼。这个人并不凶恶，他只是不思考，把自己当成执行命令的零件。Milgram 的服从实验也发现，普通人一旦觉得自己只是在替别人办事，可以做出很可怕的事。在这里&quot;让渡自由&quot;本身就是问题所在，没法拿来当辩护。</p>
+</li>
+<li>
+<p>卢梭。还是《社会契约论》第一卷第四章，他说放弃自己的自由就是放弃做人的资格，取消了意志的一切自由，也就取消了行为的一切道德性。他原本是在反驳&quot;人可以自愿卖身为奴&quot;，但道理可以用在这里：道德责任没法通过契约转让给别人。同一章，支持了我的第一个论证，又反驳了第二个，我觉得还挺有意思的。</p>
+</li>
+<li>
+<p>战后德国的做法。联邦德国 1950 年代重建军队的时候提出了&quot;穿军装的公民&quot;（Staatsbürger in Uniform），意思是士兵首先是公民，穿上军装不会让他失去良知和基本权利。德国的军人法规定，侵犯人的尊严的命令可以不服从，会构成犯罪的命令不得服从。2005 年还有一个案子，一名少校认为伊拉克战争违法，拒绝参与一个可能为它提供支持的软件项目，联邦行政法院最后支持了他。</p>
+</li>
+</ul>
+<p><em>让渡自由本身有问题，这个其实我和朋友同一天晚上就讨论了。基本同意。</em></p>
+<h2 id="和平主义" tabindex="-1"><a class="header-anchor" href="#和平主义"><span>和平主义</span></a></h2>
+<p>朋友认为生命权不能丧失，连杀人犯都不能处死。按这个标准，战场上哪一方杀人都是错的。这更接近和平主义，比如托尔斯泰。</p>
+<p>这个立场要面对的问题是自卫。死刑针对的是已经被制服、不再有威胁的人，而战场上对面的人正在朝你开枪。如果生命权绝对不能侵犯，那为了保命杀死正在攻击自己的人，算不算侵犯了他的生命权？</p>
+<p><em>其实在之前的一次关于战争的讨论中，我问了相同的问题，哈哈</em></p>
+<h2 id="加缪和萨特" tabindex="-1"><a class="header-anchor" href="#加缪和萨特"><span>加缪和萨特</span></a></h2>
+<p>朋友提到说&quot;有罪&quot;更像加缪。这里整理一下二者对战争的看法：</p>
+<ul>
+<li>
+<p>加缪不是和平主义者，二战时他参加了抵抗运动。他的立场是，杀人有时候避免不了，但永远不能被正当化。他在《反抗者》里写 1905 年的俄国刺客，说杀人在这些人看来&quot;必要而不可原谅&quot;。剧本《正义者》里，卡利亚耶夫刺杀了大公，然后坚持用自己的命来偿。他还写过《关于断头台的思考》反对死刑，和朋友的推论几乎一样。</p>
+</li>
+<li>
+<p>萨特的方向相反。剧本《脏手》里，革命领袖贺德雷说自己的手一直脏到手肘，还反问对方：你以为可以清清白白地掌权吗？1961 年他给法农的《全世界受苦的人》写序，走得更远，认为被压迫者的暴力是在重新创造自己。在他看来，坚持双手干净也是一种选择，而且是站在现状那一边的选择。</p>
+</li>
+</ul>
+<h2 id="正义和非正义战争" tabindex="-1"><a class="header-anchor" href="#正义和非正义战争"><span>正义和非正义战争</span></a></h2>
+<p>我和朋友从头到尾没有区分这个士兵方是正义还是非正义的。因为：</p>
+<p>正方论证是：人有不可侵犯的生命权，士兵是人，所以杀死士兵是错的。我试着讲的反方论证是：处在士兵状态里的人不再有普通人的那种生命权，对面的也是士兵，所以杀死他无罪。这两个都是标准的三段论，所以结论对正义的一方和不正义的一方都成立。</p>
+<p>我想先尝试寻找这种更 general 的论证路径，如果找不到，那么可以去尝试分类讨论。</p>
+<h2 id="延伸生命权的来源" tabindex="-1"><a class="header-anchor" href="#延伸生命权的来源"><span>延伸：生命权的来源</span></a></h2>
+<p>这个问题再往下，会链接到另一个更大的问题：人生来就有的生命权，是因为什么才有的？</p>
+<p>哲学上没有统一的答案，主流的说法大概有四种：</p>
+<ul>
+<li>神学和自然法（阿奎那、洛克）：人是上帝造的，所以谁也无权毁掉别人的生命。&quot;生而具有、不可让渡&quot;最早是从这里来的。</li>
+<li>理性和尊严（康德）：人有理性，能给自己立法，所以是目的，不能只被当作手段。</li>
+<li>利益和功利（边沁、密尔、Singer）：生命权是一条特别重要的规则，根据是人能感受痛苦、有活下去的利益。</li>
+<li>契约（霍布斯、罗尔斯）：生命权是理性的人会互相同意的规则。</li>
+</ul>
+<blockquote>
+<p>现代的人权法其实绕开了这个问题，《世界人权宣言》只说人有&quot;固有的尊严&quot;，没有说尊严从哪里来。参与起草讨论的哲学家马里坦有句话，大意是：我们对这些权利意见一致，条件是没人问我们为什么。</p>
+</blockquote>
+<p>这四种大致可以分成两类。</p>
+<p>一类是只要是人这个物种就有，神学的说法接近这个。那士兵当然也有，那么反方第一个论证就讲不通了。另一类是因为人有某种特质，比如理性（康德），或者感受痛苦的能力（Singer）。如果是这样，就可以接着问：这种特质在士兵身上如果失去了，变了，或者被他自己放弃了，生命权是不是也跟着没有了？</p>
+<p>这不只是士兵的问题。如果生命权来自某种特质，那精神病人有没有？AI 有没有？这个问题在哲学里叫&quot;道德地位&quot;（moral status），问的就是什么样的存在应该被道德地对待，凭的是什么。精神病人的问题还有个专门的名字，叫&quot;边缘案例论证&quot;：如果权利来自某种特质，那些不具备这种特质的人怎么办？Peter Singer 用它来批评&quot;只因为是人就有权利&quot;的想法，他把这种想法叫物种主义。</p>
+<p>延伸解释：这里道德地位这个概念有点模糊。道德地位是&quot;资格&quot;，生命权是有资格之后拿到的其中一项东西。道德地位取决于你是什么，所以不会因为你做了什么而改变。具体的权利取决于地位，但可以因为你做了什么而失去。例如，一个人可以为了自卫杀死行凶者，但不能折磨他，他被制服之后也不能再杀他。这说明他的道德地位一直都在，失去的只是&quot;此刻不被攻击&quot;这一项。士兵是同样的结构，所以才有不杀俘虏、救治伤兵这些规则。</p>
+<p><em>新了解的一个概念，很有意思，但我觉得我只是了解了这个概念，并没有带着这个概念回看之前的所有论述，因为我困了:)</em></p>
+</div>
+    
+  </div>
+  <footer class="essay__foot">
+    <a class="back-link" href="/notes-essays/">← Back to writing</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+      
+        <a class="social-link" href="https://github.com/szy1840" aria-label="GitHub" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.51 11.51 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+      
+        <a class="social-link" href="https://www.linkedin.com/in/ziyansong02/" aria-label="LinkedIn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+      
+        <a class="social-link" href="mailto:szy1840@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v.18l-10 5.6L2 5.68V5.5Zm0 2.07V18.5A1.5 1.5 0 0 0 3.5 20h17a1.5 1.5 0 0 0 1.5-1.5V7.57l-9.51 5.33a1 1 0 0 1-.98 0L2 7.57Z"/></svg></a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>
