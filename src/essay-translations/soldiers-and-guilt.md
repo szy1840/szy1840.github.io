@@ -11,7 +11,7 @@ Today a friend and I got talking about war and soldiers. When I got home I went 
 
 Let's set aside the question of whether war can be avoided. Suppose the war has already started, or that it can't be avoided. A soldier on the battlefield kills a soldier on the other side. Is he guilty or not?
 
-My friend was clear that he is guilty. Their main point was that soldiers are people too, people are born with a right to life, and that right can't be violated. Less central to this question, but they went further: even when someone has killed, no one else has the right to put him to death. Life imprisonment is as far as it should go.
+My friend was clear that the soldier is guilty. His main point was that soldiers are people too, people are born with a right to life, and that right can't be violated. Less central to this question, but he went further: even when someone has killed, no one else has the right to put him to death. Life imprisonment is as far as it should go.
 
 I fully understand this view, and I don't have a strong intuition myself about which side is right. But I find the other side's position interesting. In a fairly traditional view, many people hold that a soldier who kills the enemy is not guilty, and that it's even honorable. What's the logic behind that? I found it interesting, so I want to try to explain and dig out the arguments that side might make.
 
