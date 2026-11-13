@@ -19,7 +19,7 @@ bodyClass: essay-page
     {% if translation %}
       <h1 class="essay__title" data-title data-title-en="{{ enTitle }}" data-title-zh="{{ zhTitle }}">{{ enTitle }}</h1>
     {% else %}
-      <h1 class="essay__title">{{ title }}</h1>
+      <h1 class="essay__title"{% if lang == 'zh' %} lang="zh"{% endif %}>{{ title }}</h1>
     {% endif %}
     <div class="essay__meta">
       <time datetime="{{ page.date | isoDate }}">{{ page.date | readableDate(lang) }}</time>
@@ -37,7 +37,7 @@ bodyClass: essay-page
       <div class="note-version" data-version="en" lang="en">{{ enBody | safe }}</div>
       <div class="note-version prose--zh" data-version="zh" lang="zh" hidden>{{ zhBody | safe }}</div>
     {% else %}
-      <div class="{% if lang == 'zh' %}prose--zh{% endif %}">{{ content | safe }}</div>
+      <div{% if lang == 'zh' %} class="prose--zh" lang="zh"{% endif %}>{{ content | safe }}</div>
     {% endif %}
   </div>
   <footer class="essay__foot">
