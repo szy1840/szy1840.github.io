@@ -9,7 +9,11 @@
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
     "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
-  --font-zh-serif: "Songti SC", "Noto Serif SC", "Source Han Serif SC", serif;
+  /* Latin letters and digits inside Chinese text come from Fraunces; the
+     CJK glyphs fall through to the system Songti / Source Han Serif. */
+  --font-zh-serif: "Fraunces", "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC",
+    "Noto Serif SC", "STSong", "SimSun", serif;
+  --font-zh-kai: "Kaiti SC", "STKaiti", "KaiTi", "Songti SC", "Noto Serif CJK SC", serif;
 
   --wrap: 1120px;
   --narrow: 720px;
@@ -28,8 +32,8 @@
   --surface-2: #f6f2e9;
   --ink: #1c1a17;
   --ink-soft: #3a352e;
-  --muted: #756c5d;
-  --faint: #9a9081;
+  --muted: #6b6254;
+  --faint: #7b7163;
   --line: #e7e0d1;
   --line-strong: #d8cfba;
   --accent: #b1542e;
@@ -47,7 +51,7 @@
   --ink: #ece6da;
   --ink-soft: #d3ccbd;
   --muted: #9c9282;
-  --faint: #6f6757;
+  --faint: #857c6c;
   --line: #2c2820;
   --line-strong: #3a352b;
   --accent: #e0794c;
@@ -145,10 +149,9 @@ main {
 }
 
 .eyebrow {
-  font-size: 0.74rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  font-weight: 500;
   color: var(--accent);
   margin-bottom: 1rem;
 }
@@ -289,7 +292,7 @@ main {
   border-radius: 999px;
   background: var(--ink);
   box-shadow: inset -3px -3px 0 0 var(--surface);
-  transition: all 0.3s var(--ease);
+  transition: background-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 [data-theme="dark"] .theme-toggle__icon {
   background: var(--accent);
@@ -664,9 +667,8 @@ a.bento-card {
   margin-bottom: auto;
 }
 .bento-card__cat {
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
   font-weight: 600;
   color: var(--accent);
 }
@@ -805,6 +807,9 @@ a.bento-card {
 .page-intro {
   padding-top: clamp(2.5rem, 6vw, 4.5rem);
   padding-bottom: clamp(2rem, 4vw, 3rem);
+}
+/* The intro shares the left edge of the list below it; only its text is capped */
+.page-intro > * {
   max-width: 760px;
 }
 .page__title {
@@ -878,9 +883,8 @@ a.bento-card {
 }
 .writing-col__head {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
   color: var(--accent);
   padding-bottom: 0.9rem;
   border-bottom: 1px solid var(--line-strong);
@@ -944,35 +948,54 @@ a.bento-card {
 
 /* ---------- Prose (shared) ---------- */
 .prose {
+  --flow: 1.15em;
   font-size: 1.05rem;
   line-height: 1.75;
   color: var(--ink-soft);
+  overflow-wrap: break-word;
 }
-.prose > * + * {
-  margin-top: 1.15em;
+/* Vertical rhythm. Bilingual pages wrap each language in .note-version, so
+   these rules apply at any depth, not only to direct children of .prose. */
+.prose :where(p, ul, ol, dl, blockquote, pre, table, figure) {
+  margin-top: var(--flow);
+}
+.prose :where(h2, h3, h4) + * {
+  margin-top: 0.65em;
+}
+.prose > :first-child,
+.prose > div > :first-child,
+.prose :where(li, blockquote, td, th) > :first-child {
+  margin-top: 0;
 }
 .prose h2 {
   font-family: var(--font-serif);
   font-weight: 600;
   font-size: 1.6rem;
-  line-height: 1.2;
+  line-height: 1.25;
   letter-spacing: -0.01em;
   color: var(--ink);
-  margin-top: 2.4em;
-  padding-top: 0.2em;
+  margin-top: 2.2em;
+  text-align: start;
 }
 .prose h3 {
   font-family: var(--font-serif);
   font-weight: 600;
   font-size: 1.25rem;
+  line-height: 1.3;
   color: var(--ink);
   margin-top: 1.8em;
+  text-align: start;
 }
 .prose h4 {
   font-weight: 600;
   font-size: 1.02rem;
   color: var(--ink);
   margin-top: 1.5em;
+  text-align: start;
+}
+.prose h2 + h3,
+.prose h3 + h4 {
+  margin-top: 0.8em;
 }
 .prose p,
 .prose ul,
@@ -980,9 +1003,10 @@ a.bento-card {
   max-width: 70ch;
 }
 .prose a {
-  color: var(--accent);
+  color: var(--accent-ink);
   text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  text-decoration-thickness: 1px;
   text-underline-offset: 3px;
   transition: text-decoration-color 0.2s var(--ease);
 }
@@ -1000,17 +1024,29 @@ a.bento-card {
 .prose li + li {
   margin-top: 0.4em;
 }
+/* Loose lists (blank lines between items): each item is a small paragraph */
+.prose li:has(> p) + li {
+  margin-top: 0.8em;
+}
+.prose li > :where(ul, ol) {
+  margin-top: 0.4em;
+}
 .prose li::marker {
-  color: var(--faint);
+  color: var(--muted);
 }
 .prose blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 0.4em 0 0.4em 1.2em;
-  color: var(--muted);
-  font-style: italic;
+  border-left: 2px solid var(--line-strong);
+  padding-left: 1.25rem;
+  color: var(--ink-soft);
 }
-.prose blockquote p {
-  margin: 0;
+/* An aside: a paragraph written entirely in *emphasis* */
+.prose .aside {
+  color: var(--muted);
+}
+/* Chinese has no italic. Emphasis, asides and quotations switch to Kaiti. */
+.prose :where(:lang(zh)) :where(em, i) {
+  font-style: normal;
+  font-family: "Inter", var(--font-zh-kai);
 }
 .prose hr {
   border: 0;
@@ -1020,6 +1056,50 @@ a.bento-card {
 .prose img {
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
+}
+
+/* footnotes */
+.prose sup {
+  line-height: 0;
+}
+.prose .footnote-ref a {
+  font-family: var(--font-sans);
+  font-size: 0.72em;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-decoration: none;
+  padding: 0 0.15em;
+}
+.prose .footnote-ref a:hover {
+  text-decoration: underline;
+}
+.prose .footnotes-sep {
+  display: none;
+}
+.prose .footnotes {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  letter-spacing: 0;
+  text-align: start;
+  color: var(--muted);
+}
+.prose .footnotes ol {
+  max-width: none;
+}
+.prose .footnotes p {
+  max-width: none;
+}
+.prose .footnote-item:target {
+  color: var(--ink);
+}
+.prose .footnote-backref {
+  font-family: var(--font-sans);
+  text-decoration: none;
+  margin-left: 0.25em;
 }
 
 /* inline code */
@@ -1146,6 +1226,7 @@ a.bento-card {
 /* Chinese body inside a technical note: a touch more line-height */
 .prose--zh-note {
   line-height: 1.85;
+  line-break: strict;
 }
 
 /* "EN · 中文" marker in the index */
@@ -1243,9 +1324,8 @@ a.bento-card {
   }
   .toc__title {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.01em;
     color: var(--faint);
     margin-bottom: 0.9rem;
   }
@@ -1281,6 +1361,10 @@ a.bento-card {
 .essay {
   padding-top: clamp(2.5rem, 6vw, 4.5rem);
 }
+/* One reading column: title, meta and body share the same two edges */
+.essay.wrap--narrow > * {
+  max-width: 40rem;
+}
 .essay__head {
   margin-bottom: 2.5rem;
 }
@@ -1290,10 +1374,19 @@ a.bento-card {
   font-size: clamp(1.7rem, 3.2vw, 2.4rem);
   line-height: 1.18;
   letter-spacing: -0.015em;
+  text-wrap: balance;
 }
-.essay-page .lang-zh .essay__title,
-.prose--zh ~ * {
-  /* placeholder */
+/* Songti has no medium weight, so a Chinese title needs the bold cut to hold
+   its place above the text */
+.essay__title:lang(zh),
+.note__title:lang(zh) {
+  font-family: var(--font-zh-serif);
+  font-weight: 600;
+  /* CJK glyphs fill the em box, so the same size reads larger than Latin */
+  font-size: clamp(1.5rem, 2.8vw, 2rem);
+  line-height: 1.35;
+  letter-spacing: 0;
+  word-break: auto-phrase;
 }
 .essay__meta {
   display: flex;
@@ -1303,46 +1396,76 @@ a.bento-card {
   margin-top: 1.1rem;
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  color: var(--faint);
+  color: var(--muted);
 }
-.prose--essay {
+.prose--essay,
+.prose--note {
+  --flow: 1em;
   font-family: var(--font-serif);
-  font-size: 1.18rem;
-  line-height: 1.85;
+  font-size: 1.1875rem;
+  line-height: 1.7;
+  color: var(--ink);
 }
-.prose--essay h2 {
+.prose--essay :where(p, ul, ol),
+.prose--note :where(p, ul, ol) {
+  max-width: none;
+}
+.prose--essay h2,
+.prose--note h2 {
   font-size: 1.5rem;
 }
-.prose--essay p:first-of-type::first-letter {
-  font-size: 3.4em;
+/* Drop cap on the opening paragraph of an English essay only */
+.prose--essay > div:not(.prose--zh) > p:first-child::first-letter {
+  font-size: 3.1em;
   float: left;
-  line-height: 0.8;
-  padding: 0.08em 0.12em 0 0;
+  line-height: 0.82;
+  padding: 0.07em 0.1em 0 0;
   font-weight: 500;
   color: var(--accent);
 }
 .prose--zh {
   font-family: var(--font-zh-serif);
-  font-size: 1.15rem;
-  line-height: 2;
+  font-size: 1.125rem;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  text-align: justify;
+  line-break: strict;
+  /* Fraunces at 400 is darker than Songti Regular; thin the Latin letters so
+     names and numbers don't read as bold. Songti has no such axis and ignores it. */
+  font-variation-settings: "wght" 340;
 }
-.prose--zh p:first-of-type::first-letter {
-  font-size: 1em;
-  float: none;
-  padding: 0;
-  color: inherit;
-}
-.prose--essay blockquote {
-  font-size: 0.95em;
-}
-/* Notes: serif reading, no drop cap */
-.prose--note {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  line-height: 1.8;
-}
-.prose--note.prose--zh {
+.prose--zh :where(h2, h3, h4) {
   font-family: var(--font-zh-serif);
+  letter-spacing: 0.02em;
+}
+.prose--zh :where(h2, h3, h4, strong, b) {
+  font-variation-settings: "wght" 560;
+}
+.prose--zh :where(.footnotes, .footnote-ref) {
+  font-variation-settings: normal;
+}
+.prose--zh :where(em, i),
+.prose--zh blockquote {
+  font-family: "Fraunces", var(--font-zh-kai);
+}
+.prose--essay .aside,
+.prose--note .aside {
+  font-size: 0.94em;
+}
+/* Kaiti is drawn small in its box; keep it at body size and untracked */
+.prose--zh .aside,
+.prose--zh blockquote {
+  font-size: 1.05em;
+  letter-spacing: 0;
+}
+@media (max-width: 480px) {
+  .prose--essay,
+  .prose--note {
+    font-size: 1.125rem;
+  }
+  .prose--zh {
+    font-size: 1.0625rem;
+  }
 }
 .essay__foot {
   margin-top: 3.5rem;
@@ -1516,9 +1639,8 @@ a.bento-card {
 }
 .skills__label {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
   color: var(--muted);
   margin-bottom: 0.7rem;
 }
@@ -1631,9 +1753,8 @@ a.bento-card {
 }
 .resume__section-title {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
   color: var(--accent);
   padding-bottom: 0.8rem;
   border-bottom: 1px solid var(--line);
@@ -1678,8 +1799,7 @@ a.bento-card {
 }
 .resume__skills h4 {
   font-size: 0.82rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--muted);
   margin-bottom: 0.3rem;
 }
@@ -1842,9 +1962,8 @@ a.bento-card {
 }
 .project__facts dt {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
   color: var(--faint);
   margin-bottom: 0.25rem;
 }

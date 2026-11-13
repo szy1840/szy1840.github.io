@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400..500&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/css/style.css" />
@@ -271,7 +271,7 @@
 <p>While building dev_pulse, I immediately felt that, to account for usage, my implementation was heavily dependent on the LLM vendors’ specific implementations, e.g. the <code>.claude/</code> directory layout and so on. So I wanted to look for a solution that didn’t depend on vendor implementation details. When I learned about this low-level eBPF-based approach, I found it quite interesting. But on closer inspection it still depends on plenty of specifics: it depends on the SSL library type, token accounting still depends on vendor fields, it may still depend on concrete directories and local storage contents like those under <code>.claude/</code>, and static linking may even depend on byte signatures.</p>
 <p>I can only say this is yet another tradeoff: using higher privileges to intercept and obtain LLM traffic, in exchange for reducing part of the dependence on the LLM vendors’ specific local storage contents and structures. But fundamentally you can’t escape dependence on implementation details of some kind. I suspect that eventually LLM vendors will settle on a common stateless/stateful request-response protocol, which would make everyone’s life easier.</p>
 </div>
-        <div class="note-version prose--zh-note" data-version="zh" lang="zh" hidden><p><strong>ANOLISA</strong> 是阿里云 2026 年 3 月开源的 Agentic OS（Anolis OS 的 Agent 演进版），由 Copilot Shell、OS Skills、Agent Sec Core、AgentSight 等组件组装而成，定位为首个&quot;以 Agent 为用户主体&quot;的服务端操作系统。</p>
+        <div class="note-version prose--zh-note" data-version="zh" lang="zh" hidden><p><strong>ANOLISA</strong> 是阿里云 2026 年 3 月开源的 Agentic OS（Anolis OS 的 Agent 演进版），由 Copilot Shell、OS Skills、Agent Sec Core、AgentSight 等组件组装而成，定位为首个“以 Agent 为用户主体”的服务端操作系统。</p>
 <p>其中 <strong>AgentSight</strong> 来自上游开源项目 <a href="https://github.com/eunomia-bpf/agentsight">eunomia-bpf/agentsight</a>（MIT），被 ANOLISA 集成为可观测性组件，核心是基于 eBPF、对 AI Agent 的 LLM 流量提供零侵入式监控。</p>
 <p>本文是对它的实现思路的一篇学习笔记。</p>
 <h2 id="ebpf" tabindex="-1"><a class="header-anchor" href="#ebpf"><span>eBPF</span></a></h2>
@@ -304,13 +304,13 @@
 <li><strong>进入时</strong>，函数参数还在寄存器里，能拿到调用方传进来的缓冲区指针，但缓冲区里还没有数据（read 尤其明显，此时是空的）。所以这一刀只是把缓冲区地址和时间戳暂存进一张以线程号（tid）为 key 的 hash map。</li>
 <li><strong>返回时</strong>，函数已经干完活：read 的明文填好了、write 的明文还在。返回值告诉我们实际读/写了多少字节，于是根据进入时暂存的地址，精确拷贝这么多字节出来并 submit。</li>
 </ul>
-<p><strong>为什么用 tid 当 key</strong>：进入和返回是两次独立触发，中间必须有个标识把&quot;我刚记下的缓冲区&quot;找回来。同一次函数调用一定发生在同一个线程里，所以 tid 是最自然的选择。</p>
+<p><strong>为什么用 tid 当 key</strong>：进入和返回是两次独立触发，中间必须有个标识把“我刚记下的缓冲区”找回来。同一次函数调用一定发生在同一个线程里，所以 tid 是最自然的选择。</p>
 <p>数据通过 ring buffer map 离开内核。用户态加载器抽干它，每行输出一个 JSON 对象。</p>
 <h3 id="为什么不只在返回的时候读" tabindex="-1"><a class="header-anchor" href="#为什么不只在返回的时候读"><span>为什么不只在返回的时候读？</span></a></h3>
 <p>因为函数参数是通过寄存器传的，函数体一开始执行，那几个参数寄存器就很可能被当普通临时寄存器覆盖掉了。因此我们需要在函数进入的时候，拿到第二个参数：缓冲区地址。</p>
 <h2 id="ssl" tabindex="-1"><a class="header-anchor" href="#ssl"><span>SSL</span></a></h2>
 <p><strong>SSL 是什么？</strong> OpenSSL 和 GnuTLS 都是 TLS/SSL 加密库——就是让程序能建立加密网络连接（HTTPS 那个 “S”）的底层软件库。</p>
-<p>当你的程序要往 <code>https://api.anthropic.com</code> 发请求时，数据不能明文过网络，得加密。但&quot;实现 TLS 协议&quot;这件事很复杂：密钥协商、证书验证、对称/非对称加密、各种算法套件……没人会自己从头写。所以绝大多数程序都是链接一个现成的 TLS 库：</p>
+<p>当你的程序要往 <code>https://api.anthropic.com</code> 发请求时，数据不能明文过网络，得加密。但“实现 TLS 协议”这件事很复杂：密钥协商、证书验证、对称/非对称加密、各种算法套件……没人会自己从头写。所以绝大多数程序都是链接一个现成的 TLS 库：</p>
 <ul>
 <li><strong>OpenSSL</strong>，Apache 许可证，几乎无处不在：Nginx、Python 的 requests、curl、大量语言的 HTTP 客户端底层都用的是 OpenSSL。</li>
 <li><strong>GnuTLS</strong>：GNU 项目的替代实现，LGPL 许可证。有些项目出于许可证兼容性（早年 OpenSSL 的许可证和 GPL 有冲突）或偏好选它，比如 GnuPG 生态、一些 GNOME 组件。</li>
@@ -332,7 +332,7 @@
 <li><strong>符号没了就靠字节特征。</strong> stripped 二进制查不到符号，于是退回去扫描文件内容，找三个特征串：<code>SSL_write</code>、<code>BoringSSLError</code>、<code>OPENSSL_internal</code>。</li>
 </ul>
 <h2 id="请求响应关联correlation" tabindex="-1"><a class="header-anchor" href="#请求响应关联correlation"><span>请求–响应关联（correlation）</span></a></h2>
-<p>内核抓到的是一条条孤立的 SSL 读写，它不知道哪个 <code>SSL_read</code>（响应）对应哪个 <code>SSL_write</code>（请求）。把请求和响应配成一对，才能算出&quot;这次调用多久、多少 token、成功还是失败&quot;，即一行调用记录。</p>
+<p>内核抓到的是一条条孤立的 SSL 读写，它不知道哪个 <code>SSL_read</code>（响应）对应哪个 <code>SSL_write</code>（请求）。把请求和响应配成一对，才能算出“这次调用多久、多少 token、成功还是失败”，即一行调用记录。</p>
 <p>核心匹配数据结构：</p>
 <ul>
 <li><strong>key 是 (pid, tid)</strong>：一次请求-响应，发生在同一线程。</li>

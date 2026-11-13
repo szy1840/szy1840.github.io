@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400..500&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/css/style.css" />
@@ -120,7 +120,7 @@
     </aside>
     <div class="prose prose--doc" data-article>
       
-        <div class="note-version" data-version="en" lang="en"><p><em>Originally written between February and May 2022 while studying MIT 6.S081.</em></p>
+        <div class="note-version" data-version="en" lang="en"><p class="aside"><em>Originally written between February and May 2022 while studying MIT 6.S081.</em></p>
 <h2 id="introduction" tabindex="-1"><a class="header-anchor" href="#introduction"><span>Introduction</span></a></h2>
 <h3 id="the-art-of-balance" tabindex="-1"><a class="header-anchor" href="#the-art-of-balance"><span>The Art of Balance</span></a></h3>
 <p>Beyond the usual requirements of performance and stability, an operating system must strike a balance among many competing demands, including:</p>
@@ -157,7 +157,7 @@
 <li><strong>Kernel/user mode.</strong> RISC-V supports three privilege levels; there is also a machine mode. In RISC-V, kernel mode is called supervisor mode.</li>
 <li><strong>Virtual memory</strong> (via page tables).</li>
 </ul>
-<p><em>Why these two features specifically require hardware support, and why other features don’t, likely involves complex trade-offs.</em></p>
+<p class="aside"><em>Why these two features specifically require hardware support, and why other features don’t, likely involves complex trade-offs.</em></p>
 <p>Hardware supports distinct modes and switching between them. In RISC-V, the <code>ecall</code> instruction transitions from user mode to kernel mode. <code>ecall</code> takes a numeric argument identifying the desired system call; the mapping is defined in <code>kernel/syscall.h</code>, for example:</p>
 <ul>
 <li><code>#define SYS_fork 1</code></li>
@@ -565,7 +565,7 @@ devsw<span class="token punctuation">[</span>CONSOLE<span class="token punctuati
 <li>Finer-grained locks improve performance (ignoring lock overhead itself) but are harder to audit for potential deadlocks.</li>
 <li>More importantly, this breaks ideal modularity: we’d prefer a function to hide its internal locks, but ordering requirements force callers to know what locks a function holds.</li>
 </ul>
-<p><em>The mathematical rule is simple, which is why deadlock-detection tools exist.</em></p>
+<p class="aside"><em>The mathematical rule is simple, which is why deadlock-detection tools exist.</em></p>
 <h3 id="development-practice" tabindex="-1"><a class="header-anchor" href="#development-practice"><span>Development Practice</span></a></h3>
 <p>In practice, the common workflow is: start with <strong>coarse-grained locks</strong>, verify the multi-threaded code is correct and performance is adequate. If it is, there may be no need to refine. If not, incrementally fine-grain.</p>
 <h3 id="spinlock-implementation" tabindex="-1"><a class="header-anchor" href="#spinlock-implementation"><span>Spinlock Implementation</span></a></h3>
@@ -1022,7 +1022,7 @@ p<span class="token operator">-></span>context<span class="token punctuation">.<
 </ul>
 <hr>
 <h2 id="ext3" tabindex="-1"><a class="header-anchor" href="#ext3"><span>ext3</span></a></h2>
-<p><em>FS below refers to the non-log disk region.</em></p>
+<p class="aside"><em>FS below refers to the non-log disk region.</em></p>
 <h3 id="xv6s-performance-problem" tabindex="-1"><a class="header-anchor" href="#xv6s-performance-problem"><span>xv6’s Performance Problem</span></a></h3>
 <p>xv6 logging forces every system call to wait for the entire transaction — all writes to the log, header update, install to FS, and log clear — before returning. Other system calls must wait during <code>commit()</code> because <code>begin_op</code> checks <code>committing</code>. Each system call is synchronous with its disk writes.</p>
 <p>Additionally, xv6 writes every block twice (to the log and then to FS). ext3 can partially optimize this.</p>
@@ -1177,10 +1177,10 @@ p<span class="token operator">-></span>context<span class="token punctuation">.<
 </ul>
 </li>
 </ul>
-<p><em>The pattern is consistent: use page faults for any situation where a background thread must run concurrently with the main thread but must not interfere with data the background thread is working on.</em></p>
+<p class="aside"><em>The pattern is consistent: use page faults for any situation where a background thread must run concurrently with the main thread but must not interfere with data the background thread is working on.</em></p>
 <hr>
 <h2 id="microkernel" tabindex="-1"><a class="header-anchor" href="#microkernel"><span>Microkernel</span></a></h2>
-<p><em>No source code explored for this section; consult “Operating Systems: Design and Implementation” and Minix source.</em></p>
+<p class="aside"><em>No source code explored for this section; consult “Operating Systems: Design and Implementation” and Minix source.</em></p>
 <h3 id="monolithic-kernels-and-their-problems" tabindex="-1"><a class="header-anchor" href="#monolithic-kernels-and-their-problems"><span>Monolithic Kernels and Their Problems</span></a></h3>
 <p>xv6 models Unix, a monolithic kernel. The core idea: the OS should provide powerful abstractions, so it includes VM, process scheduling, system calls, signals, interrupts, hardware drivers, file system, etc. Benefits:</p>
 <ul>
@@ -1547,7 +1547,7 @@ e<span class="token operator">-></span>next <span class="token operator">=</span
 </ul>
 <p>Other synchronization primitives exist (e.g., sequence locks allow in-place updates without reader locks, but are more complex and more restrictive). Some mechanisms perform better under high load, worse under low load. In distributed systems, the complexity grows further. Synchronization is a vast and ongoing field of research.</p>
 </div>
-        <div class="note-version prose--zh-note" data-version="zh" lang="zh" hidden><p><em>原始笔记写于 2022 年 2 月至 5 月，学习 MIT 6.S081 课程期间。</em></p>
+        <div class="note-version prose--zh-note" data-version="zh" lang="zh" hidden><p class="aside"><em>原始笔记写于 2022 年 2 月至 5 月，学习 MIT 6.S081 课程期间。</em></p>
 <h2 id="简介" tabindex="-1"><a class="header-anchor" href="#简介"><span>简介</span></a></h2>
 <h3 id="平衡的艺术" tabindex="-1"><a class="header-anchor" href="#平衡的艺术"><span>平衡的艺术</span></a></h3>
 <p>除了一般的性能、稳定性要求之外，操作系统需要在许多矛盾的需求间取得平衡。包括：</p>
@@ -1598,7 +1598,7 @@ e<span class="token operator">-></span>next <span class="token operator">=</span
 <li>kernel/user mode。RISC-V 支持三级模式，还有一级 machine mode。另外在 RISC-V 中 kernel mode 称为 supervisor mode。</li>
 <li>虚拟内存（page table形式）</li>
 </ul>
-<p><em>至于为什么这两部分是必须需要硬件支持的，别的功能为什么不寻求硬件支持，可能有复杂的证明和权衡。</em></p>
+<p class="aside"><em>至于为什么这两部分是必须需要硬件支持的，别的功能为什么不寻求硬件支持，可能有复杂的证明和权衡。</em></p>
 <p>硬件支持了不同模式，还需要支持从一个模式切换到另一个模式。在 RISC-V 中，有一个 ecall 指令，支持从 user mode 转到 kernel mode. 具体来说，ecall 有一个数字参数，表示想要调用的 system call，具体对应关系定义在了 <code>kernel/syscall.h</code>，例如：</p>
 <ul>
 <li>#define SYS_fork    1</li>
@@ -2029,7 +2029,7 @@ devsw<span class="token punctuation">[</span>CONSOLE<span class="token punctuati
 <li>理论上，锁加的越精细，性能会越好（此处不考虑加锁和释放的消耗），但是锁多了过于复杂，人力难以检查潜在死锁</li>
 <li>更重要的，这是对模块化的理想世界的根本破坏。理论上，我们希望把锁放在函数的内部，但这个顺序的要求，需要我们知道函数内部使用了什么锁。</li>
 </ul>
-<p><em>但这条规则从数学上挺简单的，所以查了下果然有<strong>死锁检测</strong>程序</em></p>
+<p class="aside"><em>但这条规则从数学上挺简单的，所以查了下果然有<strong>死锁检测</strong>程序</em></p>
 <h3 id="开发实践" tabindex="-1"><a class="header-anchor" href="#开发实践"><span>开发实践</span></a></h3>
 <p>可以看到，说清之后，我们发现锁的使用是很难完美的。一般开发的流程是：先使用 coarse-grained lock 完成开发，测试是否可以使用多线程并且性能达标。如果可以，那么也许并不需要着急地重构细化锁。</p>
 <h3 id="自旋锁实现" tabindex="-1"><a class="header-anchor" href="#自旋锁实现"><span>自旋锁实现</span></a></h3>
@@ -2565,7 +2565,7 @@ p<span class="token operator">-></span>context<span class="token punctuation">.<
 <li>bpin() 由且只由 log_write() 调用</li>
 <li>bunpin() 由且只由 install_trans() 调用（且是在 recovering == 0 时）</li>
 </ul>
-<p><em>其他地方也有直接修改 refcnt 的，但是这两个应该是就是提供给 logging 层使用的接口。</em></p>
+<p class="aside"><em>其他地方也有直接修改 refcnt 的，但是这两个应该是就是提供给 logging 层使用的接口。</em></p>
 <h3 id="细节讨论-1" tabindex="-1"><a class="header-anchor" href="#细节讨论-1"><span>细节讨论</span></a></h3>
 <p>由于磁盘上的 logging 区大小有限（默认是 30），这会引发一些细节问题。</p>
 <p>首先，由于写入 logging 之前需要将 block 在 buffer cache 中 pin 住，因此显然 bcache 的 最大 buf 数量需要大于等于 30</p>
@@ -2585,7 +2585,7 @@ p<span class="token operator">-></span>context<span class="token punctuation">.<
 <p>end_op() 中会对 outstanding 减 1，并且当 outstanding == 0 时进行 commit()；否则，唤醒可能正在 begin_op() 中等待的进程</p>
 </li>
 </ul>
-<p><em>这里还有一些问题：log 区只有 30，如果三个事务同时开始，都写满了 10 个 block，这样实际 log 不是需要加上一个 log header 的 block，也就变成 31 了吗？</em></p>
+<p class="aside"><em>这里还有一些问题：log 区只有 30，如果三个事务同时开始，都写满了 10 个 block，这样实际 log 不是需要加上一个 log header 的 block，也就变成 31 了吗？</em></p>
 <h3 id="inode-cache" tabindex="-1"><a class="header-anchor" href="#inode-cache"><span>inode cache</span></a></h3>
 <p>xv6 中 inode cache 层和 buffer cache 层很类似，也是有一个大的 icache（和一个大的锁）和一个数组的 inode（各自有锁）。内存中的 inode 结构是磁盘中的 inode 数据加上 lock, link 等 xv6 需要的数据。</p>
 <p>最大的区别在于，inode 解耦了【持有引用】和【持有锁】。bread() 返回的时候就是返回一个带有锁的 buf，但是 iget() 返回的时候并不带有锁。这是必须的，因为我们希望能够在多个进程中持有同一个文件的引用，而且 pathname lookup 等功能也需要同时持有多个 inode 的引用。</p>
@@ -2600,7 +2600,7 @@ p<span class="token operator">-></span>context<span class="token punctuation">.<
 <li>实际的 OS 往往将很多种资源都抽象成文件的形式。因此，对于每个打开的文件，一般有一个 function pointer table，用操作（eg. read()）去查表，从而执行该 inode 对于该种操作的实现</li>
 </ul>
 <h2 id="ext3" tabindex="-1"><a class="header-anchor" href="#ext3"><span>ext3</span></a></h2>
-<p><em>下面用 FS 表示除 log 区以外的磁盘文件系统区域。</em></p>
+<p class="aside"><em>下面用 FS 表示除 log 区以外的磁盘文件系统区域。</em></p>
 <h3 id="xv6-的问题" tabindex="-1"><a class="header-anchor" href="#xv6-的问题"><span>xv6 的问题</span></a></h3>
 <p>xv6 的 logging 性能太差了，因为：xv6 中所有系统调用，例如 write，都需要在整个事务完成之后才能返回。这包括了：</p>
 <ul>
@@ -2763,7 +2763,7 @@ p<span class="token operator">-></span>context<span class="token punctuation">.<
 <li>handler 返回到内核</li>
 <li>内核返回到用户空间，继续执行之前的用户进程</li>
 </ol>
-<p><em>Linux 中 handler 并不需要像 xv6 中 sigalarm() 那样调用 sys_sigreturn() 来返回，这里的 upcall 机制资料不多，具体实现不清楚。</em></p>
+<p class="aside"><em>Linux 中 handler 并不需要像 xv6 中 sigalarm() 那样调用 sys_sigreturn() 来返回，这里的 upcall 机制资料不多，具体实现不清楚。</em></p>
 <p>这里显然需要讨论下安全性问题。由于 handler 也是在同一个用户空间运行的，因此最坏的情况就是导致该进程自己崩溃，而不会影响其他进程。</p>
 <h3 id="应用举例" tabindex="-1"><a class="header-anchor" href="#应用举例"><span>应用举例</span></a></h3>
 <p>可以用到虚拟内存机制的应用有：</p>
@@ -2798,9 +2798,9 @@ p<span class="token operator">-></span>context<span class="token punctuation">.<
 <p>因此，我们希望经常对年轻代进行 GC。想要对该区域 GC，就需要知道所有指向该区域的对象的指针，难点是老年代中指向年轻代中的。怎么做呢？考虑到一个老年代的对象想要有一个指针指向一个年轻代，必然是通过赋值。因此，只要利用 DIRTY，在 GC 时检查老年代中记录有哪些页有写入，并检查这些页中是否有指向年轻代的指针就可以了。如果没有 DIRTY，则可以通过将老年代设为只读实现，缺页中断时，记录该页的方法来实现。</p>
 </li>
 </ul>
-<p><em>可以看到，思路和步骤都是类似的。特别是遇到一个后台线程需要和普通的线程并发运行时，应该立即想到利用虚拟内存的实现方式。当然，这只是一种实现，有些情况可能并不是最优选择。</em></p>
+<p class="aside"><em>可以看到，思路和步骤都是类似的。特别是遇到一个后台线程需要和普通的线程并发运行时，应该立即想到利用虚拟内存的实现方式。当然，这只是一种实现，有些情况可能并不是最优选择。</em></p>
 <h2 id="微内核" tabindex="-1"><a class="header-anchor" href="#微内核"><span>微内核</span></a></h2>
-<p><em>微内核没有看过代码，不知道很多地方怎么实现，具体可以看《操作系统：设计与实现》，Minix 源代码</em></p>
+<p class="aside"><em>微内核没有看过代码，不知道很多地方怎么实现，具体可以看《操作系统：设计与实现》，Minix 源代码</em></p>
 <h3 id="宏内核及其问题" tabindex="-1"><a class="header-anchor" href="#宏内核及其问题"><span>宏内核及其问题</span></a></h3>
 <p>我们的 xv6 的实现目标就是模仿 Unix，一个宏内核（monolithic kernel）OS，但是现在我们应该停下来思考开头就提出的问题：OS 究竟应该做哪些工作？传统的，习惯的方式是宏内核，其核心思想是 OS 应该提供强大的抽象，因此它包含了虚拟内存，进程调度，系统调用，信号机制，中断机制，硬件驱动等等功能，还有像文件系统这样强大的抽象。这么做的好处有：</p>
 <ul>

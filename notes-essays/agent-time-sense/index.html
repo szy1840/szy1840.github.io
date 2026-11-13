@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400..500&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/css/style.css" />
@@ -112,27 +112,27 @@
       <div class="note-version" data-version="en" lang="en"><p>Lately, working with coding agents, I’ve started to feel a real trust issue with them. After some research and testing, I found what might be the cause, and it’s an interesting one.</p>
 <h2 id="1-estimating-in-human-hours" tabindex="-1"><a class="header-anchor" href="#1-estimating-in-human-hours"><span>1. Estimating in human hours</span></a></h2>
 <p>The first problem is that AI still estimates work the pre-AI way. It will tell you a change needs half a day, a day, or 2–3 days, when in practice a single session often finishes it in 20 minutes. The number it gives you is how long a human engineer in 2022 would need, not how long it needs itself.</p>
-<p>This has already been written about. Martin Monperrus, a software engineering professor at KTH, wrote a blog post in September<sup class="footnote-ref"><a href="#fn-en-1" id="fnref-en-1">[1]</a></sup> that calls it <em>anthropocentric time bias</em>. He sees two main causes, and I agree with both:</p>
+<p>This has already been written about. Martin Monperrus, a software engineering professor at KTH, wrote a blog post in September<sup class="footnote-ref"><a href="#fn-en-1" id="fnref-en-1">1</a></sup> that calls it <em>anthropocentric time bias</em>. He sees two main causes, and I agree with both:</p>
 <ul>
 <li><strong>Training data</strong>: blog posts, sprint estimates, and pre-2022 GitHub all record how fast humans work, so the only conversion between effort and time the model has learned is the human one.</li>
 <li><strong>No clock</strong>: the model knows that “writing an API takes a few days,” but it can’t feel that it actually wrote one in 90 seconds.</li>
 </ul>
-<p>There are quantitative studies too. A paper at an ICLR 2026 workshop, “Can LLMs Perceive Time?”<sup class="footnote-ref"><a href="#fn-en-2" id="fnref-en-2">[2]</a></sup>, tested 68 tasks and found that models’ pre-task estimates overshoot actual duration by 4–7x, and by 5–10x in multi-step agent settings. A LessWrong post from August, “Your Agents Are Not Time Aware”<sup class="footnote-ref"><a href="#fn-en-3" id="fnref-en-3">[3]</a></sup>, ran Claude Code and Codex on a few hundred tasks and found that no matter how long a task actually takes, the agents like to predict around “an hour and a half.”</p>
+<p>There are quantitative studies too. A paper at an ICLR 2026 workshop, “Can LLMs Perceive Time?”<sup class="footnote-ref"><a href="#fn-en-2" id="fnref-en-2">2</a></sup>, tested 68 tasks and found that models’ pre-task estimates overshoot actual duration by 4–7x, and by 5–10x in multi-step agent settings. A LessWrong post from August, “Your Agents Are Not Time Aware”<sup class="footnote-ref"><a href="#fn-en-3" id="fnref-en-3">3</a></sup>, ran Claude Code and Codex on a few hundred tasks and found that no matter how long a task actually takes, the agents like to predict around “an hour and a half.”</p>
 <blockquote>
 <p>The Claude team has noticed this.</p>
-<p>Claude Code’s system prompt once had a section called “Planning without timelines,” which said: Never suggest timelines like “this will take 2-3 weeks” or “we can do this later.” The npm release history shows it was added in 2.0.43 in November 2025 and removed in 2.1.9 in January 2026<sup class="footnote-ref"><a href="#fn-en-4" id="fnref-en-4">[4]</a></sup>. Why it was removed isn’t known. Either way, the rule only stopped Claude from <em>saying</em> it; it couldn’t change how Claude <em>thinks</em>.</p>
+<p>Claude Code’s system prompt once had a section called “Planning without timelines,” which said: Never suggest timelines like “this will take 2-3 weeks” or “we can do this later.” The npm release history shows it was added in 2.0.43 in November 2025 and removed in 2.1.9 in January 2026<sup class="footnote-ref"><a href="#fn-en-4" id="fnref-en-4">4</a></sup>. Why it was removed isn’t known. Either way, the rule only stopped Claude from <em>saying</em> it; it couldn’t change how Claude <em>thinks</em>.</p>
 </blockquote>
-<p>Someone also filed an issue on Claude Code’s GitHub<sup class="footnote-ref"><a href="#fn-en-5" id="fnref-en-5">[5]</a></sup>: the agent kept pushing back on small changes with “not worth the complexity” or “we can do that later,” and those changes turned out to be 4 lines of code that it finished as soon as it was pushed. Even when Claude isn’t allowed to talk about time, it is still budgeting as if the job takes three days; it just says “not worth it,” “later,” or “out of scope” instead.</p>
+<p>Someone also filed an issue on Claude Code’s GitHub<sup class="footnote-ref"><a href="#fn-en-5" id="fnref-en-5">5</a></sup>: the agent kept pushing back on small changes with “not worth the complexity” or “we can do that later,” and those changes turned out to be 4 lines of code that it finished as soon as it was pushed. Even when Claude isn’t allowed to talk about time, it is still budgeting as if the job takes three days; it just says “not worth it,” “later,” or “out of scope” instead.</p>
 <h2 id="2-the-agent-remembers-deadlines" tabindex="-1"><a class="header-anchor" href="#2-the-agent-remembers-deadlines"><span>2. The agent remembers deadlines</span></a></h2>
 <p>The second one is subtler, and it has to do with Claude Code’s auto memory.</p>
-<p>Claude Code writes its own memories. According to the official docs<sup class="footnote-ref"><a href="#fn-en-6" id="fnref-en-6">[6]</a></sup>, it saves only four kinds: user (who you are and how you work), feedback (corrections you’ve given it), project (how the project is going), and reference (where to find outside information). The project type covers “ongoing work, deadlines, and decisions,” as long as they can’t be derived from the code or git history.</p>
-<p>I also dug into the prompt for this inside the Claude Code package<sup class="footnote-ref"><a href="#fn-en-7" id="fnref-en-7">[7]</a></sup>, which is more specific. When should it save a project memory? “When you learn who is doing what, why, or by when.” Relative dates like “Thursday” have to be converted to absolute dates before saving. Each memory also gets a “How to apply” line saying how the fact should shape its suggestions later. The example in the prompt: the user says non-critical merges are frozen after Thursday, and the agent saves “merge freeze begins 2026-03-05 for mobile release cut. Flag any non-critical PR work scheduled after that date.”</p>
+<p>Claude Code writes its own memories. According to the official docs<sup class="footnote-ref"><a href="#fn-en-6" id="fnref-en-6">6</a></sup>, it saves only four kinds: user (who you are and how you work), feedback (corrections you’ve given it), project (how the project is going), and reference (where to find outside information). The project type covers “ongoing work, deadlines, and decisions,” as long as they can’t be derived from the code or git history.</p>
+<p>I also dug into the prompt for this inside the Claude Code package<sup class="footnote-ref"><a href="#fn-en-7" id="fnref-en-7">7</a></sup>, which is more specific. When should it save a project memory? “When you learn who is doing what, why, or by when.” Relative dates like “Thursday” have to be converted to absolute dates before saving. Each memory also gets a “How to apply” line saying how the fact should shape its suggestions later. The example in the prompt: the user says non-critical merges are frozen after Thursday, and the agent saves “merge freeze begins 2026-03-05 for mobile release cut. Flag any non-critical PR work scheduled after that date.”</p>
 <p>So it really does pay attention to deadlines, and it is explicitly told to let them shape its suggestions. The design is reasonable on its own, but combined with the first bias it can form a chain. Say the memory says we launch in three days, and I want to build a feature and ask the agent which implementation it recommends. Sometimes it will:</p>
 <ol>
 <li>Recommend a simple, temporary workaround</li>
 <li>Suggest holding off, since we’re launching “soon”</li>
 </ol>
-<p>Add the fact that LLMs already lean toward recommending the conservative option<sup class="footnote-ref"><a href="#fn-en-8" id="fnref-en-8">[8]</a></sup><sup class="footnote-ref"><a href="#fn-en-9" id="fnref-en-9">[9]</a></sup>, and the agent becomes more likely to stop, or to work well below the pace we’d expect.</p>
+<p>Add the fact that LLMs already lean toward recommending the conservative option<sup class="footnote-ref"><a href="#fn-en-8" id="fnref-en-8">8</a></sup><sup class="footnote-ref"><a href="#fn-en-9" id="fnref-en-9">9</a></sup>, and the agent becomes more likely to stop, or to work well below the pace we’d expect.</p>
 <h3 id="then-again" tabindex="-1"><a class="header-anchor" href="#then-again"><span>Then again</span></a></h3>
 <p>In a big company, this behavior might well be more acceptable. But in a startup, or when we’re building our own projects, it’s hard to accept. A change often costs one 20-minute session, and rolling it back if something breaks is just as quick. There’s no reason to skip it just because a date is close.</p>
 <p>Seen this way, there are two possible directions. One is to stop the agent from remembering deadlines at all, or at least from using them to shape suggestions unprompted. The other is to give the agent more context, such as telling it we’re working at a startup, or just hacking on a project, and let it work out what a deadline means here.</p>
@@ -169,27 +169,27 @@
       <div class="note-version prose--zh" data-version="zh" lang="zh" hidden><p>最近用 coding agent 的时候，感觉和 agent 产生了严重的 trust issue。研究测试下来，发现了一个可能的、有意思的问题。</p>
 <h2 id="1-用人类工时估算" tabindex="-1"><a class="header-anchor" href="#1-用人类工时估算"><span>1. 用人类工时估算</span></a></h2>
 <p>第一个是，ai 还在用 pre-AI era 的方式估算工作量。它经常会说这个改动需要半天、1 天，或者 2–3 天，但实际上很多时候一个 session 跑 20 分钟就做完了。它报出来的其实是一个 2022 年的人类工程师需要的时间，而不是它自己需要的时间。</p>
-<p>这个问题已经有人专门讨论过。KTH 做软件工程的教授 Martin Monperrus 今年 9 月写过一篇博客<sup class="footnote-ref"><a href="#fn-zh-1" id="fnref-zh-1">[1]</a></sup>，把它叫做 anthropocentric time bias，也就是以人类为中心的时间偏差。他认为（我也非常同意）原因主要有两个：</p>
+<p>这个问题已经有人专门讨论过。KTH 做软件工程的教授 Martin Monperrus 今年 9 月写过一篇博客<sup class="footnote-ref"><a href="#fn-zh-1" id="fnref-zh-1">1</a></sup>，把它叫做 anthropocentric time bias，也就是以人类为中心的时间偏差。他认为（我也非常同意）原因主要有两个：</p>
 <ul>
 <li><strong>训练数据</strong>：博客、sprint 估算、2022 年以前的 GitHub，记录的基本都是人类的产出速度，所以模型学到的工作量和时间之间的换算，只有人类这一种。</li>
-<li><strong>没有时钟</strong>：模型知道&quot;写一个 API 大概要几天&quot;，但它感知不到自己其实 90 秒就写完了。</li>
+<li><strong>没有时钟</strong>：模型知道“写一个 API 大概要几天”，但它感知不到自己其实 90 秒就写完了。</li>
 </ul>
-<p>也有一些量化的研究。ICLR 2026 一个 workshop 上的论文《Can LLMs Perceive Time?》<sup class="footnote-ref"><a href="#fn-zh-2" id="fnref-zh-2">[2]</a></sup>测了 68 个任务，发现模型事前的预估比实际耗时高 4–7 倍，放到多步的 agent 场景里是 5–10 倍。LessWrong 上 8 月有一篇文章《Your Agents Are Not Time Aware》<sup class="footnote-ref"><a href="#fn-zh-3" id="fnref-zh-3">[3]</a></sup>，作者用 Claude Code 和 Codex 跑了几百个任务，发现不管任务实际要多久，agent 的预测都喜欢落在一个半小时左右。</p>
+<p>也有一些量化的研究。ICLR 2026 一个 workshop 上的论文《Can LLMs Perceive Time?》<sup class="footnote-ref"><a href="#fn-zh-2" id="fnref-zh-2">2</a></sup>测了 68 个任务，发现模型事前的预估比实际耗时高 4–7 倍，放到多步的 agent 场景里是 5–10 倍。LessWrong 上 8 月有一篇文章《Your Agents Are Not Time Aware》<sup class="footnote-ref"><a href="#fn-zh-3" id="fnref-zh-3">3</a></sup>，作者用 Claude Code 和 Codex 跑了几百个任务，发现不管任务实际要多久，agent 的预测都喜欢落在一个半小时左右。</p>
 <blockquote>
 <p>Claude 团队意识到过这个问题：</p>
-<p>Claude Code 的 system prompt 里曾经有过一条规则：不要说&quot;这要 2–3 周&quot;或者&quot;可以以后再做&quot;。从 npm 上的历史可以查到，这一节是 2025 年 11 月的 2.0.43 加进去的，2026 年 1 月的 2.1.9 又删掉了<sup class="footnote-ref"><a href="#fn-zh-4" id="fnref-zh-4">[4]</a></sup>。具体原因未知。不过，很明显，这条规则本质上只是“不让 Claude 说”，但没办法改变其内部的“思考”方式。</p>
+<p>Claude Code 的 system prompt 里曾经有过一条规则：不要说“这要 2–3 周”或者“可以以后再做”。从 npm 上的历史可以查到，这一节是 2025 年 11 月的 2.0.43 加进去的，2026 年 1 月的 2.1.9 又删掉了<sup class="footnote-ref"><a href="#fn-zh-4" id="fnref-zh-4">4</a></sup>。具体原因未知。不过，很明显，这条规则本质上只是“不让 Claude 说”，但没办法改变其内部的“思考”方式。</p>
 </blockquote>
-<p>Claude Code 的 GitHub issue 区里有人也发过 issue<sup class="footnote-ref"><a href="#fn-zh-5" id="fnref-zh-5">[5]</a></sup>：agent 一直用 “not worth the complexity”、“we can do that later” 推掉一些小改动，结果那些改动只有 4 行代码，一催它就做完了。就算不让 Claude 说时间，它其实还是按三天在算，只是说出来的话变成了&quot;不值得&quot;、&quot;之后再做&quot;或者 “out of scope”。</p>
+<p>Claude Code 的 GitHub issue 区里有人也发过 issue<sup class="footnote-ref"><a href="#fn-zh-5" id="fnref-zh-5">5</a></sup>：agent 一直用 “not worth the complexity”、“we can do that later” 推掉一些小改动，结果那些改动只有 4 行代码，一催它就做完了。就算不让 Claude 说时间，它其实还是按三天在算，只是说出来的话变成了“不值得”、“之后再做”或者 “out of scope”。</p>
 <h2 id="2-agent-自动记忆-deadline" tabindex="-1"><a class="header-anchor" href="#2-agent-自动记忆-deadline"><span>2. Agent 自动记忆 deadline</span></a></h2>
 <p>第二个更隐蔽一些，和 Claude Code 的 auto memory 有关。</p>
-<p>Claude Code 会自己往 memory 里写东西。官方文档<sup class="footnote-ref"><a href="#fn-zh-6" id="fnref-zh-6">[6]</a></sup>里说它只存四类信息：user（你是谁、你的工作习惯）、feedback（你纠正过它什么）、project（项目的进展）和 reference（外部资料在哪）。其中 project 这一类写的是 “ongoing work, deadlines, and decisions”，也就是正在做的事、deadline 和做过的决定，前提是这些从代码和 git 历史里看不出来。</p>
-<p>我又去 Claude Code 的安装包里翻了这部分的 prompt<sup class="footnote-ref"><a href="#fn-zh-7" id="fnref-zh-7">[7]</a></sup>，写得更具体。什么时候存 project memory？“When you learn who is doing what, why, or by when”，也就是谁在做什么、为什么做、什么时候之前要做完；而且要把 “Thursday” 这种相对日期换成具体日期再存。每条 memory 后面还要写一行 How to apply，说明这条信息应该怎么影响它之后的建议。prompt 里给的例子是：用户说周四之后冻结非关键的 merge，agent 就存一条&quot;2026-03-05 起冻结 merge，之后排的非关键 PR 要提醒用户&quot;。</p>
+<p>Claude Code 会自己往 memory 里写东西。官方文档<sup class="footnote-ref"><a href="#fn-zh-6" id="fnref-zh-6">6</a></sup>里说它只存四类信息：user（你是谁、你的工作习惯）、feedback（你纠正过它什么）、project（项目的进展）和 reference（外部资料在哪）。其中 project 这一类写的是 “ongoing work, deadlines, and decisions”，也就是正在做的事、deadline 和做过的决定，前提是这些从代码和 git 历史里看不出来。</p>
+<p>我又去 Claude Code 的安装包里翻了这部分的 prompt<sup class="footnote-ref"><a href="#fn-zh-7" id="fnref-zh-7">7</a></sup>，写得更具体。什么时候存 project memory？“When you learn who is doing what, why, or by when”，也就是谁在做什么、为什么做、什么时候之前要做完；而且要把 “Thursday” 这种相对日期换成具体日期再存。每条 memory 后面还要写一行 How to apply，说明这条信息应该怎么影响它之后的建议。prompt 里给的例子是：用户说周四之后冻结非关键的 merge，agent 就存一条“2026-03-05 起冻结 merge，之后排的非关键 PR 要提醒用户”。</p>
 <p>所以它确实很关注 deadline，而且是被明确要求拿 deadline 去影响建议的。这个设计本身是合理的，但它和第一个 bias 叠在一起，就可能形成一条逻辑链：比如 memory 里写着三天之后 launch，这时候我想做某个 feature，问 agent 推荐哪个 impl 方案，它有时候会：</p>
 <ol>
 <li>推荐给我简单的临时方案</li>
 <li>由于“马上”要 launch 了，所以建议先不做</li>
 </ol>
-<p>再加上 LLM 本来就倾向于推荐保守的方案<sup class="footnote-ref"><a href="#fn-zh-8" id="fnref-zh-8">[8]</a></sup><sup class="footnote-ref"><a href="#fn-zh-9" id="fnref-zh-9">[9]</a></sup>，agent 就更容易停下来，或者达不到我们期待的效率。</p>
+<p>再加上 LLM 本来就倾向于推荐保守的方案<sup class="footnote-ref"><a href="#fn-zh-8" id="fnref-zh-8">8</a></sup><sup class="footnote-ref"><a href="#fn-zh-9" id="fnref-zh-9">9</a></sup>，agent 就更容易停下来，或者达不到我们期待的效率。</p>
 <h3 id="话又说回来" tabindex="-1"><a class="header-anchor" href="#话又说回来"><span>话又说回来</span></a></h3>
 <p>当然，其实换到一个大公司里，这个 Agent 的行为可能更容易被接受的。但 startup 里，或者我们自己写 project 的时候，这种表现就很难接受了。很多时候，改动的成本就是一个二十分钟的 session，出了问题回滚也很快，没有理由因为日期近了就不做。</p>
 <p>所以从这个角度想，可能有两个方向：一是干脆不让 agent 记下 deadline 这类信息，至少不让它主动拿来影响建议；二是让 agent 理解更多的背景，比如告诉它我们正在 startup 里工作，或者只是在 hacking 一个项目，让它自己判断 deadline 在这里意味着什么。</p>
