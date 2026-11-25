@@ -2,7 +2,6 @@
 title: "How Does Claude Motion Make Animations, and What Does It Have to Do with Remotion?"
 lang: en
 ref: claude-motion
-templateEngineOverride: md
 ---
 
 On October 8, Anthropic released Claude Motion: you describe what you want, and Claude makes a short animated explainer you can export as an MP4. I wanted to know whether it runs on Remotion. The answer: Anthropic hasn't published how it works, and I found no evidence that it uses Remotion.
@@ -18,60 +17,6 @@ The core rule of these tools: **the picture depends only on the time t**.
 1. Write the picture as `render(t)`. The same t always draws the same frame, with no dependence on the real clock or random numbers.
 2. For preview, `requestAnimationFrame` calls `render(t)` with the current time, so it looks like playback.
 3. For export, a headless browser sets t frame by frame, takes screenshots, and hands them to FFmpeg. It isn't screen recording, so every frame is exact.
-
-A minimal example, a progress bar that goes from 0% to 100% in 2 seconds:
-
-```html
-<div id="label"></div>
-<div id="bar"></div>
-<script>
-  const ease = x => 1 - Math.pow(1 - x, 3);
-
-  window.render = (t) => {            // the picture depends only on t
-    const p = ease(Math.min(t / 2, 1));
-    document.getElementById('bar').style.width = `${p * 480}px`;
-    document.getElementById('label').textContent = `${Math.round(p * 100)}%`;
-  };
-
-  if (!navigator.webdriver) {         // preview: drive it with the real clock
-    const start = performance.now();
-    const tick = () => {
-      render(((performance.now() - start) / 1000) % 2);
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }
-</script>
-```
-
-The export script drives headless Chromium with Playwright and pipes the screenshots into FFmpeg:
-
-```js
-import { chromium } from 'playwright';
-import { spawn } from 'node:child_process';
-
-const FPS = 30;
-const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 640, height: 360 } });
-await page.goto(new URL('anim.html', import.meta.url).href);
-
-const ffmpeg = spawn('ffmpeg', ['-y', '-f', 'image2pipe', '-framerate', String(FPS),
-  '-i', '-', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', 'out.mp4']);
-
-for (let i = 0; i < FPS * 2; i++) {
-  await page.evaluate(t => window.render(t), i / FPS);  // jump to frame i
-  ffmpeg.stdin.write(await page.screenshot());          // capture it
-}
-ffmpeg.stdin.end();
-await new Promise(r => ffmpeg.on('close', r));
-await browser.close();
-```
-
-The result:
-
-<figure style="margin: 1.6em 0;">
-  <video src="demo.mp4" poster="demo-poster.png" width="640" height="360" autoplay loop muted playsinline style="max-width: 100%; height: auto; border-radius: 6px;"></video>
-</figure>
 
 ## Remotion works the same way
 
