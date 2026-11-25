@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="zh" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Claude Motion 是怎么做动画的？和 Remotion 是什么关系 · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Claude Motion 是怎么做动画的？和 Remotion 是什么关系" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/technical-notes/claude-motion/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400..500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="note-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" >Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" aria-current="page">Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" >Writing</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="note wrap" data-bilingual data-default-lang="en">
+  <header class="note__head">
+    <p class="eyebrow"><a href="/technical-notes/">Technical Notes</a></p>
+    
+      <h1 class="note__title" data-title data-title-en="How Does Claude Motion Make Animations, and What Does It Have to Do with Remotion?" data-title-zh="Claude Motion 是怎么做动画的？和 Remotion 是什么关系">How Does Claude Motion Make Animations, and What Does It Have to Do with Remotion?</h1>
+    
+    <div class="note__meta">
+      <time datetime="2026-11-25">2026-11-25</time>
+      
+        <span class="dot">·</span>
+        <span class="note__tags">
+          <span class="tag">AI</span><span class="tag">Animation</span><span class="tag">Remotion</span><span class="tag">Video</span>
+        </span>
+      
+      
+        <span class="lang-switch" role="group" aria-label="Article language" data-lang-switch>
+          <button type="button" data-lang="en" class="is-active" aria-pressed="true">EN</button>
+          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        </span>
+      
+    </div>
+  </header>
+
+  <div class="note__body">
+    <aside class="toc" aria-label="Table of contents">
+      <p class="toc__title">On this page</p>
+      <nav class="toc__nav" data-toc></nav>
+    </aside>
+    <div class="prose prose--doc" data-article>
+      
+        <div class="note-version" data-version="en" lang="en"><p>On October 8, Anthropic released Claude Motion: you describe what you want in Claude, and it makes a short animated explainer that you can export as an MP4<sup class="footnote-ref"><a href="#fn-en-1" id="fnref-en-1">1</a></sup>. The first question I had was whether it runs on Remotion under the hood.</p>
+<p>The short answer: Anthropic hasn’t published how Motion is built, and I found no evidence that it uses Remotion. This note has three parts: what is publicly confirmed, how this kind of tool usually works (with a minimal example that runs), and my guess about Motion.</p>
+<h2 id="what-is-public" tabindex="-1"><a class="header-anchor" href="#what-is-public"><span>What is public</span></a></h2>
+<p>Runway is Motion’s launch partner, and its announcement confirms the following<sup class="footnote-ref"><a href="#fn-en-1" id="fnref-en-1:1">1:1</a></sup>:</p>
+<ul>
+<li>The input is a prompt and the output is a short animated explainer, built from the text, charts, shapes and images in your material.</li>
+<li>In the announcement’s words, “Claude writes the code that animates your content.” The animation is code that Claude writes.</li>
+<li>You can ask for changes in the conversation or adjust things directly in an editor. You can download it as an MP4 or hand it to Runway for further work.</li>
+<li>It is in beta, on the Team and Enterprise plans.</li>
+</ul>
+<p>Several third-party reports also relay Anthropic as saying that Motion does not use a video generation model, so it does not generate live-action footage or AI-generated people. I haven’t checked this on Anthropic’s own pages.</p>
+<p>The announcement says nothing about the underlying framework or how the MP4 is rendered.</p>
+<h2 id="how-code-animation-becomes-video" tabindex="-1"><a class="header-anchor" href="#how-code-animation-becomes-video"><span>How code animation becomes video</span></a></h2>
+<p>Tools that “write animation as code, then export it as video” mostly work the same way. The core is one rule: <strong>the picture depends only on the time t</strong>.</p>
+<ol>
+<li><strong>Write the picture as <code>render(t)</code>.</strong> Given a time t, it draws that frame, and the same t always draws the same frame. The animation can’t depend on the real clock, <code>setTimeout</code> or random numbers, or export couldn’t get back to an exact frame.</li>
+<li><strong>Drive it with the real clock for preview.</strong> In the browser, <code>requestAnimationFrame</code> keeps calling <code>render(t)</code> with the current time, and you see an animation playing. Dragging the scrubber just means picking a different t.</li>
+<li><strong>Capture frame by frame for export.</strong> A headless browser opens the same page, sets t one frame at a time at the frame rate, takes a screenshot of each, and hands the screenshots to FFmpeg to encode as an MP4. This isn’t screen recording, so it doesn’t matter how fast the machine is: every frame is exact.</li>
+</ol>
+<p>Here is a minimal example: a progress bar that goes from 0% to 100% in 2 seconds.</p>
+<pre class="language-html" tabindex="0"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>label<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>bar<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript">
+  <span class="token keyword">const</span> <span class="token constant">DURATION</span> <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span> <span class="token comment">// seconds</span>
+  <span class="token keyword">const</span> <span class="token function-variable function">ease</span> <span class="token operator">=</span> <span class="token parameter">x</span> <span class="token operator">=></span> <span class="token number">1</span> <span class="token operator">-</span> Math<span class="token punctuation">.</span><span class="token function">pow</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">-</span> x<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// The picture depends only on t: the same t always draws the same frame</span>
+  window<span class="token punctuation">.</span><span class="token function-variable function">render</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">t</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> p <span class="token operator">=</span> <span class="token function">ease</span><span class="token punctuation">(</span>Math<span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span>t <span class="token operator">/</span> <span class="token constant">DURATION</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'bar'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>style<span class="token punctuation">.</span>width <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>p <span class="token operator">*</span> <span class="token number">480</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">px</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+    document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'label'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>textContent <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Math<span class="token punctuation">.</span><span class="token function">round</span><span class="token punctuation">(</span>p <span class="token operator">*</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">%</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// Preview: drive render(t) with the real clock; skipped under automation</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>navigator<span class="token punctuation">.</span>webdriver<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> start <span class="token operator">=</span> performance<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token function-variable function">tick</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+      <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span>performance<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> start<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">1000</span><span class="token punctuation">)</span> <span class="token operator">%</span> <span class="token constant">DURATION</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">requestAnimationFrame</span><span class="token punctuation">(</span>tick<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token function">requestAnimationFrame</span><span class="token punctuation">(</span>tick<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
+<p>The export script drives headless Chromium with Playwright and pipes the screenshots straight into FFmpeg:</p>
+<pre class="language-js" tabindex="0"><code class="language-js"><span class="token keyword">import</span> <span class="token punctuation">{</span> chromium <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'playwright'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> spawn <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'node:child_process'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> <span class="token constant">FPS</span> <span class="token operator">=</span> <span class="token number">30</span><span class="token punctuation">,</span> <span class="token constant">DURATION</span> <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token constant">W</span> <span class="token operator">=</span> <span class="token number">640</span><span class="token punctuation">,</span> <span class="token constant">H</span> <span class="token operator">=</span> <span class="token number">360</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> browser <span class="token operator">=</span> <span class="token keyword">await</span> chromium<span class="token punctuation">.</span><span class="token function">launch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> page <span class="token operator">=</span> <span class="token keyword">await</span> browser<span class="token punctuation">.</span><span class="token function">newPage</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">viewport</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">width</span><span class="token operator">:</span> <span class="token constant">W</span><span class="token punctuation">,</span> <span class="token literal-property property">height</span><span class="token operator">:</span> <span class="token constant">H</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">await</span> page<span class="token punctuation">.</span><span class="token function">goto</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">URL</span><span class="token punctuation">(</span><span class="token string">'anim.html'</span><span class="token punctuation">,</span> <span class="token keyword">import</span><span class="token punctuation">.</span>meta<span class="token punctuation">.</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span>href<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Write each PNG screenshot to ffmpeg's stdin; ffmpeg encodes the MP4</span>
+<span class="token keyword">const</span> ffmpeg <span class="token operator">=</span> <span class="token function">spawn</span><span class="token punctuation">(</span><span class="token string">'ffmpeg'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>
+  <span class="token string">'-y'</span><span class="token punctuation">,</span> <span class="token string">'-f'</span><span class="token punctuation">,</span> <span class="token string">'image2pipe'</span><span class="token punctuation">,</span> <span class="token string">'-framerate'</span><span class="token punctuation">,</span> <span class="token function">String</span><span class="token punctuation">(</span><span class="token constant">FPS</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">'-i'</span><span class="token punctuation">,</span> <span class="token string">'-'</span><span class="token punctuation">,</span>
+  <span class="token string">'-c:v'</span><span class="token punctuation">,</span> <span class="token string">'libx264'</span><span class="token punctuation">,</span> <span class="token string">'-pix_fmt'</span><span class="token punctuation">,</span> <span class="token string">'yuv420p'</span><span class="token punctuation">,</span> <span class="token string">'out.mp4'</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">stdio</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'pipe'</span><span class="token punctuation">,</span> <span class="token string">'inherit'</span><span class="token punctuation">,</span> <span class="token string">'inherit'</span><span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token constant">FPS</span> <span class="token operator">*</span> <span class="token constant">DURATION</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">await</span> page<span class="token punctuation">.</span><span class="token function">evaluate</span><span class="token punctuation">(</span><span class="token parameter">t</span> <span class="token operator">=></span> window<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>t<span class="token punctuation">)</span><span class="token punctuation">,</span> i <span class="token operator">/</span> <span class="token constant">FPS</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   <span class="token comment">// jump to frame i</span>
+  ffmpeg<span class="token punctuation">.</span>stdin<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token keyword">await</span> page<span class="token punctuation">.</span><span class="token function">screenshot</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>           <span class="token comment">// capture it</span>
+<span class="token punctuation">}</span>
+
+ffmpeg<span class="token punctuation">.</span>stdin<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">await</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> ffmpeg<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'close'</span><span class="token punctuation">,</span> r<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">await</span> browser<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>On my Mac, this script produced a 2-second, 60-frame MP4:</p>
+<figure style="margin: 1.6em 0;">
+  <video src="demo.mp4" poster="demo-poster.png" width="640" height="360" autoplay loop muted playsinline style="max-width: 100%; height: auto; border-radius: 6px;"></video>
+  <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted);">The video exported by the two snippets above</figcaption>
+</figure>
+<p>If the animation uses CSS animations or the Web Animations API, the same idea applies: pause them all during export and set each animation’s <code>currentTime</code> to the milliseconds for t. As long as you can jump straight to any frame, you can export it.</p>
+<h2 id="remotion-works-the-same-way" tabindex="-1"><a class="header-anchor" href="#remotion-works-the-same-way"><span>Remotion works the same way</span></a></h2>
+<p>Remotion is an open-source framework for writing videos in React. Its <code>useCurrentFrame()</code> returns the current frame number, and the component computes the picture from it. That is really a React version of <code>render(t)</code>:</p>
+<pre class="language-jsx" tabindex="0"><code class="language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span> useCurrentFrame<span class="token punctuation">,</span> interpolate <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'remotion'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">const</span> <span class="token function-variable function">Bar</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> frame <span class="token operator">=</span> <span class="token function">useCurrentFrame</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> width <span class="token operator">=</span> <span class="token function">interpolate</span><span class="token punctuation">(</span>frame<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">60</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">480</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">extrapolateRight</span><span class="token operator">:</span> <span class="token string">'clamp'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> width<span class="token punctuation">,</span> <span class="token literal-property property">height</span><span class="token operator">:</span> <span class="token number">40</span><span class="token punctuation">,</span> <span class="token literal-property property">background</span><span class="token operator">:</span> <span class="token string">'#e8a33d'</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+<p>To render, Remotion also opens the page in headless Chrome, captures it frame by frame, and hands the frames to FFmpeg to encode<sup class="footnote-ref"><a href="#fn-en-2" id="fnref-en-2">2</a></sup>. The differences are mostly in the layer above: it organizes the timeline with React components and ideas like <code>&lt;Sequence&gt;</code>, and it offers batch rendering in the cloud with Lambda.</p>
+<p>Watch the license: individuals and companies of up to 3 people can use it for free, and larger companies need a Company License<sup class="footnote-ref"><a href="#fn-en-3" id="fnref-en-3">3</a></sup>.</p>
+<h2 id="does-motion-use-remotion" tabindex="-1"><a class="header-anchor" href="#does-motion-use-remotion"><span>Does Motion use Remotion?</span></a></h2>
+<p>I don’t know. In principle either route works: Motion could run a Remotion project in the background, or it could have Claude write a web page with a <code>render(t)</code> and capture it frame by frame with its own export service.</p>
+<p>I lean toward the second, for three reasons, all of them guesses:</p>
+<ul>
+<li>Motion’s output is previewed and edited inside Claude, and Claude’s Artifacts are already web pages, so writing a page directly is the simplest path.</li>
+<li>Remotion needs a React project and a bundling step, which makes the loop longer for live preview and repeated edits in a conversation.</li>
+<li>Under Remotion’s license, a company of Anthropic’s size needs a commercial license, while the approach above has little core code, so building its own runtime isn’t hard.</li>
+</ul>
+<p>There is a community project on GitHub with the same name, whaleyxbt/claude-motion<sup class="footnote-ref"><a href="#fn-en-4" id="fnref-en-4">4</a></sup>. It has nothing to do with Anthropic, but it happens to take both routes. One pipeline writes React components with Remotion. The other, <code>sims/</code>, makes each piece a single HTML file where <code>render(t)</code> is a pure function of time, physics is simulated once when the page loads, and on export headless Chromium captures the page frame by frame into ffmpeg at 60 fps. If you want to compare the two approaches, it works as a reference implementation.</p>
+<h2 id="summary" tabindex="-1"><a class="header-anchor" href="#summary"><span>Summary</span></a></h2>
+<ul>
+<li>Claude Motion’s animations are code written by Claude, not footage from a video generation model. The underlying framework isn’t public.</li>
+<li>The usual way to turn code animation into video: write the picture as a pure function of time, preview it in the browser, and on export have a headless browser capture it frame by frame for FFmpeg to encode.</li>
+<li>Remotion is the React version of this approach. There is no evidence so far that Motion uses it.</li>
+</ul>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn-en-1" class="footnote-item"><p>Runway, <a href="https://runway.com/news/company-news/runway-claude-motion">Runway is in Claude Motion</a>, October 8, 2026 <a href="#fnref-en-1" class="footnote-backref">↩︎</a> <a href="#fnref-en-1:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-2" class="footnote-item"><p>Remotion docs, <a href="https://www.remotion.dev/docs/renderer/render-media">renderMedia()</a>: uses a headless browser by default and relies on <code>ffmpeg</code> and <code>ffprobe</code> <a href="#fnref-en-2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-3" class="footnote-item"><p>Remotion docs, <a href="https://www.remotion.dev/docs/license/pricing">Pricing</a> <a href="#fnref-en-3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-4" class="footnote-item"><p>whaleyxbt, <a href="https://github.com/whaleyxbt/claude-motion">claude-motion</a>, MIT license <a href="#fnref-en-4" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+</div>
+        <div class="note-version prose--zh-note" data-version="zh" lang="zh" hidden><p>10 月 8 日，Anthropic 发布了 Claude Motion：在 Claude 里描述想要的内容，它会做出一段短的动画讲解，可以导出成 MP4<sup class="footnote-ref"><a href="#fn-zh-1" id="fnref-zh-1">1</a></sup>。我第一个想到的问题是，它底层用的是不是 Remotion？</p>
+<p>先说结论：Anthropic 没有公开 Motion 的实现，我也没有找到它用了 Remotion 的证据。下面分三部分来写：公开能确认的信息，这类工具通用的实现方式（附一个能跑的最小例子），以及我对 Motion 的推测。</p>
+<h2 id="公开的信息" tabindex="-1"><a class="header-anchor" href="#公开的信息"><span>公开的信息</span></a></h2>
+<p>Runway 是 Motion 的首发合作伙伴，从它的公告里能确认这几点<sup class="footnote-ref"><a href="#fn-zh-1" id="fnref-zh-1:1">1:1</a></sup>：</p>
+<ul>
+<li>输入是提示词，输出是一段短的动画讲解，画面由你材料里的文字、图表、形状和图片组成。</li>
+<li>公告原话是 “Claude writes the code that animates your content”，也就是说，动画是 Claude 写的代码。</li>
+<li>可以在对话里提修改，也可以在编辑器里直接调整；能下载成 MP4，也能交给 Runway 继续加工。</li>
+<li>目前是 beta，Team 和 Enterprise 计划可用。</li>
+</ul>
+<p>另外，多篇第三方报道转述了 Anthropic 的说法：Motion 没有用视频生成模型，所以不会生成实拍画面，也不会出现 AI 生成的人物。这一点我没有在 Anthropic 自己的页面上核实。</p>
+<p>底层用的是什么框架、怎么渲染成 MP4，公告里都没有提。</p>
+<h2 id="代码动画怎么变成视频" tabindex="-1"><a class="header-anchor" href="#代码动画怎么变成视频"><span>代码动画怎么变成视频</span></a></h2>
+<p>“用代码写动画，再导出成视频”的工具，做法大同小异。核心是一个约定：<strong>画面只由时间 t 决定</strong>。</p>
+<ol>
+<li><strong>把画面写成 <code>render(t)</code>。</strong> 给一个时间 t，就画出那一帧；同一个 t 永远画出同一帧。动画不能依赖真实时钟、<code>setTimeout</code> 或随机数，否则导出的时候没法准确回到某一帧。</li>
+<li><strong>预览时用真实时钟驱动。</strong> 浏览器里用 <code>requestAnimationFrame</code> 不停地拿当前时间调用 <code>render(t)</code>，看起来就是一段正在播放的动画。拖进度条，也就是换一个 t。</li>
+<li><strong>导出时逐帧截图。</strong> 用无头浏览器打开同一个页面，按帧率一帧一帧地设置 t、截图，再把截图交给 FFmpeg 编码成 MP4。这不是录屏，所以和机器快慢无关，每一帧都是准的。</li>
+</ol>
+<p>下面是一个最小的例子，页面上是一个在 2 秒内从 0% 涨到 100% 的进度条：</p>
+<pre class="language-html" tabindex="0"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>label<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>bar<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript">
+  <span class="token keyword">const</span> <span class="token constant">DURATION</span> <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span> <span class="token comment">// 秒</span>
+  <span class="token keyword">const</span> <span class="token function-variable function">ease</span> <span class="token operator">=</span> <span class="token parameter">x</span> <span class="token operator">=></span> <span class="token number">1</span> <span class="token operator">-</span> Math<span class="token punctuation">.</span><span class="token function">pow</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">-</span> x<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// 画面只由 t 决定：同一个 t 永远画出同一帧</span>
+  window<span class="token punctuation">.</span><span class="token function-variable function">render</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">t</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> p <span class="token operator">=</span> <span class="token function">ease</span><span class="token punctuation">(</span>Math<span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span>t <span class="token operator">/</span> <span class="token constant">DURATION</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'bar'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>style<span class="token punctuation">.</span>width <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>p <span class="token operator">*</span> <span class="token number">480</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">px</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+    document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'label'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>textContent <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Math<span class="token punctuation">.</span><span class="token function">round</span><span class="token punctuation">(</span>p <span class="token operator">*</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">%</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// 预览：用真实时钟驱动 render(t)；被自动化工具打开时不跑</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>navigator<span class="token punctuation">.</span>webdriver<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> start <span class="token operator">=</span> performance<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token function-variable function">tick</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+      <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span>performance<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> start<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">1000</span><span class="token punctuation">)</span> <span class="token operator">%</span> <span class="token constant">DURATION</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">requestAnimationFrame</span><span class="token punctuation">(</span>tick<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token function">requestAnimationFrame</span><span class="token punctuation">(</span>tick<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
+<p>导出脚本用 Playwright 驱动无头 Chromium，截图通过管道直接写给 FFmpeg：</p>
+<pre class="language-js" tabindex="0"><code class="language-js"><span class="token keyword">import</span> <span class="token punctuation">{</span> chromium <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'playwright'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> spawn <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'node:child_process'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> <span class="token constant">FPS</span> <span class="token operator">=</span> <span class="token number">30</span><span class="token punctuation">,</span> <span class="token constant">DURATION</span> <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token constant">W</span> <span class="token operator">=</span> <span class="token number">640</span><span class="token punctuation">,</span> <span class="token constant">H</span> <span class="token operator">=</span> <span class="token number">360</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> browser <span class="token operator">=</span> <span class="token keyword">await</span> chromium<span class="token punctuation">.</span><span class="token function">launch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> page <span class="token operator">=</span> <span class="token keyword">await</span> browser<span class="token punctuation">.</span><span class="token function">newPage</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">viewport</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">width</span><span class="token operator">:</span> <span class="token constant">W</span><span class="token punctuation">,</span> <span class="token literal-property property">height</span><span class="token operator">:</span> <span class="token constant">H</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">await</span> page<span class="token punctuation">.</span><span class="token function">goto</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">URL</span><span class="token punctuation">(</span><span class="token string">'anim.html'</span><span class="token punctuation">,</span> <span class="token keyword">import</span><span class="token punctuation">.</span>meta<span class="token punctuation">.</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span>href<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 截图以 PNG 写进 ffmpeg 的标准输入，由它编码成 MP4</span>
+<span class="token keyword">const</span> ffmpeg <span class="token operator">=</span> <span class="token function">spawn</span><span class="token punctuation">(</span><span class="token string">'ffmpeg'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>
+  <span class="token string">'-y'</span><span class="token punctuation">,</span> <span class="token string">'-f'</span><span class="token punctuation">,</span> <span class="token string">'image2pipe'</span><span class="token punctuation">,</span> <span class="token string">'-framerate'</span><span class="token punctuation">,</span> <span class="token function">String</span><span class="token punctuation">(</span><span class="token constant">FPS</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">'-i'</span><span class="token punctuation">,</span> <span class="token string">'-'</span><span class="token punctuation">,</span>
+  <span class="token string">'-c:v'</span><span class="token punctuation">,</span> <span class="token string">'libx264'</span><span class="token punctuation">,</span> <span class="token string">'-pix_fmt'</span><span class="token punctuation">,</span> <span class="token string">'yuv420p'</span><span class="token punctuation">,</span> <span class="token string">'out.mp4'</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">stdio</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'pipe'</span><span class="token punctuation">,</span> <span class="token string">'inherit'</span><span class="token punctuation">,</span> <span class="token string">'inherit'</span><span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token constant">FPS</span> <span class="token operator">*</span> <span class="token constant">DURATION</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">await</span> page<span class="token punctuation">.</span><span class="token function">evaluate</span><span class="token punctuation">(</span><span class="token parameter">t</span> <span class="token operator">=></span> window<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>t<span class="token punctuation">)</span><span class="token punctuation">,</span> i <span class="token operator">/</span> <span class="token constant">FPS</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   <span class="token comment">// 跳到第 i 帧</span>
+  ffmpeg<span class="token punctuation">.</span>stdin<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token keyword">await</span> page<span class="token punctuation">.</span><span class="token function">screenshot</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>           <span class="token comment">// 截下来</span>
+<span class="token punctuation">}</span>
+
+ffmpeg<span class="token punctuation">.</span>stdin<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">await</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> ffmpeg<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'close'</span><span class="token punctuation">,</span> r<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">await</span> browser<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>在我的 Mac 上，这个脚本输出了一个 2 秒、60 帧的 MP4：</p>
+<figure style="margin: 1.6em 0;">
+  <video src="demo.mp4" poster="demo-poster.png" width="640" height="360" autoplay loop muted playsinline style="max-width: 100%; height: auto; border-radius: 6px;"></video>
+  <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted);">上面两段代码导出的视频</figcaption>
+</figure>
+<p>如果动画里用的是 CSS 动画或 Web Animations API，道理也一样：导出时把它们都暂停，再把每个动画的 <code>currentTime</code> 设成 t 对应的毫秒数。只要每一帧都能直接“跳过去”，就能导出。</p>
+<h2 id="remotion-也是这么做的" tabindex="-1"><a class="header-anchor" href="#remotion-也是这么做的"><span>Remotion 也是这么做的</span></a></h2>
+<p>Remotion 是用 React 写视频的开源框架。它的 <code>useCurrentFrame()</code> 返回当前是第几帧，组件根据帧号算出画面，这其实就是 React 版的 <code>render(t)</code>：</p>
+<pre class="language-jsx" tabindex="0"><code class="language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span> useCurrentFrame<span class="token punctuation">,</span> interpolate <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'remotion'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">const</span> <span class="token function-variable function">Bar</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> frame <span class="token operator">=</span> <span class="token function">useCurrentFrame</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> width <span class="token operator">=</span> <span class="token function">interpolate</span><span class="token punctuation">(</span>frame<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">60</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">480</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">extrapolateRight</span><span class="token operator">:</span> <span class="token string">'clamp'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> width<span class="token punctuation">,</span> <span class="token literal-property property">height</span><span class="token operator">:</span> <span class="token number">40</span><span class="token punctuation">,</span> <span class="token literal-property property">background</span><span class="token operator">:</span> <span class="token string">'#e8a33d'</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+<p>渲染的时候，Remotion 同样是用无头 Chrome 打开页面、逐帧截图，再交给 FFmpeg 编码<sup class="footnote-ref"><a href="#fn-zh-2" id="fnref-zh-2">2</a></sup>。区别主要在上层：它用 React 组件和 <code>&lt;Sequence&gt;</code> 这类概念来组织时间线，另外提供 Lambda 云端批量渲染。</p>
+<p>许可证需要注意：个人和 3 人以内的公司可以免费用，更大的公司要买 Company License<sup class="footnote-ref"><a href="#fn-zh-3" id="fnref-zh-3">3</a></sup>。</p>
+<h2 id="motion-用的是-remotion-吗" tabindex="-1"><a class="header-anchor" href="#motion-用的是-remotion-吗"><span>Motion 用的是 Remotion 吗</span></a></h2>
+<p>不知道。从原理上讲两条路都行：Motion 可以在后台跑一个 Remotion 工程，也可以让 Claude 直接写一个带 <code>render(t)</code> 的网页，再用自己的导出服务逐帧截图。</p>
+<p>我更倾向于后者，理由有三个，但都只是推测：</p>
+<ul>
+<li>Motion 的作品是在 Claude 里预览和编辑的，Claude 的 Artifact 本来就是网页，直接写一个网页最省事。</li>
+<li>Remotion 需要 React 工程和打包步骤，放进对话里实时预览、反复修改，链路更长。</li>
+<li>按 Remotion 的许可证，Anthropic 这样规模的公司需要商业授权；而上面那套做法核心代码不多，自己做一个运行时也不难。</li>
+</ul>
+<p>GitHub 上有一个同名的社区项目 whaleyxbt/claude-motion<sup class="footnote-ref"><a href="#fn-zh-4" id="fnref-zh-4">4</a></sup>，和 Anthropic 没有关系，但正好两条路都走了。一条管线用 Remotion 写 React 组件；另一条 <code>sims/</code> 管线每个作品是一个单独的 HTML 文件，<code>render(t)</code> 是时间的纯函数，物理模拟在页面加载时先算好，导出时由无头 Chromium 逐帧截图交给 ffmpeg，输出 60fps 的视频。想对比这两种做法的话，可以拿它当参考实现。</p>
+<h2 id="小结" tabindex="-1"><a class="header-anchor" href="#小结"><span>小结</span></a></h2>
+<ul>
+<li>Claude Motion 的动画是 Claude 写的代码，不是视频生成模型画出来的；底层框架没有公开。</li>
+<li>“代码动画 → 视频”的通用做法是：把画面写成时间的纯函数，在浏览器里预览，导出时由无头浏览器逐帧截图，交给 FFmpeg 编码。</li>
+<li>Remotion 是这套做法的 React 版。Motion 有没有用它，目前没有证据。</li>
+</ul>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn-zh-1" class="footnote-item"><p>Runway，<a href="https://runway.com/news/company-news/runway-claude-motion">Runway is in Claude Motion</a>，2026 年 10 月 8 日 <a href="#fnref-zh-1" class="footnote-backref">↩︎</a> <a href="#fnref-zh-1:1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-2" class="footnote-item"><p>Remotion 文档，<a href="https://www.remotion.dev/docs/renderer/render-media">renderMedia()</a>：默认使用无头浏览器，并依赖 <code>ffmpeg</code> 和 <code>ffprobe</code> <a href="#fnref-zh-2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-3" class="footnote-item"><p>Remotion 文档，<a href="https://www.remotion.dev/docs/license/pricing">Pricing</a> <a href="#fnref-zh-3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-4" class="footnote-item"><p>whaleyxbt，<a href="https://github.com/whaleyxbt/claude-motion">claude-motion</a>，MIT 许可证 <a href="#fnref-zh-4" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+</div>
+      
+    </div>
+  </div>
+
+  <footer class="note__foot">
+    <a class="back-link" href="/technical-notes/">← All technical notes</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+      
+        <a class="social-link" href="https://github.com/szy1840" aria-label="GitHub" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.51 11.51 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+      
+        <a class="social-link" href="https://www.linkedin.com/in/ziyansong02/" aria-label="LinkedIn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+      
+        <a class="social-link" href="mailto:szy1840@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v.18l-10 5.6L2 5.68V5.5Zm0 2.07V18.5A1.5 1.5 0 0 0 3.5 20h17a1.5 1.5 0 0 0 1.5-1.5V7.57l-9.51 5.33a1 1 0 0 1-.98 0L2 7.57Z"/></svg></a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>
