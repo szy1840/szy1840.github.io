@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="zh" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ESP32 iPhone Agent 的中文输入：一个没有按键的键盘 · Ziyan Song</title>
+    <meta name="description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta name="author" content="Ziyan Song" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="ESP32 iPhone Agent 的中文输入：一个没有按键的键盘" />
+    <meta property="og:description" content="Software engineer and founder. Building things, and writing to think." />
+    <meta property="og:url" content="https://szy1840.github.io/technical-notes/esp32-iphone-agent-keyboard/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400..500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/prism.css" />
+    <script>
+      // Prevent theme flash
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body class="note-page">
+    <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark">Z</span>
+      <span class="brand__name">Ziyan&nbsp;Song</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list" aria-label="Toggle menu">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-list" id="nav-list">
+        
+          
+          
+          <li>
+            <a href="/" >Home</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/projects/" >Projects</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/technical-notes/" aria-current="page">Technical Notes</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/notes-essays/" >Writing</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/about/" >About</a>
+          </li>
+        
+          
+          
+          <li>
+            <a href="/resume/" >Résumé</a>
+          </li>
+        
+        <li class="nav-list__theme">
+          <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <span class="theme-toggle__icon" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+    <main id="main"><article class="note wrap" >
+  <header class="note__head">
+    <p class="eyebrow"><a href="/technical-notes/">Technical Notes</a></p>
+    
+      <h1 class="note__title" lang="zh">ESP32 iPhone Agent 的中文输入：一个没有按键的键盘</h1>
+    
+    <div class="note__meta">
+      <time datetime="2026-11-25">2026-11-25</time>
+      
+        <span class="dot">·</span>
+        <span class="note__tags">
+          <span class="tag">AI Agent</span><span class="tag">iOS</span><span class="tag">Keyboard Extension</span>
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="note__body">
+    <aside class="toc" aria-label="Table of contents">
+      <p class="toc__title">On this page</p>
+      <nav class="toc__nav" data-toc></nav>
+    </aside>
+    <div class="prose prose--doc" data-article>
+      
+        <div class="prose--zh-note" lang="zh"><p>让模型操作一台真的 iPhone，这个想法我一个月之前就有，后来发现已经有一个和我的想法几乎一样的项目了：<a href="https://github.com/onehumanbeing/esp32-iphone-agent">ESP32 iPhone Agent</a><sup class="footnote-ref"><a href="#fn-zh-1" id="fnref-zh-1">1</a></sup>。它的原理是，手机把屏幕镜像给一块 ESP32-S3 小板子，iOS app 读画面、问视觉模型下一步做什么，板子再以鼠标和键盘的身份去操作手机。</p>
+<p>这个想法能跑通，但我觉得瓶颈在速度上，目前的可用性太差了。我做了一些尝试，其中一个重要的方向是提升中文输入的速度，也就是这篇要写的：给 agent 做一个没有按键的键盘，让它把一整段文字直接放进输入框。agent 侧的优化方案后面再更新。</p>
+<h2 id="逐键输入中文的开销" tabindex="-1"><a class="header-anchor" href="#逐键输入中文的开销"><span>逐键输入中文的开销</span></a></h2>
+<p>板子在手机看来是一个硬件键盘，它能做的只有发按键。英文还好，一个字母一个键。中文就必须过输入法：把拼音敲进去，等候选词出来，选词上屏，再确认上屏的是不是想要的字。这是用系统键盘输入中文本身的特点，和手机上设的是哪种输入法没有关系，就算是默认的全拼也一样。</p>
+<p>上游的 <code>HanTyper</code> 做的就是这件事。它打的是不带声调的全拼，先试着把整句一次打完，再读一次屏幕确认；整句的首选候选经常不是想要的那句话，不对的话就删掉，改成一个词一个词打，每隔几个词读一次屏幕。开销主要是两块：</p>
+<ul>
+<li><strong>敲键</strong>：我测试用的句子是 17 个字，拼音有四十多个键。日志里有两次只敲键、没有回读的输入，分别用了 4.0 秒和 4.6 秒。</li>
+<li><strong>回读</strong>：读一次屏幕要 1 到 2 秒。逐词打的时候，每个词大约 0.3 秒，最多每四个词就要读一次。</li>
+</ul>
+<p>所以即使一切顺利，一句话也要好几秒，而且句子越长越慢。剪贴板在这里也用不上，因为 agent 的 app 跑任务的时候在后台，iOS 会拒绝后台 app 写剪贴板。</p>
+<h2 id="输入法不一样时的额外问题" tabindex="-1"><a class="header-anchor" href="#输入法不一样时的额外问题"><span>输入法不一样时的额外问题</span></a></h2>
+<p>上面说的还是输入法和 app 的假设一致的情况。我的测试机是 iPhone 17，iOS 26.6，中文键盘设的是小鹤双拼，这就多出来一层问题。</p>
+<p>任务是“打开备忘录，新建一条备忘录，输入：今天天气不错，我们下午去公园散步吧”。结果完整打一遍要 22 秒左右，出来的是这个：</p>
+<figure style="margin: 1.6em 0;">
+  <img src="typing-before.jpg" alt="备忘录里的输入结果：集虐差虐差集虐差呢提案起不粗哦,我么呢洗啊呜去过能预案撒您是吧" width="600" height="393" style="max-width: 100%; height: auto;">
+  <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted);">全拼打进双拼键盘的结果（截图只留了上半部分）</figcaption>
+</figure>
+<p>原因其实很简单，双拼是两个键一个音节。全拼的 tianqi 是六个键，被切成 ti、an、qi 三个音节，出来就是“提案起”；bucuo 变成“不粗哦”，women 变成“我么呢”。整句九个词里只有“去”和“吧”打对了，因为 qu 和 ba 本来就是两个键。</p>
+<p>更麻烦的是 app 自己没有发现。日志里这一步记的是 typed and read back，也就是“打完了，也回读确认了”。看日志能看出来为什么：<code>HanTyper</code> 在回读不到某个词的时候，只要输入框里的拼音字母没了，就当它已经上屏（“not read back, but its pinyin is gone; taken as committed”）。双拼下拼音字母确实都没了，只是变成了别的字。</p>
+<p>模型看截图发现文字不对，于是清空重打，前后重打了七次，每次结果都一样，5 分多钟之后我手动把这次 run 停掉了。</p>
+<p>这不能算上游的 bug，<code>HanTyper</code> 假设的是全拼键盘，而我的手机设的是双拼。但用户的输入法设置本来就各不相同，app 很难每一种都适配。只要还是通过输入法去凑字，每多一种配置就多一种出错的方式，而且往往是第一次打错了才发现，再花时间重打。</p>
+<h2 id="方案一个没有按键的键盘" tabindex="-1"><a class="header-anchor" href="#方案一个没有按键的键盘"><span>方案：一个没有按键的键盘</span></a></h2>
+<p>这两个问题其实是同一个来源：agent 想做的只是“把这段文字放进输入框”，但它手里只有按键，只能通过输入法间接地去凑。所以更合适的做法是跳过输入法，直接插入文字。iOS 上能往别的 app 的输入框里插入文字的正规途径，就是键盘扩展：<code>UIInputViewController</code> 的 <code>textDocumentProxy.insertText</code>。</p>
+<p>我给 app 加了一个键盘扩展 AgentKeyboard。它没有按键，界面上只有一行状态文字和一个地球键。文字由 agent 的 app 通过手机内部的一个 socket 喂给它：</p>
+<ul>
+<li><strong>App 这边</strong>：在 loopback 地址（127.0.0.1）的 47613 端口上监听 TCP，协议是一行一个 JSON。</li>
+<li><strong>键盘这边</strong>：启动后连上来，每秒发一次心跳。App 只有在最近 2.5 秒内听到过心跳，才认为键盘可用。</li>
+<li><strong>输入</strong>：app 发一条带 id 的 Insert，键盘调用一次 <code>insertText</code> 把整段文字放进当前的输入框，再按 id 回一条确认。</li>
+</ul>
+<p>整个协议就是两个结构体：</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token comment">/// App → keyboard: insert `text` at the cursor.</span>
+<span class="token keyword">struct</span> <span class="token class-name">Insert</span><span class="token punctuation">:</span> <span class="token class-name">Codable</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> id<span class="token punctuation">:</span> <span class="token class-name">Int</span>
+    <span class="token keyword">var</span> text<span class="token punctuation">:</span> <span class="token class-name">String</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">/// Keyboard → app. 什么都不带是每秒一次的心跳；带 `done` 是对某次 Insert 的回答，</span>
+<span class="token comment">/// `ok` 为 false 表示没有可以插入的输入框。</span>
+<span class="token keyword">struct</span> <span class="token class-name">Note</span><span class="token punctuation">:</span> <span class="token class-name">Codable</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> done<span class="token punctuation">:</span> <span class="token class-name">Int</span><span class="token operator">?</span>
+    <span class="token keyword">var</span> ok<span class="token punctuation">:</span> <span class="token class-name">Bool</span><span class="token operator">?</span>
+<span class="token punctuation">}</span></code></pre>
+<p>键盘这边真正干活的只有一行：</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token keyword">func</span> <span class="token function-definition function">insert</span><span class="token punctuation">(</span><span class="token omit keyword">_</span> text<span class="token punctuation">:</span> <span class="token class-name">String</span><span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token class-name">Bool</span> <span class="token punctuation">{</span>
+    <span class="token keyword">guard</span> isViewLoaded <span class="token keyword">else</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> <span class="token boolean">false</span> <span class="token punctuation">}</span>
+    textDocumentProxy<span class="token punctuation">.</span><span class="token function">insertText</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token boolean">true</span>
+<span class="token punctuation">}</span></code></pre>
+<p>这样就不需要敲键，不需要等候选词，也不需要逐词回读，手机上设的是全拼还是双拼也无所谓了。</p>
+<p><strong>为什么用 socket 而不是 App Group</strong>：app 和它的键盘扩展之间通信，一般会用 App Group，但 App Group 需要付费的开发者 team，而我是用免费的 personal team 签名的。Loopback socket 只需要键盘打开“允许完全访问”（Full Access）。按 Apple 的文档，键盘扩展默认没有网络访问，也不能和 containing app 共享容器，打开 Full Access 之后才有<sup class="footnote-ref"><a href="#fn-zh-2" id="fnref-zh-2">2</a></sup>。这个选择是有代价的：loopback 端口手机上的其他 app 也能连，所以不应该用这条路输入密码之类的 secret。</p>
+<p><strong>键盘不在的时候</strong>：没听到心跳，就退回到板子逐键输入，和原来一样。</p>
+<p><strong>发出去了但没收到确认的时候</strong>：app 等 1.5 秒，等不到就把结果报成 unconfirmed，并告诉模型先看一眼输入框，文字在就继续，不在再重打。这样同一段文字不会被盲打两遍。</p>
+<h2 id="额外的好处和开销" tabindex="-1"><a class="header-anchor" href="#额外的好处和开销"><span>额外的好处和开销</span></a></h2>
+<p>好处是不用再管输入法的切换了。逐键输入的时候，打字之前要先弄清楚当前是中文键盘还是英文键盘，不对就发 Ctrl+Space 切过去；英文打进拼音键盘，出来的是没上屏的拼音；中英混合的句子，英文后面的第一个中文词还要再读一次屏幕，确认键盘没有变。现在 <code>type</code> 不看文字是什么语言，都先走 AgentKeyboard，英文、中英混合、emoji 是同一次 <code>insertText</code>。逐键的时候 emoji 是直接被丢掉的。</p>
+<p>这里实测的范围要说清楚：英文在真机上测过一句 55 个字符的；中英混合只在模拟器上测过，74 个字符（中文加一个链接），app 在后台，插入另一个 app 的输入框，用了 57 毫秒；emoji 没有测过。</p>
+<p>开销是要先把输入框的键盘切成 AgentKeyboard。这件事在真机上用了 9.1 秒，但只需要做一次，iOS 会记住最后用的键盘，除非中间有人手动切走。怎么切是下面的第一个坑。</p>
+<h2 id="中间遇到的坑" tabindex="-1"><a class="header-anchor" href="#中间遇到的坑"><span>中间遇到的坑</span></a></h2>
+<h3 id="1-没办法直接切到指定的键盘" tabindex="-1"><a class="header-anchor" href="#1-没办法直接切到指定的键盘"><span>1. 没办法直接切到指定的键盘</span></a></h3>
+<p>这是最费劲的部分。键盘装好、Full Access 也开了之后，还得让它成为输入框当前用的那个键盘。板子发 Ctrl+Space，或者点一下地球键，都只会在最近用过的两个系统键盘之间来回切（我这里是英文和双拼），永远切不到第三方键盘。键盘扩展自己也没有办法，Apple 的文档里写了，没有 API 可以指定切到某一个键盘<sup class="footnote-ref"><a href="#fn-zh-2" id="fnref-zh-2:1">2:1</a></sup>。</p>
+<p>管用的办法是人平时用的那个：长按地球键，等菜单弹出来，再点键盘的名字。现在 app 自己会做这件事：</p>
+<ol>
+<li>用 OCR 在屏幕上找到“123”键，地球键就在它的正下方</li>
+<li>把指针移过去，按住一秒再松开</li>
+<li>再读一次屏幕，在弹出的菜单里找到“ESP32 Agent”那一行，点它</li>
+</ol>
+<div style="display: flex; gap: 1rem; align-items: flex-start; margin: 1.6em 0;">
+  <figure style="margin: 0; flex: 1; min-width: 0;">
+    <img src="keyboard-menu.jpg" alt="长按地球键弹出的键盘菜单，里面有 English (US)、Emoji、简体双拼和 ESP32 Agent" width="540" height="1173" style="width: 100%; height: auto;">
+    <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted);">长按地球键弹出的菜单</figcaption>
+  </figure>
+  <figure style="margin: 0; flex: 1; min-width: 0;">
+    <img src="keyboard-active.jpg" alt="AgentKeyboard 成为当前键盘：没有按键，只有一行状态文字和地球键" width="540" height="1173" style="width: 100%; height: auto;">
+    <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted);">选中之后：没有按键的键盘，已经连上 app</figcaption>
+  </figure>
+</div>
+<p>这里还有一个小坑：手机的 OCR 把“ESP32”和“Agent”读成了两个独立的词，直接按名字找是找不到的，所以要先把同一行上相邻的词拼起来再匹配。</p>
+<p>如果菜单里选不到，这次 run 剩下的输入就都走板子逐键，不会再试。</p>
+<h3 id="2-打开-full-access-会重启-app" tabindex="-1"><a class="header-anchor" href="#2-打开-full-access-会重启-app"><span>2. 打开 Full Access 会重启 app</span></a></h3>
+<p>在设置里给键盘打开 Full Access 的时候，iOS 会把 containing app 杀掉再重新启动。这个设置只需要做一次，但要避开有任务在跑的时候。</p>
+<h3 id="3-系统弹窗的按钮要点两次" tabindex="-1"><a class="header-anchor" href="#3-系统弹窗的按钮要点两次"><span>3. 系统弹窗的按钮要点两次</span></a></h3>
+<p>在这台手机上，系统弹窗的按钮不理会指针的第一次点击，第二次才生效。现在的处理是：一次重试的点击之后如果画面没有变化，就在原地再点一下。</p>
+<h2 id="结果" tabindex="-1"><a class="header-anchor" href="#结果"><span>结果</span></a></h2>
+<p>同一个任务，同一句话，这次输入框里是对的：</p>
+<figure style="margin: 1.6em 0;">
+  <img src="typing-after.jpg" alt="备忘录里的输入结果：今天天气不错，我们下午去公园散步吧" width="600" height="393" style="max-width: 100%; height: auto;">
+  <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted);">通过 AgentKeyboard 整段插入的结果</figcaption>
+</figure>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>之前：板子逐键（双拼键盘）</th>
+<th>之后：AgentKeyboard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输入这 17 个字</td>
+<td>每次约 22 秒，内容是错的</td>
+<td>0.04 秒，内容正确</td>
+</tr>
+<tr>
+<td>整个任务（打开备忘录、新建、输入）</td>
+<td>重打七次，5 分多钟后手动停止</td>
+<td>第一次 37 秒完成，后来一次 28.1 秒</td>
+</tr>
+<tr>
+<td>一次性的开销</td>
+<td>无</td>
+<td>切到 AgentKeyboard，9.1 秒</td>
+</tr>
+</tbody>
+</table>
+<p>输入这一步，每次省下来 22 秒左右，更重要的是之前打出来的字是错的，任务根本完成不了。第一次的 37 秒里，有大约 16 秒其实是在清掉上一次留在备忘录里的错字，28.1 秒那次没有这一步。</p>
+<p>如果手机设的是全拼，逐键输入应该是能打对的，这种情况我没有在这台手机上测过，所以没有直接的对比数字。按前面的开销算，这句话光敲键就要 4 秒多，还要加上至少一次 1 到 2 秒的回读，现在是 0.04 秒。</p>
+<p>输入本身降到 0.04 秒之后，任务剩下的时间基本都花在模型调用上（这两次 run 里每次调用大约 4 到 8 秒），和输入已经没什么关系了。</p>
+<h2 id="限制" tabindex="-1"><a class="header-anchor" href="#限制"><span>限制</span></a></h2>
+<ul>
+<li><strong>样本很小</strong>：只在一台手机上测过（iPhone 17，iOS 26.6），一句中文、一句英文，都是在备忘录里。</li>
+<li><strong>只测了蓝牙输入模式</strong>：板子用 USB 输入的时候，这个改动没有测过。</li>
+<li><strong>需要 Full Access</strong>，而且前面说了，loopback 端口其他 app 也能连，不适合输入 secret。</li>
+<li><strong>人自己打字会受影响</strong>：AgentKeyboard 是当前键盘的时候，人点开输入框看到的是一个空键盘，要点地球键切回原来的键盘。</li>
+<li><strong>密码框没有测</strong>：按 Apple 的文档，第三方键盘不能用在 secure text field 里，系统会临时换回系统键盘；phone pad 类型的输入框也不行，app 还可以整体拒绝第三方键盘<sup class="footnote-ref"><a href="#fn-zh-2" id="fnref-zh-2:2">2:2</a></sup>。这些情况下 app 能不能正确地退回逐键输入，我没有测过。</li>
+<li><strong>聊天 app 里没有测</strong>：微信这类 app 的输入框里还没试过。</li>
+</ul>
+<p>上游项目在 commit 9b1d512 的时候没有这个功能，据我所知这个项目上之前也没有人做出来过。其他项目里有没有类似的做法，我没有调研过。</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn-zh-1" class="footnote-item"><p>Henry Yuan，<a href="https://github.com/onehumanbeing/esp32-iphone-agent">ESP32 iPhone Agent</a>，MIT 许可证 <a href="#fnref-zh-1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-zh-2" class="footnote-item"><p>Apple，App Extension Programming Guide 的 <a href="https://developer.apple.com/library/archive/documentation/General/Conceptual/ExtensibilityPG/CustomKeyboard.html">Custom Keyboard</a> 一章。这份文档最后更新于 2017 年，里面的说法我没有在 iOS 26 上逐条验证 <a href="#fnref-zh-2" class="footnote-backref">↩︎</a> <a href="#fnref-zh-2:1" class="footnote-backref">↩︎</a> <a href="#fnref-zh-2:2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+</div>
+      
+    </div>
+  </div>
+
+  <footer class="note__foot">
+    <a class="back-link" href="/technical-notes/">← All technical notes</a>
+  </footer>
+</article>
+</main>
+    <footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__name">Ziyan Song</p>
+      <p class="site-footer__note">Building software, and writing to think.</p>
+    </div>
+    <nav class="site-footer__links" aria-label="Social">
+      
+      
+        <a class="social-link" href="https://github.com/szy1840" aria-label="GitHub" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.51 11.51 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+      
+        <a class="social-link" href="https://www.linkedin.com/in/ziyansong02/" aria-label="LinkedIn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+      
+        <a class="social-link" href="mailto:szy1840@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v.18l-10 5.6L2 5.68V5.5Zm0 2.07V18.5A1.5 1.5 0 0 0 3.5 20h17a1.5 1.5 0 0 0 1.5-1.5V7.57l-9.51 5.33a1 1 0 0 1-.98 0L2 7.57Z"/></svg></a>
+      
+    </nav>
+    <p class="site-footer__copy">© <span data-year>2026</span> Ziyan Song · Built by hand with Eleventy</p>
+  </div>
+</footer>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>
