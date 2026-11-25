@@ -90,11 +90,11 @@
   </div>
 </header>
 
-    <main id="main"><article class="note wrap" >
+    <main id="main"><article class="note wrap" data-bilingual data-default-lang="en">
   <header class="note__head">
     <p class="eyebrow"><a href="/technical-notes/">Technical Notes</a></p>
     
-      <h1 class="note__title" lang="zh">ESP32 iPhone Agent 的中文输入：一个没有按键的键盘</h1>
+      <h1 class="note__title" data-title data-title-en="Chinese Input for ESP32 iPhone Agent: A Keyboard with No Keys" data-title-zh="ESP32 iPhone Agent 的中文输入：一个没有按键的键盘">Chinese Input for ESP32 iPhone Agent: A Keyboard with No Keys</h1>
     
     <div class="note__meta">
       <time datetime="2026-11-25">2026-11-25</time>
@@ -104,6 +104,11 @@
           <span class="tag">AI Agent</span><span class="tag">iOS</span><span class="tag">Keyboard Extension</span>
         </span>
       
+      
+        <span class="lang-switch" role="group" aria-label="Article language" data-lang-switch>
+          <button type="button" data-lang="en" class="is-active" aria-pressed="true">EN</button>
+          <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+        </span>
       
     </div>
   </header>
@@ -115,7 +120,143 @@
     </aside>
     <div class="prose prose--doc" data-article>
       
-        <div class="prose--zh-note" lang="zh"><p>让模型操作一台真的 iPhone，这个想法我一个月之前就有，后来发现已经有一个和我的想法几乎一样的项目了：<a href="https://github.com/onehumanbeing/esp32-iphone-agent">ESP32 iPhone Agent</a><sup class="footnote-ref"><a href="#fn-zh-1" id="fnref-zh-1">1</a></sup>。它的原理是，手机把屏幕镜像给一块 ESP32-S3 小板子，iOS app 读画面、问视觉模型下一步做什么，板子再以鼠标和键盘的身份去操作手机。</p>
+        <div class="note-version" data-version="en" lang="en"><p>I had the idea of letting a model operate a real iPhone about a month ago, and then found a project that was almost exactly what I had in mind: <a href="https://github.com/onehumanbeing/esp32-iphone-agent">ESP32 iPhone Agent</a><sup class="footnote-ref"><a href="#fn-en-1" id="fnref-en-1">1</a></sup>. It works like this: the phone mirrors its screen to a small ESP32-S3 board, an iOS app reads the picture and asks a vision model what to do next, and the board then acts on the phone as a mouse and keyboard.</p>
+<p>The idea works, but I think speed is the bottleneck, and right now the usability is too poor. I tried a few things, and one important direction is making Chinese input faster, which is what this note is about: a keyboard with no keys for the agent, so it can put a whole text straight into the input field. I’ll write up the agent-side optimizations later.</p>
+<h2 id="the-cost-of-typing-chinese-key-by-key" tabindex="-1"><a class="header-anchor" href="#the-cost-of-typing-chinese-key-by-key"><span>The cost of typing Chinese key by key</span></a></h2>
+<p>To the phone, the board is a hardware keyboard, and all it can do is send keys. English is fine: one letter, one key. Chinese has to go through an input method: type the Pinyin, wait for the candidates, pick one so it is committed, then check that what was committed is the text you wanted. This comes with typing Chinese on the system keyboard at all, and has nothing to do with which input method the phone is set to. It is the same with the default full Pinyin.</p>
+<p>Upstream’s <code>HanTyper</code> does exactly this. It types toneless full Pinyin. It first tries to type the whole sentence in one go and reads the screen once to check. The top candidate for a whole sentence is often not the sentence you wanted, and in that case it deletes it and types word by word, reading the screen every few words. The cost comes from two places:</p>
+<ul>
+<li><strong>Keys</strong>: my test sentence is 17 characters, which is more than forty keys of Pinyin. The log has two inputs that only sent keys, with no read-back, and they took 4.0 and 4.6 seconds.</li>
+<li><strong>Reading back</strong>: one screen read takes 1 to 2 seconds. When typing word by word, each word takes about 0.3 seconds, and the screen is read at least once every four words.</li>
+</ul>
+<p>So even when everything goes well, one sentence takes several seconds, and longer sentences take longer. The clipboard is no help here either: the agent’s app is in the background while a task runs, and iOS refuses clipboard writes from a background app.</p>
+<h2 id="an-extra-problem-when-the-input-method-is-different" tabindex="-1"><a class="header-anchor" href="#an-extra-problem-when-the-input-method-is-different"><span>An extra problem when the input method is different</span></a></h2>
+<p>All of the above assumes the input method is the one the app expects. My test phone is an iPhone 17 on iOS 26.6, with the Chinese keyboard set to Xiaohe Shuangpin, and that adds another layer.</p>
+<p>The task was “open Notes, create a new note, and type: 今天天气不错，我们下午去公园散步吧” (roughly “The weather is nice today, let’s take a walk in the park this afternoon”). One full attempt took about 22 seconds, and this is what came out:</p>
+<figure style="margin: 1.6em 0;">
+  <img src="typing-before.jpg" alt="The text in Notes after typing: 集虐差虐差集虐差呢提案起不粗哦,我么呢洗啊呜去过能预案撒您是吧" width="600" height="393" style="max-width: 100%; height: auto;">
+  <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted);">Full Pinyin typed into a Shuangpin keyboard (screenshot cropped to the top half)</figcaption>
+</figure>
+<p>The reason is simple. In Shuangpin, every syllable is two keys. In full Pinyin, tianqi (天气) is six keys. The Shuangpin keyboard cuts them into three syllables, ti, an and qi, and out comes “提案起”. bucuo (不错) becomes “不粗哦”, and women (我们) becomes “我么呢”. Of the nine words in the sentence, only “去” and “吧” came out right, because qu and ba are two keys each to begin with.</p>
+<p>Worse, the app did not notice. The log records this step as “typed and read back”. The log also shows why: when <code>HanTyper</code> cannot read a word back, it treats the word as committed as long as its Pinyin letters are gone from the field (“not read back, but its pinyin is gone; taken as committed”). With Shuangpin the Pinyin letters were indeed gone. They had just turned into other characters.</p>
+<p>The model saw in the screenshot that the text was wrong, cleared it and typed again. It retyped seven times with the same result every time, and after a bit more than five minutes I stopped the run by hand.</p>
+<p>I would not call this an upstream bug: <code>HanTyper</code> assumes a full Pinyin keyboard, and my phone is set to Shuangpin. But users’ input method settings differ anyway, and an app can hardly support every one of them. As long as text is put together through an input method, every extra configuration is one more way to go wrong, and you often only find out after the first attempt has failed, and then spend time retyping.</p>
+<h2 id="the-fix-a-keyboard-with-no-keys" tabindex="-1"><a class="header-anchor" href="#the-fix-a-keyboard-with-no-keys"><span>The fix: a keyboard with no keys</span></a></h2>
+<p>Both problems come from the same place: all the agent wants is to put this text into the field, but all it has are keys, so it can only get there indirectly, through the input method. The better way is to skip the input method and insert the text directly. The proper way on iOS to insert text into another app’s field is a keyboard extension: <code>textDocumentProxy.insertText</code> on <code>UIInputViewController</code>.</p>
+<p>I added a keyboard extension to the app, AgentKeyboard. It has no keys. Its UI is one line of status text and a globe key. The text is fed to it by the agent’s app over a socket inside the phone:</p>
+<ul>
+<li><strong>The app</strong> listens for TCP on the loopback address (127.0.0.1), port 47613. The protocol is one JSON object per line.</li>
+<li><strong>The keyboard</strong> connects when it starts and sends a heartbeat once a second. The app treats the keyboard as available only if it has heard a heartbeat in the last 2.5 seconds.</li>
+<li><strong>Typing</strong>: the app sends an Insert with an id, the keyboard calls <code>insertText</code> once to put the whole text into the current field, and answers with that id.</li>
+</ul>
+<p>The whole protocol is two structs:</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token comment">/// App → keyboard: insert `text` at the cursor.</span>
+<span class="token keyword">struct</span> <span class="token class-name">Insert</span><span class="token punctuation">:</span> <span class="token class-name">Codable</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> id<span class="token punctuation">:</span> <span class="token class-name">Int</span>
+    <span class="token keyword">var</span> text<span class="token punctuation">:</span> <span class="token class-name">String</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">/// Keyboard → app. With nothing set it is the once-a-second heartbeat; with `done` it answers</span>
+<span class="token comment">/// one Insert, and `ok` false means there was no field to insert into.</span>
+<span class="token keyword">struct</span> <span class="token class-name">Note</span><span class="token punctuation">:</span> <span class="token class-name">Codable</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> done<span class="token punctuation">:</span> <span class="token class-name">Int</span><span class="token operator">?</span>
+    <span class="token keyword">var</span> ok<span class="token punctuation">:</span> <span class="token class-name">Bool</span><span class="token operator">?</span>
+<span class="token punctuation">}</span></code></pre>
+<p>On the keyboard side, only one line does the real work:</p>
+<pre class="language-swift" tabindex="0"><code class="language-swift"><span class="token keyword">func</span> <span class="token function-definition function">insert</span><span class="token punctuation">(</span><span class="token omit keyword">_</span> text<span class="token punctuation">:</span> <span class="token class-name">String</span><span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token class-name">Bool</span> <span class="token punctuation">{</span>
+    <span class="token keyword">guard</span> isViewLoaded <span class="token keyword">else</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> <span class="token boolean">false</span> <span class="token punctuation">}</span>
+    textDocumentProxy<span class="token punctuation">.</span><span class="token function">insertText</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token boolean">true</span>
+<span class="token punctuation">}</span></code></pre>
+<p>So there are no keys to send, no candidates to wait for and no word-by-word reading back, and it no longer matters whether the phone is set to full Pinyin or Shuangpin.</p>
+<p><strong>Why a socket and not an App Group</strong>: an app and its keyboard extension would normally talk through an App Group, but that needs a paid developer team, and I sign with a free personal team. A loopback socket only needs the keyboard to have “Allow Full Access” turned on. According to Apple’s documentation, a keyboard extension has no network access by default and cannot share a container with its containing app, and it gets both only with Full Access<sup class="footnote-ref"><a href="#fn-en-2" id="fnref-en-2">2</a></sup>. This choice has a price: other apps on the phone can connect to a loopback port too, so secrets such as passwords should not be typed this way.</p>
+<p><strong>When the keyboard is not there</strong>: with no heartbeat, typing falls back to the board sending keys, as before.</p>
+<p><strong>When the text was sent but no answer came back</strong>: the app waits 1.5 seconds, then reports the result as unconfirmed and tells the model to look at the field first: continue if the text is there, and retype only if it is not. That way the same text is not blindly typed twice.</p>
+<h2 id="an-extra-benefit-and-its-cost" tabindex="-1"><a class="header-anchor" href="#an-extra-benefit-and-its-cost"><span>An extra benefit and its cost</span></a></h2>
+<p>The benefit is that switching input methods is no longer a concern. When typing key by key, the app first has to work out whether the current keyboard is the Chinese one or the English one, and send Ctrl+Space to switch if it is the wrong one. English typed into a Pinyin keyboard comes out as uncommitted Pinyin. In a sentence that mixes Chinese and English, the first Chinese word after the English part needs another screen read to confirm the keyboard has not changed. Now <code>type</code> does not look at what language the text is in. It tries AgentKeyboard first, and English, mixed text and emoji all go through the same single <code>insertText</code>. On the key path, emoji were simply dropped.</p>
+<p>To be clear about what was actually tested: English was tested on the device, with one 55-character sentence. Mixed Chinese and English was tested only on the simulator: 74 characters (Chinese plus a link), with the app in the background inserting into another app’s field, took 57 ms. Emoji were not tested.</p>
+<p>The cost is that the field’s keyboard has to be switched to AgentKeyboard first. On the device this took 9.1 seconds, but it only has to happen once: iOS remembers the last keyboard used, unless someone switches away by hand. How to switch is the first pitfall below.</p>
+<h2 id="pitfalls-along-the-way" tabindex="-1"><a class="header-anchor" href="#pitfalls-along-the-way"><span>Pitfalls along the way</span></a></h2>
+<h3 id="1-there-is-no-way-to-switch-straight-to-a-given-keyboard" tabindex="-1"><a class="header-anchor" href="#1-there-is-no-way-to-switch-straight-to-a-given-keyboard"><span>1. There is no way to switch straight to a given keyboard</span></a></h3>
+<p>This was the hardest part. With the keyboard installed and Full Access on, it still has to become the keyboard the field is currently using. Ctrl+Space from the board, or a tap on the globe key, only goes back and forth between the two most recently used system keyboards (English and Shuangpin on my phone) and never reaches a third-party keyboard. The keyboard extension cannot do it either: Apple’s documentation says there is no API for picking a particular keyboard to switch to<sup class="footnote-ref"><a href="#fn-en-2" id="fnref-en-2:1">2:1</a></sup>.</p>
+<p>What works is what people do: long-press the globe key, wait for the menu, and tap the keyboard’s name. The app now does this itself:</p>
+<ol>
+<li>Use OCR to find the “123” key on screen; the globe key is right below it</li>
+<li>Move the pointer there, hold for one second, then release</li>
+<li>Read the screen again, find the “ESP32 Agent” row in the menu, and tap it</li>
+</ol>
+<div style="display: flex; gap: 1rem; align-items: flex-start; margin: 1.6em 0;">
+  <figure style="margin: 0; flex: 1; min-width: 0;">
+    <img src="keyboard-menu.jpg" alt="The keyboard menu shown after long-pressing the globe key, listing English (US), Emoji, 简体双拼 (Shuangpin) and ESP32 Agent" width="540" height="1173" style="width: 100%; height: auto;">
+    <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted);">The menu after long-pressing the globe key</figcaption>
+  </figure>
+  <figure style="margin: 0; flex: 1; min-width: 0;">
+    <img src="keyboard-active.jpg" alt="AgentKeyboard as the current keyboard: no keys, only a line of status text and the globe key" width="540" height="1173" style="width: 100%; height: auto;">
+    <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted);">After picking it: a keyboard with no keys, connected to the app</figcaption>
+  </figure>
+</div>
+<p>There is one more small catch here: the phone’s OCR read “ESP32” and “Agent” as two separate words, so looking for the name directly finds nothing. Adjacent words on the same row have to be joined before matching.</p>
+<p>If the keyboard cannot be picked in the menu, the rest of that run’s typing goes through the board’s keys, and it does not try again.</p>
+<h3 id="2-turning-on-full-access-restarts-the-app" tabindex="-1"><a class="header-anchor" href="#2-turning-on-full-access-restarts-the-app"><span>2. Turning on Full Access restarts the app</span></a></h3>
+<p>When you turn on Full Access for the keyboard in Settings, iOS kills the containing app and starts it again. It is a one-time setting, but do it when no task is running.</p>
+<h3 id="3-buttons-in-system-alerts-need-two-clicks" tabindex="-1"><a class="header-anchor" href="#3-buttons-in-system-alerts-need-two-clicks"><span>3. Buttons in system alerts need two clicks</span></a></h3>
+<p>On this phone, buttons in system alerts ignore the pointer’s first click and only respond to the second. The current handling: if the screen has not changed after a retried click, click once more in the same place.</p>
+<h2 id="results" tabindex="-1"><a class="header-anchor" href="#results"><span>Results</span></a></h2>
+<p>Same task, same sentence, and this time the text in the field is right:</p>
+<figure style="margin: 1.6em 0;">
+  <img src="typing-after.jpg" alt="The text in Notes: 今天天气不错，我们下午去公园散步吧" width="600" height="393" style="max-width: 100%; height: auto;">
+  <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted);">Inserted as a whole through AgentKeyboard</figcaption>
+</figure>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Before: board keys (Shuangpin keyboard)</th>
+<th>After: AgentKeyboard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Typing these 17 characters</td>
+<td>About 22 s per attempt, wrong text</td>
+<td>0.04 s, correct text</td>
+</tr>
+<tr>
+<td>The whole task (open Notes, new note, type)</td>
+<td>Retyped seven times, stopped by hand after more than 5 minutes</td>
+<td>37 s the first time, 28.1 s in a later run</td>
+</tr>
+<tr>
+<td>One-off cost</td>
+<td>None</td>
+<td>Switching to AgentKeyboard, 9.1 s</td>
+</tr>
+</tbody>
+</table>
+<p>The typing step saves about 22 seconds per attempt. More importantly, the text used to come out wrong, and the task could not finish at all. Of the 37 seconds in the first run, about 16 went to clearing the wrong text that the earlier run had left in the note. The 28.1-second run did not have that step.</p>
+<p>If the phone were set to full Pinyin, typing key by key should come out right. I have not tested that on this phone, so I have no direct comparison. Going by the costs above, this sentence needs more than 4 seconds for the keys alone, plus at least one read of 1 to 2 seconds, against 0.04 seconds now.</p>
+<p>With typing down to 0.04 seconds, nearly all the remaining time in the task goes to model calls (about 4 to 8 seconds each in these two runs), and it has little to do with typing anymore.</p>
+<h2 id="limits" tabindex="-1"><a class="header-anchor" href="#limits"><span>Limits</span></a></h2>
+<ul>
+<li><strong>Small sample</strong>: tested on one phone only (iPhone 17, iOS 26.6), with one Chinese sentence and one English sentence, both in Notes.</li>
+<li><strong>Bluetooth input mode only</strong>: the change was not tested with the board on USB input.</li>
+<li><strong>Needs Full Access</strong>, and as said above, other apps can connect to the loopback port, so it is not suitable for secrets.</li>
+<li><strong>It gets in the way of a person typing</strong>: while AgentKeyboard is the current keyboard, a person who taps a field sees an empty keyboard and has to tap the globe key to get back to their own.</li>
+<li><strong>Password fields not tested</strong>: according to Apple’s documentation, third-party keyboards cannot be used in secure text fields, where the system temporarily swaps in the system keyboard. Phone pad fields are out too, and an app can refuse third-party keyboards altogether<sup class="footnote-ref"><a href="#fn-en-2" id="fnref-en-2:2">2:2</a></sup>. I have not tested whether the app correctly falls back to keys in these cases.</li>
+<li><strong>Not tested in chat apps</strong>: I have not tried it in the input fields of apps like WeChat.</li>
+</ul>
+<p>The upstream project did not have this as of commit 9b1d512, and as far as I know nobody had it working on this project before. I have not surveyed whether other projects do something similar.</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn-en-1" class="footnote-item"><p>Henry Yuan, <a href="https://github.com/onehumanbeing/esp32-iphone-agent">ESP32 iPhone Agent</a>, MIT License <a href="#fnref-en-1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn-en-2" class="footnote-item"><p>Apple, App Extension Programming Guide, the <a href="https://developer.apple.com/library/archive/documentation/General/Conceptual/ExtensibilityPG/CustomKeyboard.html">Custom Keyboard</a> chapter. The document was last updated in 2017, and I have not verified each of its statements on iOS 26 <a href="#fnref-en-2" class="footnote-backref">↩︎</a> <a href="#fnref-en-2:1" class="footnote-backref">↩︎</a> <a href="#fnref-en-2:2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+</div>
+        <div class="note-version prose--zh-note" data-version="zh" lang="zh" hidden><p>让模型操作一台真的 iPhone，这个想法我一个月之前就有，后来发现已经有一个和我的想法几乎一样的项目了：<a href="https://github.com/onehumanbeing/esp32-iphone-agent">ESP32 iPhone Agent</a><sup class="footnote-ref"><a href="#fn-zh-1" id="fnref-zh-1">1</a></sup>。它的原理是，手机把屏幕镜像给一块 ESP32-S3 小板子，iOS app 读画面、问视觉模型下一步做什么，板子再以鼠标和键盘的身份去操作手机。</p>
 <p>这个想法能跑通，但我觉得瓶颈在速度上，目前的可用性太差了。我做了一些尝试，其中一个重要的方向是提升中文输入的速度，也就是这篇要写的：给 agent 做一个没有按键的键盘，让它把一整段文字直接放进输入框。agent 侧的优化方案后面再更新。</p>
 <h2 id="逐键输入中文的开销" tabindex="-1"><a class="header-anchor" href="#逐键输入中文的开销"><span>逐键输入中文的开销</span></a></h2>
 <p>板子在手机看来是一个硬件键盘，它能做的只有发按键。英文还好，一个字母一个键。中文就必须过输入法：把拼音敲进去，等候选词出来，选词上屏，再确认上屏的是不是想要的字。这是用系统键盘输入中文本身的特点，和手机上设的是哪种输入法没有关系，就算是默认的全拼也一样。</p>
